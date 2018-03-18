@@ -1,0 +1,46 @@
+page-create-new {
+
+  .createNew{
+    background-color: #000;
+    background-size: cover;
+    background-position: center;
+
+    .select{
+      background-color: #ffffff;
+      min-width: 100% !important;
+      color: #d3a33c;
+    }
+
+    h2{
+      color: #d3a33c;;
+    }
+
+    .post{
+      display: inline-block;
+      min-height: 100%;
+      width: 100%;
+      background:  linear-gradient(rgba(0,0,0, 0) 0%,rgba(0,0,0, 1) 100%);
+      border-radius: 5px;
+      background-size: cover;
+      background-position: center;
+
+    }
+
+    .postInfo {
+
+      width: 100%;
+      height: 100%;
+      background-image:  linear-gradient(rgba(0,0,0, 0) 0%,rgba(0,0,0, 1)100%);
+      background-size: cover;
+      background-position: center;
+    }
+
+  }
+
+
+
+
+
+
+
+}

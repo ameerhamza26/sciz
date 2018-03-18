@@ -1,0 +1,63 @@
+page-messenger {
+
+
+  .chatheader {
+    border-bottom: 1px solid black;
+  }
+
+  .toolbar-background {
+    background-color: #000;
+  }
+
+  .toolbar-title {
+    text-align: center;
+  }
+
+
+  .messenger {
+    background-color: black;
+    background-size: cover;
+    background-position: center;
+  }
+
+  p {
+    color: white;
+  }
+
+
+  .allchats {
+    background-color:black;
+  }
+
+  .list{
+    border-color: #d3a33c;
+  }
+
+  .item{
+    background: transparent;
+    border-color: #d3a33c;
+
+  }
+
+  .allchats ion-item-sliding{
+    background-color: black;
+    border-color: #d3a33c;
+
+  }
+
+  .item h2 {
+    color:#d3a33c;
+  }
+  .item p {
+    color:white;
+  }
+
+  .icon {
+    color:white;
+  }
+
+  .top{
+    color:black;
+  }
+
+}

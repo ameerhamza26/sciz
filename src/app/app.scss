@@ -1,0 +1,187 @@
+// http://ionicframework.com/docs/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+@font-face {
+  font-family: 'gilroy';
+  src: url('../assets/fonts/Gilroy-ExtraBold.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'lato';
+  src: url('../assets/fonts/Lato-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+.toolbar-background {
+  background-color: transparent;
+}
+
+.toolbar-title {
+  color: #d3a33c;
+  text-align: center;
+
+}
+
+.toolbar-title h2{
+  font-family: "lato";
+
+}
+
+
+.tab-button {
+  color: #d3a33c !important;
+  background-color: #000;
+
+  .icon{
+    color: #d3a33c !important;
+  }
+}
+
+
+
+
+.back-button {
+  color: #d3a33c !important;
+}
+
+h2,button,p{
+  font-family: "lato";
+}
+
+.toast-message {
+  font-family: "lato";
+  background-color:  #d3a33c;
+  color: #fff;
+  text-align: center;
+  font-size: 40px;
+  width: 100%;
+
+  border-color: #000000;
+  border: solid;
+
+
+}
+
+.toolbar-title.toolbar-title-md,
+.toolbar-title.toolbar-title-ios,
+.toolbar-title.toolbar-title-wp { color: map-get($colors, white); }
+
+ion-icon {
+  &[class*="sp-"] {
+    // Instead of using the font-based icons
+    // We're applying SVG masks
+    mask-size: cover;
+    mask-position: 50% 50%;
+    mask-repeat: no-repeat;
+    background: currentColor;
+    width: 1em;
+    height: 1em;
+  }
+  // custom icons
+  &[class*="sp-bulb"] {
+    mask-image: url(../assets/images/bulb.png);
+  }
+  &[class*="sp-magazine"] {
+    mask-image: url(../assets/images/magazine.png);
+  }
+  &[class*="sp-bag"] {
+    mask-image: url(../assets/images/bag.png);
+  }
+  &[class*="sp-corporate"] {
+    mask-image: url(../assets/images/corporate.png);
+  }
+  &[class*="sp-traditional"] {
+    mask-image: url(../assets/images/traditional.png);
+  }
+  &[class*="sp-streetwear"] {
+    mask-image: url(../assets/images/streetwear.png);
+  }
+  &[class*="sp-streetwear2"] {
+    mask-image: url(../assets/images/streetwear2.png);
+  }
+  &[class*="sp-tailor"] {
+    mask-image: url(../assets/images/tailor.png);
+  }
+  &[class*="sp-leather"] {
+    mask-image: url(../assets/images/leather.png);
+  }
+  &[class*="sp-manufacturing"] {
+    mask-image: url(../assets/images/manufacture.png);
+  }
+  &[class*="sp-search"] {
+    mask-image: url(../assets/images/search.png);
+  }
+
+/*
+ion-content{
+  background-image: url('../assets/african1.jpg');
+  background-image: url('../assets/bag.png');
+  background-image: url('../assets/body.png');
+  background-image: url('../assets/bulb.png');
+  background-image: url('../assets/business.jpg');
+  background-image: url('../assets/business2.jpg');
+  background-image: url('../assets/business3.jpg');
+  background-image: url('../assets/business4.jpg');
+  background-image: url('../assets/business5.jpg');
+  background-image: url('../assets/chat.png');
+  background-image: url('../assets/corporate.png');
+  background-image: url('../assets/default.png');
+  background-image: url('../assets/des.jpeg');
+  background-image: url('../assets/des1.jpeg');
+  background-image: url('../assets/des2.jpeg');
+  background-image: url('../assets/des3.jpeg');
+  background-image: url('../assets/des4.jpeg');
+  background-image: url('../assets/female_back.png');
+  background-image: url('../assets/female_front.png');
+  background-image: url('../assets/green.png');
+  background-image: url('../assets/image.png');
+  background-image: url('../assets/leather.jpg');
+  background-image: url('../assets/leather.png');
+  background-image: url('../assets/magazine.png');
+  background-image: url('../assets/main.png');
+  background-image: url('../assets/male_back.png');
+  background-image: url('../assets/male_front.png');
+  background-image: url('../assets/manufacture.png');
+  background-image: url('../assets/manufacturing.png');
+  background-image: url('../assets/manufacturing.jpg');
+  background-image: url('../assets/matra.jpeg');
+  background-image: url('../assets/ogo.jpeg');
+  background-image: url('../assets/ogo1.jpeg');
+  background-image: url('../assets/ogo2.jpeg');
+  background-image: url('../assets/placeholder.png');
+  background-image: url('../assets/placeholder2.png');
+  background-image: url('../assets/profile.jpg');
+  background-image: url('../assets/red.png');
+  background-image: url('../assets/search.png');
+  background-image: url('../assets/start.png');
+  background-image: url('../assets/street1.jpg');
+  background-image: url('../assets/street2.jpg');
+  background-image: url('../assets/streetwear.png');
+  background-image: url('../assets/streetwear2.png');
+  background-image: url('../assets/tailor.png');
+  background-image: url('../assets/tailoring1.jpg');
+  background-image: url('../assets/tailoring2.jpg');
+  background-image: url('../assets/traditional.png');
+
+}
+*/
+
+}

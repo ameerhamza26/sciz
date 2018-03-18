@@ -1,0 +1,8 @@
+{
+  "name": "sczr",
+  "app_id": "6c937307",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}

@@ -1,0 +1,362 @@
+<!--
+  Generated template for the UserProfilePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+</ion-header>
+
+
+<ion-content class="userProfile" >
+
+  <ion-item color="black" style="border-radius: 5px;border: solid;border-color: #000;"  no-lines   class="">
+
+    <ion-row>
+
+      <ion-col col-2>
+        <ion-avatar (click)="selectProfileImage()">
+          <img src="{{user.image}}"  style="object-fit: cover;">
+        </ion-avatar>
+      </ion-col>
+      <ion-col col-10>
+        <h2>{{user.name}}</h2>
+        <p *ngIf="user.type != 'service'">{{user.type}}</p>
+        <p *ngIf="user.type == 'service'">{{user.type2}}</p>
+        <p *ngIf="user.rating == 0 && user.type == 'service'">No rating</p>
+        <p *ngIf="user.rating > 0 && user.type == 'service'"><ion-icon *ngFor="let key of counter(user.rating)" name="star" color="main"></ion-icon> </p>
+
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row>
+
+      <ion-col col-2>
+
+      </ion-col>
+      <ion-col col-5>
+        <button *ngIf="!(showSettings)" ion-button color="light"  outline block  (click)="settings()" ><ion-icon name="cog"></ion-icon> Settings</button>
+        <button *ngIf="showSettings" ion-button color="light"  outline block  (click)="settings()" ><ion-icon name="contact"></ion-icon> Profile</button>
+      </ion-col>
+      <ion-col col-5>
+        <button ion-button color="light"   block  (click)="logout()" ><ion-icon name="log-out"></ion-icon> Logout</button>
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row>
+
+      <ion-col col-2>
+
+      </ion-col>
+      <ion-col col-10>
+        <button ion-button color="main" *ngIf="permission == 'service' && !(showSettings)"  block (click)="createNewCreation()" ><ion-icon name="add"></ion-icon> Add New</button>
+        <button ion-button color="main" *ngIf="((this.profileChanged || this.sizesChanged) && showSettings)"  block (click)="updateProfile()" >Save Changes</button>
+      </ion-col>
+
+    </ion-row>
+
+
+  </ion-item>
+
+  <ng-container *ngIf="permission == 'service'">
+
+    <ng-container *ngIf="!(showSettings)">
+      <div class="storeholder">
+  <div class="post"  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="' url('+creation.image+')'">
+    <ion-row style="height: 100%;">
+     <ion-col col-12 text-right padding >
+        <img src="/assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
+        <img src="/assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;"  >
+      </ion-col>
+    </ion-row>
+  </div>
+</div>
+
+      </ng-container>
+
+    <ng-container *ngIf="showSettings ">
+
+      <ion-list no-lines>
+
+
+
+        <ion-item text-center>
+          <h2>{{user.type2}}</h2>
+        </ion-item>
+
+        <ion-item no-lines *ngIf="user.type == 'service' && user.type2 != 'Illustrator'">
+          <ion-select [(ngModel)]="user.type3" placeholder="Profession" text-center (ngModelChange)="fieldUpdate()" >
+            <ion-option *ngFor="let option of options" value="{{option}}">{{option}}</ion-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label> <p style="color:#fff;">Availability</p></ion-label>
+          <ion-toggle  checked="true" color="main" [(ngModel)]="user.availability" (ngModelChange)="fieldUpdate()" ></ion-toggle>
+        </ion-item>
+
+
+        <ion-item>
+          <ion-label floating> <p style="color:#fff;">About</p></ion-label>
+          <ion-textarea placeholder="Profile Description" rows="4" [(ngModel)]="user.description" text-right (ngModelChange)="fieldUpdate()" ></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="call" item-start color="yellow"></ion-icon>
+          <ion-input type="tel"  [(ngModel)]="user.phone" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="mail" item-start color="mail"></ion-icon>
+          <ion-input type="text"  placeholder="@" [(ngModel)]="user.email" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+
+
+        <ion-item>
+          <ion-icon name="logo-twitter" item-start color="twitter"></ion-icon>
+          <ion-input type="text"  placeholder="@username" [(ngModel)]="user.twitter" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="logo-facebook" item-start color="facebook"></ion-icon>
+          <ion-input type="text"  placeholder="@username" [(ngModel)]="user.facebook" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="logo-instagram" item-start color="instagram"></ion-icon>
+          <ion-input type="text"  placeholder="@username" [(ngModel)]="user.instagram" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="globe" item-start color="secondary"></ion-icon>
+          <ion-input type="text"  placeholder="http://www.website.com" [(ngModel)]="user.website" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+
+      </ion-list>
+      </ng-container>
+
+</ng-container>
+
+
+
+  <ng-container *ngIf="permission == 'customer' && !(showSettings)">
+
+      <ion-segment [(ngModel)]="segment" color="main">
+        <ion-segment-button value="likes" class="" style="font-family: gilroy;" >
+          Likes
+        </ion-segment-button  >
+        <ion-segment-button value="sizes" class="" style="font-family: gilroy;">
+          Sizes
+        </ion-segment-button>
+      </ion-segment>
+
+    <div [ngSwitch]="segment">
+
+      <ng-container *ngSwitchCase="'likes'">
+        <div class="storeholder">
+        <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of dataService.likes" [style.background-image]="' url('+getImage(creation)+')'">
+          <img src="/assets/images/placeholder2.png">
+
+        </div>
+      </div>
+
+      </ng-container>
+
+
+
+
+      <ng-container *ngSwitchCase="'sizes'">
+        <ion-grid *ngIf="user.gender == 'male'">
+          <ion-row>
+          <ion-col col-6 padding>
+            <button ion-button color="light" outline (click)="sendMail()" > Get Measured! </button>
+            <img src="/assets/images/male_front.png"  class="" >
+            <img src="/assets/images/male_back.png"  class="" >
+
+          </ion-col>
+          <ion-col col-6 >
+            <ion-list padding>
+
+              <ion-item>
+                <ion-label floating>Neck</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.neck" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Shoulder</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.shoulder" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Chest</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.chest" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Waist</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.waist" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Hip</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.hip" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Neck to Waist</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.neck_to_waist" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Arm Length</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.arm_length" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Waist to Floor</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.waist_to_floor" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Inside Leg</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.inside_leg" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Lower Leg</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.lower_leg" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+
+
+
+            </ion-list>
+          </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <ion-grid *ngIf="user.gender == 'female'">
+          <ion-row>
+          <ion-col col-6 padding>
+            <button ion-button color="light" outline (click)="sendMail()" > Get Measured! </button>
+            <img src="/assets/images/female_front.png"  class="">
+            <img src="/assets/images/female_back.png"  class="" >
+          </ion-col>
+          <ion-col col-6 >
+            <ion-list padding>
+
+              <ion-item>
+                <ion-label floating>Neck</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.neck" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Shoulder</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.shoulder" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>High Bust</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.high_bust" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Bust</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.bust" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Waist</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.waist" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Hip</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.hip" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Neck to Waist</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.neck_to_waist" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Arm Length</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.arm_length" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Waist to Floor</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.waist_to_floor" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label floating>Inside Leg</ion-label>
+                <ion-input type="tel" placeholder="0" [(ngModel)]="size.inside_leg" text-right  (ngModelChange)="sizeUpdate()"></ion-input>
+              </ion-item>
+
+            </ion-list>
+          </ion-col>
+          </ion-row>
+        </ion-grid>
+
+
+
+      </ng-container>
+
+
+      </div>
+
+
+  </ng-container>
+
+  <ng-container *ngIf="permission == 'customer' && showSettings">
+
+    <ion-list no-lines>
+
+      <ion-item>
+        <ion-icon name="call" item-start color="yellow"></ion-icon>
+        <ion-input type="tel"  [(ngModel)]="user.phone" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="mail" item-start color="mail"></ion-icon>
+        <ion-input type="text"  placeholder="@" [(ngModel)]="user.email" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+      </ion-item>
+
+
+
+      <ion-item>
+        <ion-icon name="logo-twitter" item-start color="twitter"></ion-icon>
+        <ion-input type="text"  placeholder="@username" [(ngModel)]="user.twitter" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="logo-facebook" item-start color="facebook"></ion-icon>
+        <ion-input type="text"  placeholder="@username" [(ngModel)]="user.facebook" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="logo-instagram" item-start color="instagram"></ion-icon>
+        <ion-input type="text"  placeholder="@username" [(ngModel)]="user.instagram" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon name="globe" item-start color="secondary"></ion-icon>
+        <ion-input type="text"  placeholder="http://www.website.com" [(ngModel)]="user.website" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+      </ion-item>
+
+
+    </ion-list>
+  </ng-container>
+
+  <ng-container *ngIf="permission == 'admin'">
+  </ng-container>
+
+
+</ion-content>

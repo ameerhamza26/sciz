@@ -1,0 +1,33 @@
+page-start {
+
+  .start{
+
+    scroll-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    ion-grid {
+      padding: 0;
+      height: 100%;
+    }
+
+    ion-row {
+      flex: 1;
+      height: 100%;
+
+    }
+
+    ion-col{
+      bottom: 0;
+    }
+
+    background-image: url("/assets/images/start.png");
+    background-color: transparent;
+    background-size: cover;
+    background-position: center;
+
+  }
+
+
+}

@@ -1,0 +1,58 @@
+page-tag {
+  .scizzor-search-header{
+    background-color: black;
+  }
+
+  .scizzor-search-body{
+    background-color: #000;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .spinner-container {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .header-icon{
+    color:white;
+  }
+
+  .item{
+    background-color:black;
+  }
+
+  .item h2 {
+    color:white;
+  }
+  .item p {
+    color:white;
+  }
+
+  .icon {
+    color:#d3a33c;
+  }
+
+  .close{
+    .icon {
+      color:#fff;
+    }
+  }
+
+  h2 {
+    color:white;
+  }
+
+  p {
+    color:white;
+  }
+
+  ion-searchbar{
+    color:#fff;
+  }
+
+}
+
+
+

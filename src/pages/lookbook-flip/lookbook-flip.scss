@@ -1,0 +1,42 @@
+page-lookbook-flip {
+
+  .flip{
+
+    background-color: #000000;
+
+
+    .center {
+      display:block;
+    }
+
+
+    ion-slide{
+
+      display: inline-block;
+      background-size: cover;
+      background-position: center;
+
+    }
+
+  .postInfo {
+    color:#fff;
+    height: 100%;
+
+    text-align: right;
+
+    background:  linear-gradient(rgba(0,0,0, 0) 0%,rgba(0,0,0, 1)100%);
+
+  }
+
+    img{
+      display: block;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+
+
+  }
+
+
+}

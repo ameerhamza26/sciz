@@ -1,0 +1,108 @@
+<!--
+  Generated template for the SignUpPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+</ion-header>
+
+
+<ion-content class="signUp" padding>
+
+  <ion-grid>
+
+    <ion-row >
+    </ion-row>
+
+
+    <ion-row>
+
+      <ion-col >
+        <ion-list >
+
+          <ion-item no-lines >
+            <h2>{{question}}</h2>
+          </ion-item>
+
+          <ion-item *ngIf="stage == 0" no-lines>
+            <ion-select [(ngModel)]="type" placeholder="Select" text-center>
+              <ion-option value="customer">Customer</ion-option>
+              <ion-option value="service">Service</ion-option>
+            </ion-select>
+          </ion-item>
+
+          <br>
+
+          <ion-item *ngIf="stage == 0 && type == 'service'" no-lines>
+            <ion-select [(ngModel)]="serviceType" placeholder="Service Type" text-center>
+              <ion-option value="Craftsmen">Craftsmen</ion-option>
+              <ion-option value="Designer">Designer</ion-option>
+              <ion-option value="Fabric Retailer">Fabric Retailer</ion-option>
+              <ion-option value="Illustrator">Illustrator</ion-option>
+              <ion-option value="Manufacturer">Manufacturer</ion-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item *ngIf="stage == 1">
+            <ion-input [(ngModel)]="email" type="email" placeholder="" ></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="stage == 2">
+            <ion-input [(ngModel)]="name" type="text" placeholder=""></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="stage == 3" no-lines>
+            <ion-select [(ngModel)]="gender" placeholder="Gender" text-center>
+              <ion-option value="male">Male</ion-option>
+              <ion-option value="female">Female</ion-option>
+            </ion-select>
+          </ion-item>
+
+            <br>
+
+          <ion-item *ngIf="stage == 4">
+            <ion-input [(ngModel)]="city" type="text" placeholder="" ></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="stage == 5">
+            <ion-input [(ngModel)]="phone" type="tel" placeholder="" ></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="stage == 6">
+            <ion-input [(ngModel)]="password" type="password" placeholder="Password"></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="stage == 7">
+           <h2>Now let's get started</h2>
+          </ion-item>
+
+
+
+        </ion-list>
+
+        <button color="main" *ngIf="stage == 7" ion-button block large (click)="done()">Done</button>
+
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="stage == 6">
+      <ion-col >
+          <ion-item >
+            <ion-input [(ngModel)]="confirmPassword" type="password" placeholder="Confirm Password"></ion-input>
+          </ion-item>
+      </ion-col>
+    </ion-row>
+
+
+    <ion-row >
+      <ion-col><button color="light"  ion-button block (click)="back()" *ngIf="stage < 7" large>Back</button></ion-col>
+      <ion-col></ion-col>
+      <ion-col><button color="light"  ion-button block (click)="next()" *ngIf="stage < 7" large>Next</button></ion-col>
+
+    </ion-row>
+
+  </ion-grid>
+
+</ion-content>

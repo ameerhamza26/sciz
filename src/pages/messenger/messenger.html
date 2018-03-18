@@ -1,0 +1,104 @@
+<!--
+  Generated template for the MessengerPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header class="chatheader">
+
+  <ion-navbar>
+
+    <ion-title>
+      <h2>MESSAGES</h2>
+    </ion-title>
+
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="messenger">
+
+  <br>
+
+  <ion-list class="allchats">
+    <div *ngFor="let chats of chatlist">
+      <ion-item-sliding>
+        <ion-item *ngIf="chats.sender==true;" (click)="openChat(chats.displayname,chats.participant)">
+          <ion-avatar item-start>
+            <img src="{{getAvatar(chats.participant)}}" style="object-fit: cover;">
+          </ion-avatar>
+
+          <h2>{{chats.displayname}}</h2>
+          <p *ngIf="chats.image==false;">{{chats.message}}</p>
+          <p *ngIf="chats.image==true;">image</p>
+
+          <ion-note item-end>
+            <small>{{chats.timestamp.slice(4,11)}}</small>
+            <br>
+            <small>{{chats.timestamp.slice(16,21)}}</small>
+          </ion-note>
+
+          <ion-note item-end>
+            <ion-icon name="arrow-forward"></ion-icon>
+          </ion-note>
+        </ion-item>
+
+        <ion-item-options side="right">
+          <button ion-button color="danger" (click)="deleteMessage(chats.$key,chats.participant)">
+            <ion-icon name="trash"></ion-icon>
+            Delete
+          </button>
+        </ion-item-options>
+
+      </ion-item-sliding>
+
+      <ion-item-sliding>
+        <ion-item  *ngIf="chats.sender==false;" (click)="openChat(chats.displayname, chats.user)">
+
+          <ion-avatar item-start>
+            <img src="{{getAvatar(chats.participant)}}" style="object-fit: cover;">
+          </ion-avatar>
+
+          <h2>{{chats.displayname}}</h2>
+          <p *ngIf="chats.image==false;">{{chats.message}}</p>
+          <p *ngIf="chats.image==true;">image</p>
+
+
+          <ion-note item-end >
+            <small>{{chats.timestamp.slice(4,11)}}</small>
+            <br>
+            <small>{{chats.timestamp.slice(16,21)}}</small>
+          </ion-note>
+
+          <ion-note item-end>
+            <ion-icon name="arrow-forward"></ion-icon>
+          </ion-note>
+        </ion-item>
+
+
+        <ion-item-options side="right">
+          <button ion-button color="danger" (click)="deleteMessage(chats.user,chats.participant)">
+            <ion-icon name="trash"></ion-icon>
+            Delete
+          </button>
+        </ion-item-options>
+
+      </ion-item-sliding>
+    </div>
+  </ion-list>
+
+  <!--
+    <button ion-button block color="main">chat between {{user.name}} and {{provider.name}} &nbsp;</button>
+    <div id="chatMessages">
+      <div class="message" *ngFor="let message of messages">
+        <div [class]="message.user == user.name ? 'innerMessage messageRight' : 'innerMessage messageLeft' ">
+          <div class="username">{{message.user}}</div>
+          <div class="message">{{message.message}}</div>
+        </div>
+      </div>
+    </div>
+  -->
+
+</ion-content>

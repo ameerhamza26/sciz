@@ -1,0 +1,64 @@
+page-sign-up {
+
+  .signUp{
+
+    scroll-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    ion-grid {
+      padding: 0;
+      height: 100%;
+    }
+
+    ion-row {
+      flex: 1;
+      height: 100%;
+
+    }
+
+    ion-col{
+      bottom: 0;
+    }
+
+
+
+    background-image: url("../images/main.png");
+    background-color: transparent;
+    background-size: cover;
+    background-position: center;
+
+    button{
+      color: #d3a33c;
+      background-color: transparent;
+    }
+
+    h2{
+      color: #d3a33c;
+      font-weight: bold;
+    }
+    .item{
+      background-color: transparent;
+      width: 100%;
+      color: #d3a33c;
+    }
+    .input{
+      color: #d3a33c;
+    }
+    .select{
+      background-color: #ffffff;
+      min-width: 100% !important;
+      color: #d3a33c;
+    }
+
+  }
+
+  .bottomGrid{
+    position: fixed;
+    bottom: 0;
+
+
+  }
+
+}

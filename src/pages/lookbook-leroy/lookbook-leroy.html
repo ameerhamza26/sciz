@@ -1,0 +1,95 @@
+<!--
+  Generated template for the LookbookLeroyPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+</ion-header>
+
+
+<ion-content class="leroy"  >
+
+  <ion-fab padding top left>
+    <button mini ion-fab color="main"  (click)="goBack()"><ion-icon name="close"></ion-icon></button>
+  </ion-fab>
+
+  <ion-fab padding bottom right *ngIf="mode == 'preview'|| mode == 'edit'">
+    <button ion-fab color="main"  (click)="save()"><b><ion-icon name="checkmark"></ion-icon></b></button>
+  </ion-fab>
+
+  <div *ngIf="showImage">
+    <img src={{imageLink}} (click)="closeImage()">
+  </div>
+
+
+  <ion-slides (ionSlideDidChange)="slideChanged()" style="height: 100%">
+
+    <ion-slide (click)="goToSlide(true)" [style.background-image]="' url('+post.image+')'" style="height: 100%" >
+
+
+      <div class="postInfo">
+             <h2 padding>{{post.title}}</h2>
+             <p padding >{{post.description}}</p>
+      </div>
+
+    </ion-slide>
+
+    <ion-slide class="slide"  *ngFor="let page of pages; let i = index" style="height: 100%">
+
+
+
+      <ion-grid style="height: 100%">
+        <ion-row>
+
+          <ion-col col-1 class="start" (click)="goToSlide(false)" [style.background-image]="' url('+images[i-1]+')'" style=";background-size: cover;background-position: right; "></ion-col>
+          <ion-col col-1></ion-col>
+
+          <ion-col col-8 (click)="viewImage(images[i])"  [style.background-image]="' url('+images[i]+')'" style="background-position: center;background-size: cover; ">
+            <img src="/assets/images/placeholder.png" >
+          </ion-col>
+          <ion-col col-1></ion-col>
+          <ion-col col-1 class="end" (click)="goToSlide(true)"  [style.background-image]="' url('+images[i+1]+')'" style="background-position: left;background-size: cover; "></ion-col>
+
+        </ion-row>
+      </ion-grid>
+
+    </ion-slide>
+
+    <ion-slide (click)="goToSlide(false)" [style.background-image]="' url('+dataService.coverImage+')'" style="height: 100%" >
+
+
+      <div class="postInfo">
+        <ion-grid>
+          <ion-row  >
+            <ion-col >
+              <h2 padding style="text-align:center;">Created By</h2>
+              <ion-list >
+                <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
+                  <ion-avatar item-start>
+                    <img src="{{getImage(tag)}}" class="center" >
+                  </ion-avatar>
+                  <h3>{{getUser(tag)}}</h3>
+
+                </ion-item>
+
+
+              </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+      </div>
+
+    </ion-slide>
+
+  </ion-slides>
+
+
+
+
+
+
+
+</ion-content>

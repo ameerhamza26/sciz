@@ -1,0 +1,158 @@
+<!--
+  Generated template for the ScizzorPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+
+    <ion-buttons left>
+      <button ion-button (click)="startSearch()">
+        <ion-icon style="font-size: 20px;" name="sp-search" color="light" ></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title (click)="startSearch()">
+      <h2>SEARCH</h2>
+    </ion-title>
+
+    <!--
+    <ion-buttons end>
+      <ion-icon style="font-size: 30px;" name="sp-bag" color="light"></ion-icon>
+    </ion-buttons>
+  -->
+  </ion-navbar>
+
+
+</ion-header>
+
+
+<ion-content class="scizzor">
+
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content ></ion-refresher-content>
+  </ion-refresher>
+
+  <ng-container >
+
+    <ion-segment [(ngModel)]="segment" color="main">
+      <ion-segment-button value="store" class="" style="font-family: lato;"  >
+        Store
+      </ion-segment-button>
+      <ion-segment-button value="people" class="" style="font-family: lato;"  >
+        Service
+      </ion-segment-button>
+    </ion-segment>
+
+    <div [ngSwitch]="segment">
+
+      <ng-container *ngSwitchCase="'store'" >
+
+        <div class="storeholderscizzor">
+        <div class="store" *ngFor="let store of stores; let i = index "  [style.background-image]="' url('+store+')'" (click)="openStore(storeTypes[i])"  >
+
+
+          <div class="storeInfo" >
+            <ion-grid>
+              <ion-row class="animated flipInY"  >
+                <p style="text-align: right; width: 100%" padding ><ion-icon style="font-size: 30px;"  name="" color="{{colours[i]}}"></ion-icon></p>
+              </ion-row>
+
+              <ion-row >
+                <ion-col >
+                  <h2 class="">{{storeTypes[i]}}</h2>
+                  <!-- <h2 class="animated bounceIn">{{storeTypes[i]}}</h2> -->
+                </ion-col>
+              </ion-row>
+
+            </ion-grid>
+          </div>
+        </div>
+      </div>
+
+
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'creations'" >
+        <div class="storeholder">
+        <div class="post animated fadeIn "  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="'url('+creation.image+')'">
+          <img src="/assets/images/placeholder2.png" cache="true">
+
+        </div>
+      </div>
+
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'people'">
+        <div class="storeholderscizzor">
+        <div class="store" *ngFor="let person of people; let i = index "  [style.background-image]="'url('+person+')'" (click)="openPeople(peopleTypes[i])"   >
+
+          <div class="storeInfo" >
+            <ion-grid>
+              <ion-row class="animated flipInY"  >
+                <p style="text-align: right; width: 100%" padding ><ion-icon style="font-size: 30px;"  name="" color="{{colours2[i]}}"></ion-icon></p>
+              </ion-row>
+
+              <ion-row >
+                <ion-col >
+                <!--  <h2 class="animated bounceIn">{{peopleTypes[i]}}</h2> -->
+                  <h2 class="">{{peopleTypes[i]}}</h2>
+                </ion-col>
+              </ion-row>
+
+            </ion-grid>
+          </div>
+        </div>
+      </div>
+
+
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="'services'" >
+        <div class="storeholder">
+        <ion-list no-lines>
+          <ion-item *ngFor="let user of services" (click)="openProfile(user)" class="animated slideInUp" >
+
+            <ion-row>
+
+              <ion-col col-2>
+                <ion-avatar >
+                  <img src="{{user.image}}"  style="object-fit: cover;">
+                </ion-avatar>
+              </ion-col>
+              <ion-col col-5>
+                <h2 text-left>{{user.name}}</h2>
+                <p *ngIf="user.type == 'service'">{{user.type3}}</p>
+              </ion-col>
+
+              <ion-col col-5 text-right>
+                <p><img src="/assets/images/green.png" style="height:15px;"></p>
+                <p *ngIf="user.rating == 0">No rating</p>
+                <p *ngIf="user.rating > 0"><ion-icon *ngFor="let key of counter(user.rating)" style="font-size: 15px;" name="star" color="main"></ion-icon> </p>
+
+
+              </ion-col>
+
+            </ion-row>
+
+            </ion-item>
+          </ion-list>
+
+
+        </div>
+      </ng-container>
+
+
+    </div>
+
+
+  </ng-container>
+
+
+
+
+</ion-content>

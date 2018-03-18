@@ -1,0 +1,54 @@
+page-user-profile {
+
+  .userProfile{
+    height: 100%;
+    background-color: #000;
+    color:#fff;
+
+
+
+    h2{
+      color:#d3a33c;
+    }
+
+    .storeholder{
+      height: 100vh;
+    }
+
+
+    .post{
+
+      display: inline-block;
+      height: 20%;
+      width: 33%;
+      border: solid 0.5px #000000;
+
+      background-size: cover;
+      background-position: top;
+
+    }
+
+
+    ion-list{
+
+      .item{
+        background-color: #000000;
+        color: #ffffff;
+        .label{
+          font-family: gilroy;
+        }
+
+      }
+    }
+
+
+    .select{
+      background-color: #ffffff;
+      min-width: 100% !important;
+      color: #d3a33c;
+      font-family: gilroy;
+    }
+
+  }
+
+}

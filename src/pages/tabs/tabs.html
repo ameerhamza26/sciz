@@ -1,0 +1,7 @@
+<ion-tabs color="clear">
+  <ion-tab *ngIf="dataService.permission == 'admin' || userService.user.type2 == 'Illustrator'" [root]="tab5Root"  tabIcon="book" ></ion-tab>
+  <ion-tab [root]="tab1Root"  tabIcon="bulb" ></ion-tab>
+  <ion-tab [root]="tab2Root"  tabIcon="cut" ></ion-tab>
+  <ion-tab [root]="tab3Root"  tabIcon="person" ></ion-tab>
+  <ion-tab [root]="tab4Root"  tabIcon="chatbubbles" ></ion-tab>
+</ion-tabs>

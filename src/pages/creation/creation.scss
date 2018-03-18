@@ -1,0 +1,52 @@
+page-creation {
+
+  .img-loaded + ion-spinner {
+    display:none;
+  }
+
+  .creation{
+
+
+
+    background-color: #000000;
+    color: #ffffff;
+    height: 100%;
+
+    p{
+      color: #ffffff;
+    }
+    h2{
+      color:#d3a33c;
+    }
+
+    scroll-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    ion-grid {
+      padding: 0;
+      height: 100%;
+    }
+
+    ion-row {
+      flex: 1;
+      height: 100%;
+
+    }
+
+    ion-col{
+      bottom: 0;
+    }
+
+    .select{
+      background-color: #ffffff;
+      min-width: 100% !important;
+      color: #d3a33c;
+      font-family: gilroy;
+    }
+
+
+  }
+
+}

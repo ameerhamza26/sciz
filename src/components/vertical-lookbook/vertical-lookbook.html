@@ -1,0 +1,49 @@
+<!-- Generated template for the VerticalLookbookComponent component -->
+<ng-container>
+<ion-slides >
+
+  <ion-slide  [style.background-image]="' url('+dataService.lookbook.image+')'"  >
+    <div class="postInfo">
+      <h2 padding>{{dataService.lookbook.title}}</h2>
+      <p padding>{{dataService.lookbook.description}}</p>
+    </div>
+
+  </ion-slide>
+
+</ion-slides>
+
+<div  *ngFor="let page of dataService.lookbookPages" class="center">
+
+  <img src={{page.image}}  >
+
+</div>
+
+  <ion-slides >
+
+  <ion-slide  [style.background-image]="' url('+dataService.coverImage+')'"  >
+    <div class="postInfo">
+      <ion-grid>
+        <ion-row  >
+          <ion-col >
+            <h2 style="text-align:center;" padding>Created By</h2>
+            <ion-list >
+              <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
+                <ion-avatar item-start>
+                  <img src="{{getImage(tag)}}" class="center" >
+                </ion-avatar>
+                <h3>{{getUser(tag)}}</h3>
+
+              </ion-item>
+
+
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+    </div>
+
+  </ion-slide>
+    </ion-slides>
+
+  </ng-container>

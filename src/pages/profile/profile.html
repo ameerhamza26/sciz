@@ -1,0 +1,129 @@
+<!--
+  Generated template for the ProfilePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="profile">
+
+  <ion-item color="black" style="border-radius: 5px;border: solid;border-color: #000;"  class=""  no-lines>
+
+    <ion-row>
+
+      <ion-col col-2>
+        <ion-avatar (click)="selectProfileImage()">
+          <img src="{{user.image}}"  style="object-fit: cover;">
+        </ion-avatar>
+      </ion-col>
+      <ion-col col-10>
+        <h2>{{user.name}} &nbsp;  <img src="/assets/images/green.png" style="height:15px;"  ></h2>
+        <p *ngIf="user.type != 'service'">{{user.type}}</p>
+        <p *ngIf="user.type == 'service'">{{user.type2}}</p>
+        <p *ngIf="user.type == 'service'">{{user.type3}}</p>
+        <p *ngIf="user.rating == 0 && user.type == 'service'">No rating</p>
+        <p *ngIf="user.rating > 0 && user.type == 'service'"><ion-icon *ngFor="let key of counter(user.rating)" name="star" color="main"></ion-icon> </p>
+
+      </ion-col>
+
+    </ion-row>
+
+    <ion-row>
+
+      <ion-col col-2>
+
+      </ion-col>
+      <ion-col col-10>
+        <button *ngIf="!(showSettings)" ion-button color="light"  outline block (click)="openChat(user.name, user.accountID)" ><ion-icon name="chatbubbles"></ion-icon>Message</button>
+      </ion-col>
+
+
+    </ion-row>
+
+
+  </ion-item>
+
+  <ng-container >
+
+    <ion-segment [(ngModel)]="segment" color="main">
+      <ion-segment-button value="work" class="" style="font-family: gilroy;"  >
+        Work
+      </ion-segment-button>
+      <ion-segment-button value="contact" class="" style="font-family: gilroy;"  >
+        Contact
+      </ion-segment-button>
+    </ion-segment>
+
+    <div [ngSwitch]="segment">
+
+      <ng-container *ngSwitchCase="'work'">
+        <div class="storeholder">
+        <div class="post animated fadeIn"  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="' url('+creation.image+')'">
+          <img src="/assets/images/placeholder2.png" >
+
+        </div>
+      </div>
+
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'contact'">
+
+        <p padding class="animated flipInX" text-center>
+          {{user.description}}
+
+        </p>
+
+        <ion-list no-lines>
+
+          <ion-item>
+            <ion-icon name="call" item-start color="yellow"></ion-icon>
+            <ion-label text-right>{{user.phone}}</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="mail" item-start color="mail"></ion-icon>
+            <ion-label text-right>{{user.email}}</ion-label>
+          </ion-item>
+
+
+
+          <ion-item>
+            <ion-icon name="logo-twitter" item-start color="twitter"></ion-icon>
+            <ion-label text-right>{{user.twitter}}</ion-label> </ion-item>
+
+          <ion-item>
+            <ion-icon name="logo-facebook" item-start color="facebook"></ion-icon>
+            <ion-label text-right>{{user.facebook}}</ion-label></ion-item>
+
+          <ion-item>
+            <ion-icon name="logo-instagram" item-start color="instagram"></ion-icon>
+            <ion-label text-right>{{user.twitter}}</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-icon name="globe" item-start color="secondary"></ion-icon>
+            <ion-label text-right>{{user.website}}</ion-label>
+          </ion-item>
+
+
+        </ion-list>
+
+
+
+      </ng-container>
+
+
+    </div>
+
+
+  </ng-container>
+
+</ion-content>
