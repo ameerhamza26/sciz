@@ -1,5 +1,6 @@
-## ScizzorApp
+# ScizzorApp
 
+## Description
 * This folder contains only the mobile app code
 * The server side code is in another folder
 * gitignore file has been added to remove user generated folders (node_modules, platforms etc)
@@ -10,3 +11,13 @@
 * To make a change, a new branch must be created based on the change(adding a new feature, fixing a particular bug etc)
 * A pull request must be made afterwards and this needs to be approved by the team to ensure quality code management
 * The created branch would then be merged with the master branch in the end
+
+### Updating the code to GIT
+* "git add --all" to add all changes from your machine
+* "git commit -m "commit name"" to commit the changes
+* "git push origin master"
+
+### Updating the code to IONIC PRO (Ionic View)
+* "git add --all" to add all changes from your machine
+* "git commit -m "commit name"" to commit the changes
+* "git push ionic master"
