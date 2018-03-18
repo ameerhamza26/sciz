@@ -1,26 +1,12 @@
-This is a starter template for [Ionic](http://ionicframework.com/docs/) projects.
+## ScizzorApp
 
-## How to use this template
+* This folder contains only the mobile app code
+* The server side code is in another folder
+* gitignore file has been added to remove user generated folders (node_modules, platforms etc)
+* When you clone this directory onto your machine, you have to run npm install to get the dependencies
 
-*This template does not work on its own*. The shared files for each starter are found in the [ionic2-app-base repo](https://github.com/ionic-team/ionic2-app-base).
-
-To use this template, either create a new ionic project using the ionic node.js utility, or copy the files from this repository into the [Starter App Base](https://github.com/ionic-team/ionic2-app-base).
-
-### With the Ionic CLI:
-
-Take the name after `ionic2-starter-`, and that is the name of the template to be used when using the `ionic start` command below:
-
-```bash
-$ sudo npm install -g ionic cordova
-$ ionic start myTabs tabs
-```
-
-Then, to run it, cd into `myTabs` and run:
-
-```bash
-$ ionic cordova platform add ios
-$ ionic cordova run ios
-```
-
-Substitute ios for android if not on a Mac.
-
+### Code Managament
+* Henceforth, all code management will be done via GIT
+* To make a change, a new branch must be created based on the change(adding a new feature, fixing a particular bug etc)
+* A pull request must be made afterwards and this needs to be approved by the team to ensure quality code management
+* The created branch would then be merged with the master branch in the end
