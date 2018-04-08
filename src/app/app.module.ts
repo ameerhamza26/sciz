@@ -8,6 +8,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { EmailComposer } from '@ionic-native/email-composer';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
+import { IonicStorageModule } from '@ionic/storage';
 
 import { TabsPage } from '../pages/tabs/tabs';
 import { StartPage } from '../pages/start/start';
@@ -21,41 +22,41 @@ import { CreateNewPage } from '../pages/create-new/create-new';
 import { UserProfilePage } from '../pages/user-profile/user-profile';
 import { CreationPage } from '../pages/creation/creation';
 import { ProfilePage } from '../pages/profile/profile';
-import {ScizzorPage } from '../pages/scizzor/scizzor';
-import {MessengerPage } from '../pages/messenger/messenger';
-import {ChatPage } from '../pages/chat/chat';
-import {ModalContentPage} from '../pages/chat/chat';
-import {ScizzorSearchPage} from '../pages/scizzor-search/scizzor-search';
-import {TagPage } from '../pages/tag/tag';
+import { ScizzorPage } from '../pages/scizzor/scizzor';
+import { MessengerPage } from '../pages/messenger/messenger';
+import { ChatPage } from '../pages/chat/chat';
+import { ModalContentPage } from '../pages/chat/chat';
+import { ScizzorSearchPage } from '../pages/scizzor-search/scizzor-search';
+import { TagPage } from '../pages/tag/tag';
 
 //import { IonicImageLoader } from 'ionic-image-loader';
 
-import { NativePageTransitions} from '@ionic-native/native-page-transitions';
+import { NativePageTransitions } from '@ionic-native/native-page-transitions';
 
 
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { DataService } from '../providers/data-service';
-import { AppSettings} from '../providers/app-settings'
+import { AppSettings } from '../providers/app-settings'
 import { HttpModule } from '@angular/http';
 import { AudioService } from '../providers/audio-service';
 
 import { NativeAudio } from '@ionic-native/native-audio';
-import { UserService} from '../providers/user-service';
+import { UserService } from '../providers/user-service';
 
-import {VerticalLookbook } from '../components/vertical-lookbook/vertical-lookbook';
-import {HorizontalLookbook } from '../components/horizontal-lookbook/horizontal-lookbook';
+import { VerticalLookbook } from '../components/vertical-lookbook/vertical-lookbook';
+import { HorizontalLookbook } from '../components/horizontal-lookbook/horizontal-lookbook';
 
 
 var config = {
-    apiKey: "AIzaSyBx7oLWNN8sP9NgcRyfppT0VyPnTxLg0nk",
-    authDomain: "scizzor-14968.firebaseapp.com",
-    databaseURL: "https://scizzor-14968.firebaseio.com",
-    projectId: "scizzor-14968",
-    storageBucket: "scizzor-14968.appspot.com",
-    messagingSenderId: "965202261185"
-  };
+  apiKey: "AIzaSyBx7oLWNN8sP9NgcRyfppT0VyPnTxLg0nk",
+  authDomain: "scizzor-14968.firebaseapp.com",
+  databaseURL: "https://scizzor-14968.firebaseio.com",
+  projectId: "scizzor-14968",
+  storageBucket: "scizzor-14968.appspot.com",
+  messagingSenderId: "965202261185"
+};
 
 
 @NgModule({
@@ -86,7 +87,7 @@ var config = {
 
 
 
-],
+  ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
@@ -94,7 +95,8 @@ var config = {
     AngularFireModule.initializeApp(config),
     AngularFireDatabaseModule, // imports firebase/database, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
-//    IonicImageLoader.forRoot(),
+    //    IonicImageLoader.forRoot(),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -121,10 +123,10 @@ var config = {
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    DataService, AppSettings,NativePageTransitions,Camera,
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    DataService, AppSettings, NativePageTransitions, Camera,
     AudioService, NativeAudio,
     UserService, EmailComposer, Push
   ]
 })
-export class AppModule {}
+export class AppModule { }

@@ -6,8 +6,8 @@ import { CreateNewPage } from '../create-new/create-new';
 import { UserProfilePage } from '../user-profile/user-profile';
 import { ScizzorPage } from '../scizzor/scizzor';
 
-import {DataService} from '../../providers/data-service';
-import {UserService} from '../../providers/user-service';
+import { DataService } from '../../providers/data-service';
+import { UserService } from '../../providers/user-service';
 
 @Component({
   templateUrl: 'tabs.html'
@@ -21,7 +21,7 @@ export class TabsPage {
   tab4Root = MessengerPage;
   tab5Root = CreateNewPage; //admin tab
 
-  constructor(public dataService:DataService,public userService:UserService) {
+  constructor(public dataService: DataService, public userService: UserService) {
 
   }
 }

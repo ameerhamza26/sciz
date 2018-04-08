@@ -6,19 +6,14 @@
 -->
 <ion-header>
   <ion-navbar>
-
     <ion-buttons left>
       <button ion-button (click)="startSearch()">
-        <ion-icon style="font-size: 20px;" name="sp-search" color="light" ></ion-icon>
+        <ion-icon style="font-size: 20px;" name="sp-search" color="light"></ion-icon>
       </button>
     </ion-buttons>
-
-
     <ion-title (click)="startSearch()">
       <h2 class="title">SCIZZOR</h2>
     </ion-title>
-
-
     <!--
     <ion-buttons end >
 
@@ -26,43 +21,29 @@
 
     </ion-buttons>
       -->
-
   </ion-navbar>
-
-
 </ion-header>
-
-
 <ion-content class="inspiration">
-
   <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content ></ion-refresher-content>
+    <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-
-
-
   <!--    <div class="post {{getAnimation(post)}}"  *ngFor="let post of dataService.posts" [style.background-image]="' url('+post.image+')'"  >-->
-    <div class="post"  *ngFor="let post of dataService.posts" [style.background-image]="' url('+post.image+')'"  >
+  <div class="post" *ngFor="let post of dataService.posts" [style.background-image]="' url('+post.image+'?v='+timestapm+')'">
+    <div class="postInfo" (click)="selectLookbook(post)">
+      <ion-grid>
+        <ion-row>
+          <p style="text-align: right; width: 100%" padding>
+            <ion-icon style="font-size: 30px;" name="" color="black"></ion-icon>
+          </p>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <h2>{{post.title}}</h2>
+            <p>{{post.subTitle}}</p>
+          </ion-col>
+        </ion-row>
 
-
-      <div class="postInfo" (click)="selectLookbook(post)">
-        <ion-grid>
-          <ion-row  >
-            <p style="text-align: right; width: 100%" padding ><ion-icon style="font-size: 30px;"  name="" color="black"></ion-icon></p>
-          </ion-row>
-
-          <ion-row >
-            <ion-col >
-              <h2>{{post.title}}</h2>
-              <p>{{post.subTitle}}</p>
-            </ion-col>
-          </ion-row>
-
-        </ion-grid>
-      </div>
+      </ion-grid>
+    </div>
   </div>
-
-
-
-
 </ion-content>

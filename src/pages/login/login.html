@@ -5,51 +5,29 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
-
 </ion-header>
-
-
-<ion-content class="login" >
-
-
-  <img src="/assets/images/ogo.jpeg">
-
-
-    <ion-grid>
-
-      <ion-row>
-        <ion-col >
-          <ion-list >
-
-            <ion-item>
-              <ion-label><ion-icon name="person" style="font-size: 40px;" color="main"></ion-icon></ion-label>
-              <ion-input [(ngModel)]="username" type="email" placeholder="Email" text-left></ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-label><ion-icon name="key" style="font-size: 33px;" color="main"></ion-icon></ion-label>
-              <ion-input [(ngModel)]="password" type="password" placeholder="Password" text-left></ion-input>
-            </ion-item>
-
-          </ion-list>
-
-
-          <button color="main"  ion-button block  (click)="login()" large>Login</button>
-
-          <button color="black"  ion-button block (click)="signUp()" large>Sign Up</button>
-
-        </ion-col>
-      </ion-row>
-
-
-    </ion-grid>
-
-
-
-
-
-
-
-
+<ion-content class="login">
+  <img src="./assets/images/ogo.jpeg" class="mid_img">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <ion-icon name="person" style="font-size: 40px;" color="main"></ion-icon>
+            </ion-label>
+            <ion-input [(ngModel)]="username" type="email" placeholder="Email" text-left></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <ion-icon name="key" style="font-size: 33px;" color="main"></ion-icon>
+            </ion-label>
+            <ion-input [(ngModel)]="password" type="password" placeholder="Password" text-left></ion-input>
+          </ion-item>
+        </ion-list>
+        <button color="main" ion-button block (click)="login()" large>Login</button>
+        <button color="black" ion-button block (click)="signUp()" large>Sign Up</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

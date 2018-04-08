@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams,  ToastController, Platform, ActionSheetController,ModalController, AlertController  } from 'ionic-angular';
+import { NavController, NavParams, ToastController, Platform, ActionSheetController, ModalController, AlertController } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
-import { Page} from '../../models/page';
-import { Post} from '../../models/post-model';
-import {DataService} from '../../providers/data-service';
+import { Page } from '../../models/page';
+import { Post } from '../../models/post-model';
+import { DataService } from '../../providers/data-service';
 
 import { LookbookPage } from '../lookbook/lookbook';
 import { LookbookLeroyPage } from '../lookbook-leroy/lookbook-leroy';
@@ -34,34 +34,36 @@ import { TagPage } from '../tag/tag';
 })
 export class CreateNewPage {
 
-  pictureAdded:boolean = false;
+  pictureAdded: boolean = false;
   pageCount = 0;
 
-  pages:Array<Page> = new Array<Page>();
-  temp: Array<string> = ['images/1.jpg','images/2.jpg','images/3.jpg','images/4.jpg','images/5.jpg'];
+  pages: Array<Page> = new Array<Page>();
+  temp: Array<string> = ['images/1.jpg', 'images/2.jpg', 'images/3.jpg', 'images/4.jpg', 'images/5.jpg'];
 
-  create:any = false;
-  code:any;
-  who:any = "";
-  title:any = "";
-  subTitle:any = "";
-  description:any = "";
-  lookbook:any = "";
-  index:any;
+  create: any = false;
+  code: any;
+  who: any = "";
+  title: any = "";
+  subTitle: any = "";
+  description: any = "";
+  lookbook: any = "";
+  index: any;
 
-  post:any;
+  post: any;
 
-  selectedRecord:any;
-  mode:any;
+  selectedRecord: any;
+  mode: any;
 
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams ,public platform:Platform, public actionSheetCtrl:ActionSheetController, public toastCtrl:ToastController,private camera: Camera,public dataService:DataService,public modalCtrl: ModalController,private alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public platform: Platform, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, private camera: Camera, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController) {
 
-    if(this.navParams.get('mode') == 'edit'){
+    if (this.navParams.get('mode') == 'edit') {
       //if edit mode then setup edit, get passed post
       this.post = this.navParams.get('post');
+      this.mode = "edit"
       this.setupEdit();
+      console.log(this.pages)
     }
 
   }
@@ -70,7 +72,7 @@ export class CreateNewPage {
     console.log('ionViewDidLoad CreateNewPage');
   }
 
-  start(){
+  start() {
 
     // create new clicked , create new inspiration
     this.create = true;
@@ -78,7 +80,7 @@ export class CreateNewPage {
 
   }
 
-  setupEdit(){
+  setupEdit() {
 
     //setup edit fields, load post
     this.create = true;
@@ -92,12 +94,12 @@ export class CreateNewPage {
     this.lookbook = this.post.type;
   }
 
-  getPages(){
+  getPages() {
     //load pages from data service
-    this.pages =  this.dataService.pages.filter(item => item.inspirationCode == this.post.code);
+    this.pages = this.dataService.pages.filter(item => item.inspirationCode == this.post.code);
   }
 
-  createNewPost(){
+  createNewPost() {
 
     //generate new code for inspiration post
     //create new empty post
@@ -111,7 +113,7 @@ export class CreateNewPage {
 
     this.code = 'inspiration' + text;
 
-    this.post = new Post ('',this.code,this.dataService.me.code,'','','','','','');
+    this.post = new Post('', this.code, this.dataService.me.code, '', '', '', '', '', '');
 
   }
 
@@ -123,14 +125,14 @@ export class CreateNewPage {
         {
           text: 'Load from Library',
           handler: () => {
-             this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY,newPost);
+            this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY, newPost);
 
           }
         },
         {
           text: 'Use Camera',
           handler: () => {
-            this.takePicture(this.camera.PictureSourceType.CAMERA,newPost);
+            this.takePicture(this.camera.PictureSourceType.CAMERA, newPost);
 
           }
         },
@@ -145,20 +147,17 @@ export class CreateNewPage {
 
   }
 
-takePicture(sourceType,newPost) {
-
-    let tempImage:any;
-
-
+  takePicture(sourceType, newPost) {
+    let tempImage: any;
     // Get the data of an image
     this.camera.getPicture({
       destinationType: this.camera.DestinationType.DATA_URL,
       sourceType: sourceType,
-      quality:100
+      quality: 100
     }).then((imageData) => {
       // imageData is a base64 encoded string
       tempImage = "data:image/jpeg;base64," + imageData;
-      tempImage = tempImage.replace(/(\r\n|\n|\r)/gm,"");
+      tempImage = tempImage.replace(/(\r\n|\n|\r)/gm, "");
       newPost.image = tempImage;
       //newPost.image = 'images/1.jpg';
       this.pictureAdded = true;
@@ -171,41 +170,36 @@ takePicture(sourceType,newPost) {
   }
 
 
-  preview(){
-
+  preview() {
     //preview inspiration, send post to whateva lookbook style is selected
-
     this.savePost();
     console.log('preview page');
     console.log('open ' + this.lookbook);
-
-    if(this.lookbook == 'vertical' || this.lookbook == 'horizontal'){
-      this.navCtrl.push(LookbookPage,{
-        mode:'preview',
-        pages : this.pages,
-        post:this.post
+    var modesection = this.mode;
+    console.log(this.pages)
+    if (this.lookbook == 'vertical' || this.lookbook == 'horizontal') {
+      this.navCtrl.push(LookbookPage, {
+        mode: (modesection == 'edit') ? 'edit' : 'preview',
+        pages: this.pages,
+        post: this.post
       });
-    }else if(this.lookbook == 'leroy'){
-      this.navCtrl.push(LookbookLeroyPage,{
-        mode:'preview',
-        pages : this.pages,
-        post:this.post
+    } else if (this.lookbook == 'leroy') {
+      this.navCtrl.push(LookbookLeroyPage, {
+        mode: (modesection == 'edit') ? 'edit' : 'preview',
+        pages: this.pages,
+        post: this.post
       });
-
-    }else if(this.lookbook == 'flip'){
-      this.navCtrl.push(LookbookFlipPage,{
-        mode:'preview',
-        pages : this.pages,
-        post:this.post
+    } else if (this.lookbook == 'flip') {
+      this.navCtrl.push(LookbookFlipPage, {
+        mode: (modesection == 'edit') ? 'edit' : 'preview',
+        pages: this.pages,
+        post: this.post
       });
-
     }
   }
 
   showPage(selected) {
-
     //expand page view
-
     if (this.selectedRecord == selected) {
       this.selectedRecord = null;
     } else {
@@ -214,17 +208,17 @@ takePicture(sourceType,newPost) {
 
   }
 
-  add(){
+  add() {
     // add page to inspiration
-    let tempPage = new Page('',this.code,'images/image.png');
+    let tempPage = new Page('', this.code, 'images/image.png');
     this.pages.push(tempPage);
   }
-  minus(index){
+  minus(index) {
     //delete page from inspiration
-    this.pages.splice(index,1);
+    this.pages.splice(index, 1);
   }
 
-  savePost(){
+  savePost() {
     // save post fields into post object
     this.post.title = this.title;
     this.post.subTitle = this.subTitle;
@@ -245,12 +239,9 @@ takePicture(sourceType,newPost) {
   }
 
 
-  selectLookbook(post){
-
+  selectLookbook(post) {
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
-
-    if(this.dataService.permission == 'admin' || post.accountCode == this.dataService.me.code ){
-
+    if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.code) {
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Modify lookbook',
         buttons: [
@@ -259,22 +250,22 @@ takePicture(sourceType,newPost) {
             handler: () => {
               this.openLookbook(post);
             }
-          },{
+          }, {
             text: 'Edit',
             handler: () => {
               this.editLookbook(post);
             }
-          },{
+          }, {
             text: 'Tag',
             handler: () => {
               this.tagPost(post);
             }
-          },{
+          }, {
             text: 'Delete',
             handler: () => {
               this.deletePost(post);
             }
-          },{
+          }, {
             text: 'Cancel',
             role: 'cancel',
             handler: () => {
@@ -284,7 +275,7 @@ takePicture(sourceType,newPost) {
         ]
       });
       actionSheet.present();
-    }else{
+    } else {
       this.openLookbook(post);
     }
 
@@ -292,58 +283,47 @@ takePicture(sourceType,newPost) {
 
 
 
-  openLookbook(post){
-
+  openLookbook(post) {
     //open lookbook according to style -> segue
     console.log('Open Lookbook');
-
-
-    if(post.type == 'vertical' || post.type == 'horizontal'){
-      this.navCtrl.push(LookbookPage,{
-        post :post,
-        mode:'view'
+    if (post.type == 'vertical' || post.type == 'horizontal') {
+      this.navCtrl.push(LookbookPage, {
+        post: post,
+        mode: 'view'
       });
-    }else if(post.type == 'leroy'){
-      this.navCtrl.push(LookbookLeroyPage,{
-        post :post,
-        mode:'view'
+    } else if (post.type == 'leroy') {
+      this.navCtrl.push(LookbookLeroyPage, {
+        post: post,
+        mode: 'view'
       });
-    }else if(post.type == 'flip'){
-      this.navCtrl.push(LookbookFlipPage,{
-        post :post,
-        mode:'view'
+    } else if (post.type == 'flip') {
+      this.navCtrl.push(LookbookFlipPage, {
+        post: post,
+        mode: 'view'
       });
     }
 
   }
 
-  editLookbook(post2Edit){
+  editLookbook(post2Edit) {
 
     //admin option,  edit selected  lookbook - > segue
 
-    this.navCtrl.setRoot(CreateNewPage,{
-      mode:'edit',
-      post : post2Edit
+    this.navCtrl.setRoot(CreateNewPage, {
+      mode: 'edit',
+      post: post2Edit
     });
 
   }
 
-  tagPost(post){
-
-// tag post, bring up modal
-
-    let profileModal = this.modalCtrl.create(TagPage, {inspiration: post});
+  tagPost(post) {
+    // tag post, bring up modal
+    let profileModal = this.modalCtrl.create(TagPage, { inspiration: post });
     profileModal.present();
-
-
-
   }
 
-  deletePost(post2Delete){
-
+  deletePost(post2Delete) {
     //admin option,  delete selected  lookbook
-
-
     let alert = this.alertCtrl.create({
       title: 'Confirm',
       message: 'Do you want to Delete this Lookbook',
@@ -358,44 +338,30 @@ takePicture(sourceType,newPost) {
         {
           text: 'Confirm',
           handler: () => {
-
-            this.dataService.deleteInspiration(post2Delete).subscribe(data =>{
-
-              try{
+            this.dataService.deleteInspiration(post2Delete).subscribe(data => {
+              try {
                 console.log('inspiration deleted');
-
                 let index = 0;
-
-
-                for(let post of this.dataService.posts) {
-
-                  if(post2Delete != post){
+                for (let post of this.dataService.posts) {
+                  if (post2Delete != post) {
                     index = index + 1;
-                  }else{
-                    this.dataService.posts.splice(index,1);
+                  } else {
+                    this.dataService.posts.splice(index, 1);
                   }
-
                 }
-
                 this.dataService.getInspirations();
-
-              } catch(error){
+              } catch (error) {
                 console.log('inspiration delete error');
               }
-
             });
-
-
           }
         }
       ]
     });
     alert.present();
-
-
   }
 
-  goBack(){
+  goBack() {
     this.create = false;
   }
 

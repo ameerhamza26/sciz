@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Http,Headers,RequestOptions  } from '@angular/http';
+import { Http, Headers, RequestOptions } from '@angular/http';
 
 import 'rxjs/add/operator/map';
-import {AppSettings} from './app-settings';
-import {UserService} from './user-service';
+import { AppSettings } from './app-settings';
+import { UserService } from './user-service';
 
 //MODELS
-import {Post} from '../models/post-model';
-import {Page} from '../models/page';
-import {Creation} from '../models/creation-model';
-import {Size} from '../models/size-model';
-import {User} from '../models/user-model';
-import {Like} from '../models/like-model';
-import {Tag} from '../models/tag-model';
+import { Post } from '../models/post-model';
+import { Page } from '../models/page';
+import { Creation } from '../models/creation-model';
+import { Size } from '../models/size-model';
+import { User } from '../models/user-model';
+import { Like } from '../models/like-model';
+import { Tag } from '../models/tag-model';
 
 
 
@@ -26,32 +26,32 @@ import {Tag} from '../models/tag-model';
 export class DataService {
 
   apiUrl = this.appSettings.getApiURl();
-  me:any;
-  permission:any;
-  openConversation:any;
-  user2Message:any;
+  me: any;
+  permission: any;
+  openConversation: any;
+  user2Message: any;
 
-  posts:Array<Post> = new Array<Post>();
-  tags:Array<Tag> = new Array<Tag>();
-  illustratorPosts:Array<Post> = new Array<Post>();
-  pages:Array<Page> = new Array<Page>();
-  lookbookPages:Array<Page> = new Array<Page>();
-  sizes:Array<Size> = new Array<Size>();
-  creations:Array<Creation> = new Array<Creation>();
-  users:Array<User> = new Array<User>();
-  likes:Array<Like> = new Array<Like>();
+  posts: Array<Post> = new Array<Post>();
+  tags: Array<Tag> = new Array<Tag>();
+  illustratorPosts: Array<Post> = new Array<Post>();
+  pages: Array<Page> = new Array<Page>();
+  lookbookPages: Array<Page> = new Array<Page>();
+  sizes: Array<Size> = new Array<Size>();
+  creations: Array<Creation> = new Array<Creation>();
+  users: Array<User> = new Array<User>();
+  likes: Array<Like> = new Array<Like>();
 
-  lookbook:any;
-  coverImage:any;
+  lookbook: any;
+  coverImage: any;
 
-  constructor(public http: Http,public appSettings:AppSettings,public userService:UserService) {
+  constructor(public http: Http, public appSettings: AppSettings, public userService: UserService) {
     console.log('Hello DataServiceProvider Provider');
     this.loadData();
   }
 
 
 
-  loadData(){
+  loadData() {
 
     this.coverImage = 'assets/images/placeholder.png';
 
@@ -61,19 +61,19 @@ export class DataService {
     this.getCreations();
   }
 
-  filterItems(searchTerm){
+  filterItems(searchTerm) {
 
     return this.users.filter((item) => {
       return ((item.type3.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
-      || (item.type2.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
-      || (item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
-      || (item.city.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
+        || (item.type2.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
+        || (item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
+        || (item.city.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
       );
     });
 
   }
 
-  filter4Tag(searchTerm){
+  filter4Tag(searchTerm) {
 
     return this.users.filter((item) => {
       return item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
@@ -81,13 +81,13 @@ export class DataService {
 
   }
 
-  getUsers(){
+  getUsers() {
 
     this.users.length = 0;
 
-    this.http.get( this.apiUrl + 'getUsers').map(res => res.json()).subscribe(data => {
+    this.http.get(this.apiUrl + 'getUsers').map(res => res.json()).subscribe(data => {
 
-      for(let user of data) {
+      for (let user of data) {
 
         let image = this.apiUrl + "images/" + user.image;
         user.image = image;
@@ -100,44 +100,44 @@ export class DataService {
 
   }
 
-  reloadUsers(){
+  reloadUsers() {
     this.users.length = 0;
-    return this.http.get( this.apiUrl + 'getUsers').map(res => res.json());
+    return this.http.get(this.apiUrl + 'getUsers').map(res => res.json());
   }
 
 
-  getInspirations(){
+  getInspirations() {
 
+    this.posts = []
     this.posts.length = 0;
+    this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
 
-      this.http.get( this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
+      for (let inspiration of data) {
 
-        for(let inspiration of data) {
+        let image = this.apiUrl + "images/" + inspiration.image;
+        inspiration.image = image;
+        this.posts.push(inspiration);
 
-          let image = this.apiUrl + "images/" + inspiration.image;
-          inspiration.image = image;
-          this.posts.push(inspiration);
+      }
 
-        }
+      console.log(this.posts);
 
-        console.log(this.posts);
+      this.getPages();
 
-        this.getPages();
-
-      });
+    });
 
   }
 
-  getInspirationTags(){
+  getInspirationTags() {
 
     this.tags.length = 0;
 
-    this.http.get( this.apiUrl + 'getInspirationTags').map(res => res.json()).subscribe(data => {
+    this.http.get(this.apiUrl + 'getInspirationTags').map(res => res.json()).subscribe(data => {
 
 
-      for(let tag of data) {
+      for (let tag of data) {
 
-        let newTag = new Tag(tag.tagCode,tag.inspirationCode,tag.userCode);
+        let newTag = new Tag(tag.tagCode, tag.inspirationCode, tag.userCode);
         this.tags.push(newTag);
       }
 
@@ -146,13 +146,13 @@ export class DataService {
 
   }
 
-  getPages(){
+  getPages() {
 
     this.pages.length = 0;
 
-    this.http.get( this.apiUrl + 'getPages').map(res => res.json()).subscribe(data => {
+    this.http.get(this.apiUrl + 'getPages').map(res => res.json()).subscribe(data => {
 
-      for(let page of data) {
+      for (let page of data) {
 
         let image = this.apiUrl + "images/" + page.image;
         page.image = image;
@@ -163,13 +163,13 @@ export class DataService {
     });
 
   }
-  getCreations(){
+  getCreations() {
 
     this.creations.length = 0;
 
-    this.http.get( this.apiUrl + 'getCreations').map(res => res.json()).subscribe(data => {
+    this.http.get(this.apiUrl + 'getCreations').map(res => res.json()).subscribe(data => {
 
-      for(let creation of data) {
+      for (let creation of data) {
 
         let image = this.apiUrl + "images/" + creation.image;
         creation.image = image;
@@ -181,31 +181,31 @@ export class DataService {
 
   }
 
-  reloadCreations(){
+  reloadCreations() {
     this.creations.length = 0;
-    return this.http.get( this.apiUrl + 'getCreations').map(res => res.json());
+    return this.http.get(this.apiUrl + 'getCreations').map(res => res.json());
   }
 
-  getLikes(){
+  getLikes() {
 
     this.likes.length = 0;
 
     var parameters = JSON.stringify({
-      userCode:this.me.code
+      userCode: this.me.code
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'getLikes';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'getLikes';
 
     console.log('getting likes');
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data =>{
+    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
       console.log(data);
-      for(let like of data.result) {
+      for (let like of data.result) {
         this.likes.push(like);
       }
 
@@ -216,25 +216,25 @@ export class DataService {
 
   }
 
-  saveLike(likeToUpload){
+  saveLike(likeToUpload) {
 
 
     var parameters = JSON.stringify({
-      newLike:likeToUpload
+      newLike: likeToUpload
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'saveLike';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'saveLike';
 
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data =>{
+    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
-      if(data.message == "Successful"){
+      if (data.message == "Successful") {
         console.log('like saved');
-      }else{
+      } else {
         console.log('like not saved');
       }
 
@@ -245,26 +245,26 @@ export class DataService {
 
   }
 
-  updateAvailability(creationCode,availability){
+  updateAvailability(creationCode, availability) {
 
 
     var parameters = JSON.stringify({
-      creationCode:creationCode,
-      availability:availability
+      creationCode: creationCode,
+      availability: availability
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'updateAvailability';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'updateAvailability';
 
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data =>{
+    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
-      if(data.message == "Successful"){
+      if (data.message == "Successful") {
         console.log('availability saved');
-      }else{
+      } else {
         console.log('availability not saved');
       }
 
@@ -273,19 +273,19 @@ export class DataService {
 
   }
 
-  saveCreation(creation){
+  saveCreation(creation) {
 
     console.log(creation);
 
     var parameters = JSON.stringify({
-      creation:creation
+      creation: creation
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'saveCreation';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'saveCreation';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -294,47 +294,47 @@ export class DataService {
 
 
 
-  updateCreation(creation){
+  updateCreation(creation) {
 
     console.log(creation);
 
     var parameters = JSON.stringify({
-      creation:creation
+      creation: creation
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'updateCreation';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'updateCreation';
 
     return this.http.post(url, body, options).map(response => response.json());
 
   }
 
 
-  login(userLogin,userHash){
+  login(userLogin, userHash) {
 
     var parameters = JSON.stringify({
-      email:userLogin,
-      password:userHash
+      email: userLogin,
+      password: userHash
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'login';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'login';
 
 
     return this.http.post(url, body, options).map(response => response.json());
 
   }
 
-  loadIllustratorPosts(){
-    for(let inspiration of this.posts) {
+  loadIllustratorPosts() {
+    for (let inspiration of this.posts) {
 
-      if(inspiration.accountCode == this.me.code){
+      if (inspiration.accountCode == this.me.code) {
 
         this.illustratorPosts.push(inspiration);
       }
@@ -347,17 +347,17 @@ export class DataService {
 
 
 
-  tagInspiration(tag){
+  tagInspiration(tag) {
 
     var parameters = JSON.stringify({
-      tag:tag
+      tag: tag
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'tagInspiration';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'tagInspiration';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -365,24 +365,24 @@ export class DataService {
   }
 
 
-  getSizeFile(){
+  getSizeFile() {
 
     this.sizes.length = 0;
 
     var parameters = JSON.stringify({
-      userCode:this.me.code
+      userCode: this.me.code
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'getSizeFile';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'getSizeFile';
 
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data =>{
+    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
-      for(let sizeFile of data.result) {
+      for (let sizeFile of data.result) {
         this.sizes.push(sizeFile);
       }
 
@@ -390,18 +390,33 @@ export class DataService {
 
   }
 
-  updateProfile(user){
+  updateInspiration(code, inspiration, inspirationPages) {
+    var parameters = JSON.stringify({
+      code: code,
+      inspiration: inspiration,
+      inspirationPages: inspirationPages
+    });
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'updateInspiration';
+
+    return this.http.post(url, body, options).map(response => response.json());
+  }
+
+  updateProfile(user) {
 
 
     var parameters = JSON.stringify({
-      user:user
+      user: user
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'updateServiceProfile';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'updateServiceProfile';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -409,24 +424,24 @@ export class DataService {
   }
 
 
-  saveSize(sizeFile){
+  saveSize(sizeFile) {
 
     var parameters = JSON.stringify({
-      sizeFile:sizeFile
+      sizeFile: sizeFile
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'saveSize';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'saveSize';
 
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data =>{
+    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
-      if(data.message == "Successful"){
+      if (data.message == "Successful") {
         console.log('size file saved');
-      }else{
+      } else {
         console.log('image not saved');
       }
 
@@ -434,25 +449,25 @@ export class DataService {
 
   }
 
-  updateSize(sizeFile){
+  updateSize(sizeFile) {
 
 
     var parameters = JSON.stringify({
-      sizeFile:sizeFile
+      sizeFile: sizeFile
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'updateSize';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'updateSize';
 
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data =>{
+    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
-      if(data.message == "Successful"){
+      if (data.message == "Successful") {
         console.log('profile saved');
-      }else{
+      } else {
         console.log('profile not saved');
       }
 
@@ -461,59 +476,59 @@ export class DataService {
 
   }
 
-  saveNewInspiration(inspiration,inspirationPages){
+  saveNewInspiration(inspiration, inspirationPages) {
 
     var parameters = JSON.stringify({
-      inspiration:inspiration,
-      inspirationPages:inspirationPages
+      inspiration: inspiration,
+      inspirationPages: inspirationPages
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'saveNewInspiration';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'saveNewInspiration';
 
 
     return this.http.post(url, body, options).map(response => response.json());
 
   }
 
-  deleteInspiration(inspiration){
+  deleteInspiration(inspiration) {
 
     var parameters = JSON.stringify({
-      inspiration:inspiration
+      inspiration: inspiration
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'deleteInspiration';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'deleteInspiration';
 
 
     return this.http.post(url, body, options).map(response => response.json());
 
   }
 
-  saveImage(imageData,imageName){
+  saveImage(imageData, imageName) {
 
     var parameters = JSON.stringify({
-      imageData:imageData,
-      imageName:imageName
+      imageData: imageData,
+      imageName: imageName
     });
 
-    let body:string = parameters,
-      type:string = "application/json",
-      headers:any = new Headers({'Content-Type': type}),
-      options:any = new RequestOptions({headers: headers}),
-      url:any = this.apiUrl + 'uploadImage';
+    let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'uploadImage';
 
 
     return this.http.post(url, body, options).map(response => response.json());
   }
 
-  generateCode(type){
+  generateCode(type) {
 
     //new user code
 
