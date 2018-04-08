@@ -21,3 +21,5 @@
 * "git add --all" to add all changes from your machine
 * "git commit -m "commit name"" to commit the changes
 * "git push ionic master"
+* If the app is not yet linked, run "ionic link" and select the right app. This would make the ionic pro a remote repository
+* If login is also needed - Username - arinze.ibekwe@yahoo.com - Password - arinze10
