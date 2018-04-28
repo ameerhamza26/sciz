@@ -43,25 +43,25 @@ export class MessengerPage {
 
     this.start();
 
-    this.subscription = db.list('/' + this.user.accountID);
+    this.subscription = db.list('/' + this.user.code);
     this.subscription.subscribe( data => {
       this.chatlist = []
       data.forEach( data => {
         this.listofchatsdb.set(data.$key, data)
         console.log(data)
         console.log(data.$key)
-        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.accountID)){
+        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.code)){
           this.listofchats.set(data.participant, data)
         }
-        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.accountID)){
+        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.code)){
           this.listofchats.set(data.participant, data)
         }
 
-        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.accountID)){
+        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.code)){
           this.listofchats.set(data.user, data)
         }
 
-        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.accountID)){
+        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.code)){
           this.listofchats.set(data.user, data)
         }
       });
@@ -91,7 +91,7 @@ export class MessengerPage {
   }
 
   deleteMessage(user,participant) {
-    const items = this.db.list('/' + this.user.accountID);
+    const items = this.db.list('/' + this.user.code);
     this.listofchatsdb.forEach(function(value, key) {
       if ((value as any).participant == participant){
       console.log(key)
@@ -161,7 +161,7 @@ export class MessengerPage {
 
   getAvatar(chat){
 
-  let tempUser = this.dataService.users.filter(item => (item as any).accountID == chat)[0];
+  let tempUser = this.dataService.users.filter(item => (item as any).code == chat)[0];
     return tempUser.image;
 
 

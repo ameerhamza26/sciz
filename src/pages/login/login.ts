@@ -59,13 +59,24 @@ export class LoginPage {
             this.navCtrl.setRoot(TabsPage);
           } else {
             this.showAlert('Error', 'Incorrect Email or Password');
+
           }
         } catch (error) {
           this.showAlert('Oops', 'Please try again');
         }
+      },
+      err => {
+        this.loading.dismissAll();
+        this.showAlert('Error', 'Unable to login at this time, please try again later');
       });
     }
+    else if ((this.password.length < 6) || (this.username.length < 3)) {
+      this.showAlert('Error', 'Invalid Email or Password ');
+      console.log('Incorrect password or email length');
+    }
+
     else {
+      this.showAlert('Error', 'Unable to login at this time, please try again later');
       console.log('will not log in');
     }
   }

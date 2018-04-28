@@ -242,7 +242,12 @@ question:any;
 
 
 
-    });
+    },
+    err => {
+      this.showAlert('Error','Unable to confirm email, please try again later');
+    }
+
+  );
 
   }
 
@@ -273,6 +278,9 @@ question:any;
 
 
 
+    },
+    err => {
+      this.showAlert('Error','Please Try Again Later');
     });
   }
 

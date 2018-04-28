@@ -22,7 +22,7 @@
 <ion-content class="chat" padding>
   <div id="chatMessages">
     <div class="message" *ngFor="let message of messages">
-      <div [class]="message.user == user.accountID ? 'innerMessage messageRight' : 'innerMessage messageLeft' ">
+      <div [class]="message.user == user.code ? 'innerMessage messageRight' : 'innerMessage messageLeft' ">
         <div *ngIf="message.image == false" class="message">{{message.message}}</div>
         <div *ngIf="message.image == false" class="timestamp">{{message.timestamp.slice(0,21)}}</div>
         <div *ngIf="message.image == true">

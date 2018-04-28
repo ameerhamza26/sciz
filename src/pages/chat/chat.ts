@@ -48,17 +48,17 @@ export class ChatPage {
     this.start();
 
 
-    this.subscription = db.list('/' + this.user.accountID, { preserveSnapshot: true });
+    this.subscription = db.list('/' + this.user.code, { preserveSnapshot: true });
     this.subscription.subscribe(snapshots => {
       snapshots.forEach(snapshot => {
-        if ((snapshot.val().participant == this.provider.accountID) && (snapshot.val().user == this.user.accountID)){
+        if ((snapshot.val().participant == this.provider.code) && (snapshot.val().user == this.user.code)){
           console.log(snapshot.key)
           console.log(snapshot.val())
 
           this.newmessages.push(snapshot.val())
           }
 
-          else if ((snapshot.val().participant == this.user.accountID) && (snapshot.val().user == this.provider.accountID)){
+          else if ((snapshot.val().participant == this.user.code) && (snapshot.val().user == this.provider.code)){
             this.newmessages.push(snapshot.val())
 
             //this.pushSetup("Scizzor", "New message from " + this.provider.name)
@@ -232,10 +232,10 @@ export class ChatPage {
       try{
         if(data.message == "Successful"){
 
-        this.db.list('/' + this.user.accountID).push({
+        this.db.list('/' + this.user.code).push({
           messagecode: this.messageCode,
-          user: this.user.accountID,
-          participant: this.provider.accountID,
+          user: this.user.code,
+          participant: this.provider.code,
           displayname: this.provider.name,
           sender: true,
           image: true,
@@ -252,10 +252,10 @@ export class ChatPage {
 
         });
 
-        this.db.list('/' + this.provider.accountID).push({
+        this.db.list('/' + this.provider.code).push({
           messagecode: this.messageCode,
-          user: this.user.accountID,
-          participant: this.provider.accountID,
+          user: this.user.code,
+          participant: this.provider.code,
           displayname: this.provider.name,
           sender: false,
           image: true,
@@ -292,10 +292,10 @@ export class ChatPage {
     console.log(this.dateTime.toString())
     console.log(this.dateTime.getTime())
 
-    this.db.list('/' + this.user.accountID).push({
+    this.db.list('/' + this.user.code).push({
       messagecode: this.generateCode(),
-      user: this.user.accountID,
-      participant: this.provider.accountID,
+      user: this.user.code,
+      participant: this.provider.code,
       displayname: this.provider.name,
       sender:true,
       image: false,
@@ -311,10 +311,10 @@ export class ChatPage {
 
     });
 
-    this.db.list('/' + this.provider.accountID).push({
+    this.db.list('/' + this.provider.code).push({
       messagecode: this.generateCode(),
-      user: this.user.accountID,
-      participant: this.provider.accountID,
+      user: this.user.code,
+      participant: this.provider.code,
       displayname: this.provider.name,
       sender:false,
       image: false,
@@ -347,7 +347,7 @@ export class ChatPage {
     if ((this.dataService.users.filter(item => item.code == this.userCode)[0]) == undefined){
       console.log(this.navParams.get('provider'))
       console.log(this.navParams.get('providername'))
-      this.provider = {accountID : this.navParams.get('provider'), name:this.navParams.get('providername')}
+      this.provider = {code : this.navParams.get('provider'), name:this.navParams.get('providername')}
     }
     else {
       this.provider =  this.dataService.users.filter(item => item.code == this.userCode)[0];
