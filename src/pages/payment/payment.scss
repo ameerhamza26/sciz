@@ -1,0 +1,32 @@
+page-payment {
+  .payment {
+
+      ion-grid {
+          padding-top: 50%;
+          height: 50%;
+      }
+      ion-row {
+          flex: 1;
+          height: auto;
+          width: 100%;
+          align-items: center;
+      }
+      ion-col {
+          //bottom: 0;
+          padding-bottom : 20%;
+          padding-top : 20%;
+      }
+
+      button {
+        font-size: 100%;
+        margin-top: 10%;
+        margin-bottom: 10%;
+      }
+
+      background-color: black;
+      background-size: cover;
+      background-position: center;
+
+  }
+
+}

@@ -33,15 +33,15 @@
 
     <ion-row>
 
-      <ion-col col-2>
-
+      <ion-col col-4>
+        <button ion-button color="light" outline block (click)="openPayments()"><ion-icon name="card"></ion-icon>Payments</button>
       </ion-col>
-      <ion-col col-5>
+      <ion-col col-4>
         <button *ngIf="!(showSettings)" ion-button color="light"  outline block  (click)="settings()" ><ion-icon name="cog"></ion-icon> Settings</button>
         <button *ngIf="showSettings" ion-button color="light"  outline block  (click)="settings()" ><ion-icon name="contact"></ion-icon> Profile</button>
       </ion-col>
-      <ion-col col-5>
-        <button ion-button color="light"   block  (click)="logout()" ><ion-icon name="log-out"></ion-icon> Logout</button>
+      <ion-col col-4>
+        <button ion-button color="light" outline block  (click)="logout()" ><ion-icon name="log-out"></ion-icon> Logout</button>
       </ion-col>
 
     </ion-row>
@@ -51,7 +51,7 @@
       <ion-col col-2>
 
       </ion-col>
-      <ion-col col-10>
+      <ion-col col-12>
         <button ion-button color="main" *ngIf="permission == 'service' && !(showSettings)"  block (click)="createNewCreation()" ><ion-icon name="add"></ion-icon> Add New</button>
         <button ion-button color="main" *ngIf="((this.profileChanged || this.sizesChanged) && showSettings)"  block (click)="updateProfile()" >Save Changes</button>
       </ion-col>

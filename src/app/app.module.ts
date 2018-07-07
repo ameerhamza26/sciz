@@ -9,6 +9,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { EmailComposer } from '@ionic-native/email-composer';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { IonicStorageModule } from '@ionic/storage';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { Stripe } from '@ionic-native/stripe';
 
 import { TabsPage } from '../pages/tabs/tabs';
 import { StartPage } from '../pages/start/start';
@@ -28,6 +30,12 @@ import { ChatPage } from '../pages/chat/chat';
 import { ModalContentPage } from '../pages/chat/chat';
 import { ScizzorSearchPage } from '../pages/scizzor-search/scizzor-search';
 import { TagPage } from '../pages/tag/tag';
+import { PaymentPage } from '../pages/payment/payment';
+import { RavePaymentPage } from '../pages/rave-payment/rave-payment';
+import { StripePaymentPage } from '../pages/stripe-payment/stripe-payment';
+import { PaymentHistoryPage } from '../pages/payment-history/payment-history';
+import { StripeModalContentPage } from '../pages/payment-history/payment-history';
+import { RaveModalContentPage } from '../pages/payment-history/payment-history';
 
 //import { IonicImageLoader } from 'ionic-image-loader';
 
@@ -81,12 +89,13 @@ var config = {
     ChatPage,
     ScizzorSearchPage,
     TagPage,
-    ModalContentPage
-
-
-
-
-
+    PaymentPage,
+    RavePaymentPage,
+    StripePaymentPage,
+    ModalContentPage,
+    PaymentHistoryPage,
+    StripeModalContentPage,
+    RaveModalContentPage
   ],
   imports: [
     BrowserModule,
@@ -118,7 +127,13 @@ var config = {
     ChatPage,
     ScizzorSearchPage,
     TagPage,
-    ModalContentPage
+    PaymentPage,
+    RavePaymentPage,
+    StripePaymentPage,
+    ModalContentPage,
+    PaymentHistoryPage,
+    StripeModalContentPage,
+    RaveModalContentPage
   ],
   providers: [
     StatusBar,
@@ -126,7 +141,7 @@ var config = {
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     DataService, AppSettings, NativePageTransitions, Camera,
     AudioService, NativeAudio,
-    UserService, EmailComposer, Push
+    UserService, EmailComposer, Push, InAppBrowser, Stripe
   ]
 })
 export class AppModule { }

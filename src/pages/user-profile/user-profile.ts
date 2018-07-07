@@ -5,6 +5,7 @@ import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
 import { CreationPage } from '../creation/creation';
 import { LoginPage } from '../login/login';
+import { PaymentHistoryPage } from '../payment-history/payment-history';
 
 import { App } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
@@ -404,11 +405,13 @@ export class UserProfilePage {
     this.emailComposer.open(email);
   }
 
-
-
   logout() {
     this.storage.clear()
     this.app.getRootNav().push(LoginPage);
   }
+
+  openPayments() {
+    this.navCtrl.push(PaymentHistoryPage)
+    };
 
 }

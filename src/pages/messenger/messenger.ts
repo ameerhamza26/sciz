@@ -43,7 +43,7 @@ export class MessengerPage {
 
     this.start();
 
-    this.subscription = db.list('/' + this.user.code);
+    this.subscription = db.list('/' + 'chats' + '/' + this.user.code);
     this.subscription.subscribe( data => {
       this.chatlist = []
       data.forEach( data => {
@@ -91,7 +91,7 @@ export class MessengerPage {
   }
 
   deleteMessage(user,participant) {
-    const items = this.db.list('/' + this.user.code);
+    const items = this.db.list('/' + 'chats' + '/' + this.user.code);
     this.listofchatsdb.forEach(function(value, key) {
       if ((value as any).participant == participant){
       console.log(key)

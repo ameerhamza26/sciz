@@ -98,4 +98,6 @@
     <plugin name="cordova-plugin-email-composer" spec="^0.8.11" />
     <plugin name="phonegap-plugin-push" spec="^2.1.2" />
     <plugin name="cordova-plugin-file" spec="^4.0.0" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
+    <plugin name="cordova-plugin-stripe" spec="^1.5.3" />
 </widget>

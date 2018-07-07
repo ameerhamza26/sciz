@@ -11,6 +11,7 @@ import {Like} from '../../models/like-model';
 
 import { ChatPage } from '../chat/chat';
 import { ProfilePage } from '../profile/profile';
+import { PaymentPage } from '../payment/payment';
 
 
 /**
@@ -165,6 +166,17 @@ export class CreationPage {
 
             this.navCtrl.push(ProfilePage,{
               userCode:this.creation.userCode,
+              view:'service'
+            });
+
+          }
+        },
+        {
+          text: 'Purchase Item',
+          handler: () => {
+
+            this.navCtrl.push(PaymentPage,{
+              creation:this.creation,
               view:'service'
             });
 
