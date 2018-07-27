@@ -8,7 +8,6 @@ import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
 import { Storage } from '@ionic/storage';
 
-
 /**
  * Generated class for the LoginPage page.
  *
@@ -38,6 +37,7 @@ export class LoginPage {
     console.log('ionViewDidLoad LoginPage');
   }
 
+
   login() {
     if ((this.password.length > 6 && this.username.length > 3) || this.username == 'admin') {
       this.showLoading('Logging In...');
@@ -48,6 +48,7 @@ export class LoginPage {
           console.log(data)
           if (data.message == "Successful" && (data.result[0].type == "customer" || data.result[0].type == "service" || data.result[0].type == "admin")) {
             this.setUser(this.username);
+            //this.dataService.getAllLikes();
             this.storage.set('data', data);
             this.dataService.getLikes();
             console.log(this.dataService.me);
@@ -62,12 +63,15 @@ export class LoginPage {
 
           }
         } catch (error) {
+          console.log(error);
           this.showAlert('Oops', 'Please try again');
         }
       },
       err => {
         this.loading.dismissAll();
-        this.showAlert('Error', 'Unable to login at this time, please try again later');
+        this.showAlert('Error ' + err, 'Unable to login at this time, please try again later');
+        console.log("ERROR 1");
+        console.log(err.toString());
       });
     }
     else if ((this.password.length < 6) || (this.username.length < 3)) {
@@ -83,6 +87,7 @@ export class LoginPage {
 
   setUser(userName) {
     let user = this.dataService.users.filter(item => item.email == userName)[0];
+    console.log(user);
     this.storage.set('user', user)
     // let newUser = new User('0','testCode',this.permission,'Manufacturer','','images/profile.jpg','Delz','scizzorapp@gmail.com','Auckland','02105976881',true,'short description','@username','@username','@username','http://www.sczr.co.uk','sizeCode',3,'hashTest');
     this.userService.setUser(user);

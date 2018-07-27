@@ -38,6 +38,11 @@ export class ScizzorPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService) {
     console.log('hello');
+      var is_deeplink = this.navParams.get('is_deeplink');
+      var deeplink_creation = this.navParams.get('creation');
+      if(is_deeplink && deeplink_creation) {
+          this.openCreation(deeplink_creation);
+      }
     this.start();
   }
 

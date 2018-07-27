@@ -31,15 +31,20 @@ import { DataService } from '../../providers/data-service';
 export class InspirationPage {
   timestapm = Date.now();
   constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, public loadingCtrl: LoadingController) {
-
+      var is_deeplink = this.navParams.get('is_deeplink');
+      var deeplink_post = this.navParams.get('post');
+      if(is_deeplink && deeplink_post) {
+          this.openLookbook(deeplink_post);
+      }
   }
 
 
   ionViewDidLoad($event) {
     console.log('ionViewDidLoad InspirationPage');
     this.timestapm = Date.now();
-    this.dataService.getInspirations();
-
+      this.dataService.getAllLikes().then((data) => {
+        this.dataService.getInspirations();
+      })
   }
 
   getAnimation(post) {
@@ -63,6 +68,7 @@ export class InspirationPage {
 
   selectLookbook(post) {
 
+    console.log(post);
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
     console.log(this.dataService.me.code)
     if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.code) {
@@ -190,7 +196,22 @@ export class InspirationPage {
   doRefresh(refresher) {
     this.timestapm = Date.now();
     console.log('Begin async operation', refresher);
-    this.dataService.getInspirations();
+      this.dataService.getAllLikes().then((data)=>{
+          this.dataService.getLikes();
+          this.dataService.getInspirations();
+      })
+    /*var getAllLikes = new Promise(function(resolve,reject){
+        if(this.dataService.getAllLikes() == true) {
+          alert("RESOLVING");
+          resolve(true);
+        }
+    }); */
+
+    /*getAllLikes.then(function(response){
+        alert("PROMISE");
+        console.log("Get all likes response");
+        console.log(response);
+    });*/
 
     setTimeout(() => {
       console.log('Async operation has ended');

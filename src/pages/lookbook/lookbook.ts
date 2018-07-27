@@ -28,7 +28,7 @@ export class LookbookPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController) {
 
     //get pages, post and mode to operate in
-
+    console.log("LOOKBOOK");
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');
     this.post = navParams.get('post');
@@ -38,6 +38,8 @@ export class LookbookPage {
     //start according to mode
     this.start(this.mode);
     this.helpToast(this.lookbook);
+
+
 
   }
 
@@ -54,6 +56,7 @@ export class LookbookPage {
       let code = this.post.code;
       this.dataService.lookbookPages = this.dataService.pages.filter(item => item.inspirationCode == code);
       this.pages = this.dataService.lookbookPages;
+      console.log("PAGES",this.pages);
 
     } else if (mode == 'edit') {
       //admin options

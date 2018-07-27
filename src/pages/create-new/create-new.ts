@@ -210,7 +210,16 @@ export class CreateNewPage {
 
   add() {
     // add page to inspiration
-    let tempPage = new Page('', this.code, 'images/image.png');
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (var i = 0; i < 40; i++) {
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+
+      let pagecode = 'inspirationpage' + text;
+  //  let tempPage = new Page('', this.code,pagecode, 'images/image.png');
+    let tempPage = new Page('', this.code,pagecode, 'inspirationrotIf0giEtlnOmsdZZBBnUWK8FY7gCzRDJW2Uui71.png'); // debug
     this.pages.push(tempPage);
   }
   minus(index) {
@@ -220,6 +229,7 @@ export class CreateNewPage {
 
   savePost() {
     // save post fields into post object
+    this.post.image = "inspirationXOaXhtOaEQ0eyzoSnqTFCB8jPtLZ76H1nAvREIsP.png"; // debug
     this.post.title = this.title;
     this.post.subTitle = this.subTitle;
     this.post.description = this.description;

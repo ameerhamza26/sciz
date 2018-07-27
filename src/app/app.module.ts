@@ -9,6 +9,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { EmailComposer } from '@ionic-native/email-composer';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { IonicStorageModule } from '@ionic/storage';
+import { SocialSharing } from '@ionic-native/social-sharing';
+
 
 import { TabsPage } from '../pages/tabs/tabs';
 import { StartPage } from '../pages/start/start';
@@ -44,6 +46,7 @@ import { AudioService } from '../providers/audio-service';
 
 import { NativeAudio } from '@ionic-native/native-audio';
 import { UserService } from '../providers/user-service';
+import { SocialShareProvider } from '../providers/social-share/social-share';
 
 import { VerticalLookbook } from '../components/vertical-lookbook/vertical-lookbook';
 import { HorizontalLookbook } from '../components/horizontal-lookbook/horizontal-lookbook';
@@ -125,8 +128,9 @@ var config = {
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     DataService, AppSettings, NativePageTransitions, Camera,
-    AudioService, NativeAudio,
-    UserService, EmailComposer, Push
+    SocialSharing, AudioService, NativeAudio,
+    UserService, EmailComposer, Push,
+    SocialShareProvider
   ]
 })
 export class AppModule { }

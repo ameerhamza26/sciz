@@ -10,7 +10,7 @@ export class User {
               public gender:string,
               public email:string,
               public city:string,
-              public phone:string,
+            //  public phone:string,
               public availability:boolean,
               public description:string,
               public twitter:string,
@@ -31,7 +31,7 @@ export class User {
     this.gender = gender;
     this.email = email;
     this.city = city;
-    this.phone = phone;
+    //this.phone = phone;
     this.availability = availability;
     this.description = description;
     this.twitter = twitter;
