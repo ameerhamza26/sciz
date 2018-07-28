@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 
 const CONFIG = {
   // apiURL:'http://ec2-18-217-27-194.us-east-2.compute.amazonaws.com/'
-  apiURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/'
+  //apiURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/'
+  apiURL: 'http://localhost:9000/'
+
   // apiURL: 'http://192.168.43.163:9000/'
 };
 

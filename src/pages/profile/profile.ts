@@ -3,6 +3,9 @@ import { NavController, NavParams  } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
 import { CreationPage } from '../creation/creation';
 import { ChatPage } from '../chat/chat';
+import {Post} from "../../models/post-model";
+import {User} from "../../models/user-model";
+import {SocialShareProvider} from "../../providers/social-share/social-share";
 
 
 /**
@@ -25,7 +28,7 @@ export class ProfilePage {
   segment:any;
   view:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService,private socialShare:SocialShareProvider) {
 
     //get usercode to load
 
@@ -74,6 +77,25 @@ export class ProfilePage {
       view:'service'
     });
   }
+
+
+    facebookShare(profile: User) {
+        this.socialShare.shareProfile(profile,'Facebook');
+    }
+    twitterShare(profile: User){
+        this.socialShare.shareProfile(profile,'Twitter');
+
+    }
+    instagramShare(profile: User){
+        this.socialShare.shareProfile(profile,'Instagram');
+    }
+    whatsappShare(profile: User){
+        this.socialShare.shareProfile(profile,'Whatsapp');
+    }
+    emailShare(profile: User){
+        this.socialShare.shareProfile(profile,'Email');
+    }
+
 
 
 }

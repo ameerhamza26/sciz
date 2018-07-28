@@ -83,7 +83,15 @@ h2,button,p{
 .toolbar-title.toolbar-title-md,
 .toolbar-title.toolbar-title-ios,
 .toolbar-title.toolbar-title-wp { color: map-get($colors, white); }
-
+.social-header {
+  border: 0px !important;
+  border-bottom-color: transparent !important;
+  background-image: none !important;
+  border-bottom: none !important;
+}
+.slide-zoom{
+  height:100%;
+}
 ion-icon {
   &[class*="sp-"] {
     // Instead of using the font-based icons
@@ -183,5 +191,6 @@ ion-content{
 
 }
 */
+
 
 }
