@@ -255,7 +255,7 @@ question:any;
 
     //send user to database and save
 
-    let newUser = new User('',this.code,this.type,this.serviceType,'','astimlee.png',this.name,this.gender,this.email,this.city,this.phone,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
+    let newUser = new User('',this.code,this.type,this.serviceType,'','','','','astimlee.png',this.name,this.gender,this.email,this.city,this.phone,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
 
     if(this.type == 'customer'){
       let sizeFile = new Size('',this.sizeCode,this.code,0,0,0,0,0,0,0,0,0,0,0,0,0,0);

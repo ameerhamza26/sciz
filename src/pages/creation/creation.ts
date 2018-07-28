@@ -176,7 +176,7 @@ export class CreationPage {
           handler: () => {
 
             this.navCtrl.push(PaymentPage,{
-              creation:this.creation,
+              payload:this.creation,
               view:'service'
             });
 

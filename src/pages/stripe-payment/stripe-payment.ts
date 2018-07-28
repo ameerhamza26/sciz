@@ -45,16 +45,40 @@ export class StripePaymentPage {
   loading:any;
   creation : any;
   provider: any;
+  purchaseDetails: any;
+  paymentEmail: any;
+  serviceProviderEmail:any;
 
   constructor(public userService:UserService, public toastCtrl: ToastController, public dataService:DataService, public appSettings:AppSettings, public loadingCtrl: LoadingController, public navCtrl: NavController, public db: AngularFireDatabase, private alertCtrl: AlertController, public navParams: NavParams, public stripe: Stripe, public Http: Http) {
     this.user = this.userService.user;
-    this.creation = this.navParams.get('creation');
+    this.creation = this.navParams.get('purchaseDetails');
 
-    this.provider =  this.dataService.users.filter(item => item.code == this.creation.userCode)[0];
+    if (this.creation.type == 'service'){
+      this.purchaseDetails = this.navParams.get('purchaseDetails');
+      console.log(this.purchaseDetails)
+    }
+
+    else {
+      this.provider =  this.dataService.users.filter(item => item.code == this.creation.userCode)[0];
+      console.log(this.provider);
+
+      this.purchaseDetails = {
+        type : 'store',
+        name : this.provider.name,
+        email : this.provider.email,
+        mobile : this.provider.phone,
+        item : this.creation.name,
+        itemImage : this.creation.image,
+        bankAccountHolder : this.provider.bankAccountHolder,
+        bankAccountNumber : this.provider.bankAccountNumber,
+        bankAccountSortCode : this.provider.bankAccountSortCode,
+        status : 'false'
+      }
+      console.log(this.purchaseDetails)
+    }
 
     this.email = this.user.email
 
-    console.log(this.provider);
 
     if (this.creation.price.charAt(0) == '£'){
       this.currency = "gbp"
@@ -80,11 +104,35 @@ export class StripePaymentPage {
       this.amount = this.creation.price
     }
 
+    this.paymentEmail = {
+      sender : this.user.name + ' ' + this.user.email,
+      provider : this.purchaseDetails.name + ' ' + this.purchaseDetails.email,
+      item : this.purchaseDetails.item,
+      amount : this.amount,
+      currency : this.currency,
+      bankAccountHolder : this.purchaseDetails.bankAccountHolder,
+      bankAccountNumber : this.purchaseDetails.bankAccountNumber,
+      bankAccountSortCode : this.purchaseDetails.bankAccountSortCode
+    }
+
+    this.serviceProviderEmail = {
+      provider : this.purchaseDetails.email,
+      sender : this.user.name + ' ' + this.user.email,
+      item : this.purchaseDetails.item,
+      currency : this.currency,
+      amount : this.amount,
+      dueDate : this.purchaseDetails.completionDate,
+      address :this.purchaseDetails.address,
+      measurements : this.purchaseDetails.measurement,
+    }
+
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad StripePaymentPage');
   }
+
+  ////////////////////////////////////////////////////////////////////////////////
 
   presentLoading(message) {
     this.loading = this.loadingCtrl.create({
@@ -98,6 +146,8 @@ export class StripePaymentPage {
     }, 5000);
   }
 
+  ////////////////////////////////////////////////////////////////////////////////
+
   presentToast(message) {
     let toast = this.toastCtrl.create({
       message: message,
@@ -105,6 +155,8 @@ export class StripePaymentPage {
     });
     toast.present();
   }
+
+  ////////////////////////////////////////////////////////////////////////////////
 
   presentAlert(title, message) {
   let alert = this.alertCtrl.create({
@@ -114,6 +166,48 @@ export class StripePaymentPage {
   });
   alert.present();
   }
+
+  ////////////////////////////////////////////////////////////////////////////////
+
+  sendFirstConfirmationEmail(body) {
+    this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendFirstConfirmationEmail";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      console.log(JSON.stringify(data))
+      if (data == "success") {
+      }
+      else {
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
+    },
+    error => {
+      this.loading.dismissAll();
+    })
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+
+  sendEmailtoServiceProvider(body) {
+    this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendEmailtoServiceProvider";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      console.log(JSON.stringify(data))
+      if (data == "success") {
+      }
+    },
+    error => {
+      this.loading.dismissAll();
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
+    })
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
 
   pay() {
     this.presentLoading('Please wait ..');
@@ -131,14 +225,6 @@ export class StripePaymentPage {
       postalCode	: this.postalCode,
     };
 
-    let purchaseDetails = {
-      name : this.provider.name,
-      email : this.provider.email,
-      mobile : this.provider.phone,
-      item : this.creation.name,
-      itemImage : this.creation.image
-    }
-
     this.stripe.setPublishableKey(this.dataService.stripePK);
 
     this.stripe.createCardToken(cardinfo)
@@ -150,7 +236,7 @@ export class StripePaymentPage {
           description : this.description,
           stripetoken: token.id,
           email : this.email,
-          metadata : purchaseDetails
+          metadata : this.purchaseDetails
         }
 
        let headers =  new Headers({ "Content-Type": "application/json" });
@@ -170,6 +256,12 @@ export class StripePaymentPage {
            promise
            .then( (res) => {
              //message successfully sent
+             this.sendFirstConfirmationEmail(this.paymentEmail);
+
+             if (this.purchaseDetails.type = 'service'){
+               this.sendEmailtoServiceProvider(this.serviceProviderEmail)
+             }
+
              this.presentToast("Successfully pushed data to the database")
            })
            //.catch(function (err) {

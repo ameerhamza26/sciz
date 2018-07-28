@@ -110,6 +110,21 @@
         </ion-item>
 
         <ion-item>
+          <ion-icon name="card" item-start color="mail"></ion-icon>
+          <ion-input type="text"  placeholder="Account Holder" [(ngModel)]="user.bankAccountHolder" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="card" item-start color="mail"></ion-icon>
+          <ion-input type="text"  placeholder="Account Number" [(ngModel)]="user.bankAccountNumber" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="card" item-start color="mail"></ion-icon>
+          <ion-input type="text"  placeholder="6 digit Sort Code" [(ngModel)]="user.bankAccountSortCode" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+        </ion-item>
+
+        <ion-item>
           <ion-icon name="mail" item-start color="mail"></ion-icon>
           <ion-input type="text"  placeholder="@" [(ngModel)]="user.email" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
         </ion-item>

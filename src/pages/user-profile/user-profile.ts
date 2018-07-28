@@ -96,15 +96,17 @@ export class UserProfilePage {
 
   createNewCreation() {
 
+    if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
+          this.presentAlert("Error", "Please enter your account details in your profile before proceeding")
+        }
+
     //create new post - > segue
-
-    console.log('creating new ');
-
-    this.navCtrl.push(CreationPage, {
-      creating: true
-    });
-
-
+    else {
+      console.log('creating new ');
+      this.navCtrl.push(CreationPage, {
+        creating: true
+      });
+    }
   }
 
   getCreations() {

@@ -3,6 +3,7 @@ import { NavController, NavParams  } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
 import { CreationPage } from '../creation/creation';
 import { ChatPage } from '../chat/chat';
+import { ServicePaymentPage } from '../service-payment/service-payment';
 
 
 /**
@@ -71,6 +72,14 @@ export class ProfilePage {
     this.navCtrl.push(ChatPage,{
       provider:participantID,
       providername: participant,
+      view:'service'
+    });
+  }
+
+  openServicePayment(user) {
+    console.log(user)
+    this.navCtrl.push(ServicePaymentPage,{
+      provider:user,
       view:'service'
     });
   }

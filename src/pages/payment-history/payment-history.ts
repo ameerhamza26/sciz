@@ -21,31 +21,36 @@ import {UserService} from '../../providers/user-service';
 })
 export class PaymentHistoryPage {
   listofPayments = new Map<string, object []>();
-  stripePaymentHistoryData: object[] = [];
-  ravePaymentHistoryData: object[] = [];
-  loading:any;
-  user:any;
+  stripePaymentHistoryData = [];
+  ravePaymentHistoryData = [];
   stripeSubscription;
   raveSubscription;
+  loading:any;
+  user:any;
   segment:any;
 
   constructor(public platform:Platform, public modalCtrl: ModalController, public userService:UserService, public dataService:DataService, public navCtrl: NavController, public navParams: NavParams, public db: AngularFireDatabase, public loadingCtrl: LoadingController, private alertCtrl: AlertController, public Http: Http) {
     this.segment = 'rave';
     this.presentLoading('Please wait ..');
     this.user = this.userService.user;
+  }
+
+  ionViewDidLoad() {
+    this.listofPayments = new Map<string, object []>();
+    this.stripePaymentHistoryData = [];
+    this.ravePaymentHistoryData = [];
 
     //STRIPE
-    this.stripeSubscription = db.list('/' + 'stripe-payments' + '/' + this.user.code, { preserveSnapshot: true });
+    this.stripeSubscription = this.db.list('/' + 'stripe-payments' + '/' + this.user.code, { preserveSnapshot: true });
     this.stripeSubscription.subscribe( data => {
       data.forEach( data => {
-        console.log(data.val())
 
         var formatted_data = Object.keys(data.val()).map(e => data.val()[e])
-
-        console.log(formatted_data[0].created)
-
         var date = new Date(formatted_data[0].created * 1000);
+
         formatted_data[0].created = date.toUTCString()
+        formatted_data[0].key = Object.keys(data.val())[0]
+        formatted_data[0].id = data.key
 
         this.stripePaymentHistoryData.push(formatted_data)
       });
@@ -56,15 +61,16 @@ export class PaymentHistoryPage {
     })
 
     //RAVE
-    this.raveSubscription = db.list('/' + 'rave-payments' + '/' + this.user.code, { preserveSnapshot: true });
+    this.raveSubscription = this.db.list('/' + 'rave-payments' + '/' + this.user.code, { preserveSnapshot: true });
     this.raveSubscription.subscribe( data => {
       data.forEach( data => {
-        console.log(data.val())
 
         var formatted_data = Object.keys(data.val()).map(e => data.val()[e])
-
         var date = new Date(formatted_data[0].data.tx.createdAt);
+
         formatted_data[0].data.tx.createdAt = date.toUTCString()
+        formatted_data[0].key = Object.keys(data.val())[0]
+        formatted_data[0].id = data.key
 
         this.ravePaymentHistoryData.push(formatted_data)
       });
@@ -75,9 +81,6 @@ export class PaymentHistoryPage {
       this.presentAlert("Error", error);
     })
 
-  }
-
-  ionViewDidLoad() {
     console.log('ionViewDidLoad PaymentHistoryPage');
   }
 
@@ -104,13 +107,20 @@ export class PaymentHistoryPage {
 
   openStripePayment(paymentDetails) {
     let modal = this.modalCtrl.create(StripeModalContentPage, paymentDetails);
+    modal.onDidDismiss(() => {
+      this.ionViewDidLoad();
+    });
     modal.present();
   }
 
   openRavePayment(paymentDetails) {
     let modal = this.modalCtrl.create(RaveModalContentPage, paymentDetails);
+    modal.onDidDismiss(() => {
+      this.ionViewDidLoad();
+    });
     modal.present();
   }
+
 
 }
 
@@ -143,6 +153,9 @@ export class PaymentHistoryPage {
         <h2>Transaction Reference</h2>
         <p>{{details[0].balance_transaction}}</p>
       </ion-card-content>
+
+      <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
+      <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
     </ion-card>
   </ion-content>
 `
@@ -150,16 +163,82 @@ export class PaymentHistoryPage {
 
 export class StripeModalContentPage {
   details;
+  user;
+  loading;
 
   constructor(
     public platform: Platform,
     public params: NavParams,
-    public viewCtrl: ViewController
-  ) {
+    public viewCtrl: ViewController,
+    public navCtrl: NavController,
+    public loadingCtrl: LoadingController,
+    public dataService: DataService,
+    public Http: Http,
+    public db: AngularFireDatabase,
+    public userService:UserService,
+    public alertCtrl: AlertController) {
 
     this.details = this.params.get('paymentDetails');
-    console.log(this.details)
+    this.user = this.userService.user;
 
+    console.log(this.details)
+    console.log(this.user)
+  }
+
+  presentLoading(message) {
+    this.loading = this.loadingCtrl.create({
+      content: message
+    });
+
+    this.loading.present();
+
+    setTimeout(() => {
+      this.loading.dismiss();
+    }, 5000);
+  }
+
+  presentAlert(title, message) {
+  let alert = this.alertCtrl.create({
+    title: title,
+    subTitle: message,
+    buttons: ['Dismiss']
+  });
+  alert.present();
+  }
+
+  sendFinalConfirmationEmail(details) {
+
+    var body = {
+      sender : this.user.name + ' ' + this.user.email,
+      provider : details.metadata.name + ' ' + details.metadata.email,
+      item : details.metadata.item,
+      currency : details.currency.toUpperCase(),
+      amount :details.amount/100,
+      bankAccountHolder : details.bankAccountHolder,
+      bankAccountNumber : details.bankAccountNumber,
+      bankAccountSortCode : details.bankAccountSortCode
+    }
+
+    var paymentId = '' + details.id;
+    var paymentKey = '' + details.key;
+    var userCode = '' + this.user.code;
+
+    this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendFinalConfirmationEmail";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      console.log(JSON.stringify(data))
+      if (data == "success") {
+        this.db.list('/' + 'stripe-payments' + '/' + userCode + '/' + paymentId + '/' + paymentKey).update('metadata', {status : 'true'})
+        this.navCtrl.pop();
+      }
+    },
+    error => {
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      this.loading.dismissAll();
+    })
   }
 
 
@@ -199,6 +278,10 @@ export class StripeModalContentPage {
         <h2>Transaction Reference</h2>
         <p>{{details[0].data.tx.txRef}}</p>
       </ion-card-content>
+
+      <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
+      <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
+
     </ion-card>
   </ion-content>
 `
@@ -206,16 +289,79 @@ export class StripeModalContentPage {
 
 export class RaveModalContentPage {
   details;
+  user;
+  loading;
 
   constructor(
     public platform: Platform,
     public params: NavParams,
-    public viewCtrl: ViewController
-  ) {
+    public navCtrl: NavController,
+    public viewCtrl: ViewController,
+    public loadingCtrl: LoadingController,
+    public dataService: DataService,
+    public Http: Http,
+    public db: AngularFireDatabase,
+    public userService:UserService,
+    public alertCtrl: AlertController) {
 
     this.details = this.params.get('paymentDetails');
-    console.log(this.details)
+    this.user = this.userService.user;
 
+  }
+
+  presentLoading(message) {
+    this.loading = this.loadingCtrl.create({
+      content: message
+    });
+
+    this.loading.present();
+
+    setTimeout(() => {
+      this.loading.dismiss();
+    }, 5000);
+  }
+
+  presentAlert(title, message) {
+  let alert = this.alertCtrl.create({
+    title: title,
+    subTitle: message,
+    buttons: ['Dismiss']
+  });
+  alert.present();
+  }
+
+  sendFinalConfirmationEmail(details) {
+
+    var body = {
+      sender : this.user.name + ' ' + this.user.email,
+      provider : details.metadata.name + ' ' + details.metadata.email,
+      amount : details.data.tx.amount,
+      item : details.metadata.item,
+      currency : details.data.tx.currency.toUpperCase(),
+      bankAccountHolder : details.bankAccountHolder,
+      bankAccountNumber : details.bankAccountNumber,
+      bankAccountSortCode : details.bankAccountSortCode
+    }
+
+    var paymentId = '' + details.id;
+    var paymentKey = '' + details.key;
+    var userCode = '' + this.user.code;
+
+    this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendFinalConfirmationEmail";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      if (data == "success") {
+        this.db.list('/' + 'rave-payments' + '/' + userCode + '/' + paymentId + '/' + 'metadata').update(paymentKey, {status : 'true'})
+        this.navCtrl.pop();
+      }
+    },
+    error => {
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      this.loading.dismissAll();
+    })
   }
 
 

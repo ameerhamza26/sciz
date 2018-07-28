@@ -17,9 +17,11 @@ import { StripePaymentPage } from '../stripe-payment/stripe-payment';
 })
 export class PaymentPage {
   creation:any;
+  serviceDetails:any;
+  payload:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private alertCtrl: AlertController) {
-    this.creation = this.navParams.get('creation');
+    this.payload = this.navParams.get('payload');
   }
 
   ionViewDidLoad() {
@@ -40,13 +42,13 @@ export class PaymentPage {
   }
 
   openRave() {
-    if (this.creation.price == undefined){
+    if (this.payload.price.length < 2 || this.payload.price == undefined){
       this.presentAlert("Error","Unable to process payment, no amount specified")
     }
 
     else {
       this.navCtrl.push(RavePaymentPage,{
-        creation: this.creation,
+        purchaseDetails: this.payload,
         view:'service'
       });
     }
@@ -54,14 +56,16 @@ export class PaymentPage {
   }
 
   openStripe() {
-    if (this.creation.price == undefined){
+    if (this.payload.price.length < 2 || this.payload.price == undefined){
       this.presentAlert("Error","Unable to process payment, no amount specified")
     }
 
-    this.navCtrl.push(StripePaymentPage,{
-      creation: this.creation,
-      view:'service'
-    });
-  }
+    else {
 
+      this.navCtrl.push(StripePaymentPage,{
+        purchaseDetails: this.payload,
+        view:'service'
+      });
+    }
+  }
 }

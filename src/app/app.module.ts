@@ -36,6 +36,7 @@ import { StripePaymentPage } from '../pages/stripe-payment/stripe-payment';
 import { PaymentHistoryPage } from '../pages/payment-history/payment-history';
 import { StripeModalContentPage } from '../pages/payment-history/payment-history';
 import { RaveModalContentPage } from '../pages/payment-history/payment-history';
+import { ServicePaymentPage } from '../pages/service-payment/service-payment';
 
 //import { IonicImageLoader } from 'ionic-image-loader';
 
@@ -95,7 +96,8 @@ var config = {
     ModalContentPage,
     PaymentHistoryPage,
     StripeModalContentPage,
-    RaveModalContentPage
+    RaveModalContentPage,
+    ServicePaymentPage
   ],
   imports: [
     BrowserModule,
@@ -133,7 +135,8 @@ var config = {
     ModalContentPage,
     PaymentHistoryPage,
     StripeModalContentPage,
-    RaveModalContentPage
+    RaveModalContentPage,
+    ServicePaymentPage
   ],
   providers: [
     StatusBar,
