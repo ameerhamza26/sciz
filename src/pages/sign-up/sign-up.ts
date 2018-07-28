@@ -120,13 +120,13 @@ question:any;
       case 4:
         this.question = "What city are you in?";
         break;
-      case 5:
+     /* case 5:
         this.question = "What's your phone number?";
-        break;
-      case 6:
+        break;*/
+      case 5:
         this.question = "Enter Password:";
         break;
-      case 7:
+      case 6:
         this.question = "Thank You.";
         break;
     }
@@ -188,7 +188,7 @@ question:any;
         }
         break;
 
-      case 5:
+     /* case 5:
         let re = /^[0-9]*$/;
         if((this.phone != "") && (re.test(this.phone))) {
           valid = true;
@@ -197,9 +197,9 @@ question:any;
           this.showAlert('Validation Error','Invalid Phone Number');
         }
 
-        break;
+        break;*/
 
-      case 6:
+      case 5:
         if(this.password != this.confirmPassword){
             this.showAlert('Validation Error','Passwords do not match');
         }else if(this.password.length < 7 ){
@@ -255,7 +255,7 @@ question:any;
 
     //send user to database and save
 
-    let newUser = new User('',this.code,this.type,this.serviceType,'','','','','astimlee.png',this.name,this.gender,this.email,this.city,this.phone,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
+    let newUser = new User('',this.code,this.type,this.serviceType,'','','','','astimlee.png',this.name,this.gender,this.email,this.city,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
 
     if(this.type == 'customer'){
       let sizeFile = new Size('',this.sizeCode,this.code,0,0,0,0,0,0,0,0,0,0,0,0,0,0);

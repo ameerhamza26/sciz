@@ -3,14 +3,17 @@ import { NavController, NavParams, ActionSheetController, Platform, AlertControl
 
 import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
-import { CreationPage } from '../creation/creation';
-import { LoginPage } from '../login/login';
-import { PaymentHistoryPage } from '../payment-history/payment-history';
+import { CreationPage } from '../../pages/creation/creation';
+import { LoginPage } from '../../pages/login/login';
+import { PaymentHistoryPage } from '../../pages/payment-history/payment-history';
 
 import { App } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
 import { Storage } from '@ionic/storage';
 import { EmailComposer } from '@ionic-native/email-composer';
+import {LookbookLeroyPage} from "../../pages/lookbook-leroy/lookbook-leroy";
+import {LookbookPage} from "../../pages/lookbook/lookbook";
+import {LookbookFlipPage} from "../../pages/lookbook-flip/lookbook-flip";
 
 /**
  * Generated class for the UserProfilePage page.
@@ -38,12 +41,15 @@ export class UserProfilePage {
   userCopy: any;
   loading: any;
   options: any;
+  likes: any = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public userService: UserService, private app: App, public actionSheetCtrl: ActionSheetController, private camera: Camera, public platform: Platform, private alertCtrl: AlertController, public loadingCtrl: LoadingController, private emailComposer: EmailComposer, private storage: Storage) {
     this.start();
   }
 
+
   ionViewDidLoad() {
+    this.likes = [];
     console.log('ionViewDidLoad UserProfilePage');
     this.start();
   }
@@ -54,7 +60,10 @@ export class UserProfilePage {
 
     if (this.permission == 'customer') {
       this.getSizes();
-      this.dataService.getLikes();
+      this.likes = this.dataService.getLikes();
+      console.log(this.likes);
+
+
     } else if (this.permission == 'service') {
       this.getCreations();
     }
@@ -115,19 +124,60 @@ export class UserProfilePage {
   }
 
   getImage(creation) {
-    let temp = this.dataService.creations.filter(item => item.code == creation.creationCode)[0];
-    return temp.image;
+    if(creation.creationCode.substr(0,15) !== "inspirationpage") {
+        console.log(creation);
+        let temp = this.dataService.creations.filter(item => item.code == creation.creationCode)[0];
+        return temp.image;
+    }
+    else {
+        console.log(creation);
+        //console.log(this.dataService.pages);
+        let temp = this.dataService.pages.filter(item => item.code == creation.creationCode)[0];
+        console.log(temp);
+        return temp.image;
+    }
   }
 
   openLike(creation2Open) {
+      if(creation2Open.creationCode.substr(0,15) !== "inspirationpage"){
+        creation2Open = this.dataService.creations.filter(item => item.code == creation2Open.creationCode)[0];
 
-    creation2Open = this.dataService.creations.filter(item => item.code == creation2Open.creationCode)[0];
-
-    console.log('open creation: ' + creation2Open);
-    this.navCtrl.push(CreationPage, {
-      creation: creation2Open
+        console.log('open creation: ' + creation2Open);
+        this.navCtrl.push(CreationPage, {
+            creation: creation2Open
     });
+    } else {
+          var page = this.dataService.pages.filter(item => item.code == creation2Open.creationCode);
+          var post = this.dataService.posts.filter(item=>item.code == page[0].inspirationCode)
+          console.log(creation2Open);
+          this.openLookbook(post[0]);
+          console.log(page);
+          console.log(post);
+      }
+
   }
+
+    openLookbook(post) {
+        //open lookbook according to style -> segue
+        console.log('Open Lookbook');
+        if (post.type == 'vertical' || post.type == 'horizontal') {
+            this.navCtrl.push(LookbookPage, {
+                post: post,
+                mode: 'view'
+            });
+        } else if (post.type == 'leroy') {
+            this.navCtrl.push(LookbookLeroyPage, {
+                post: post,
+                mode: 'view'
+            });
+        } else if (post.type == 'flip') {
+            this.navCtrl.push(LookbookFlipPage, {
+                post: post,
+                mode: 'view'
+            });
+        }
+
+    }
 
   openCreation(creation2Open) {
 

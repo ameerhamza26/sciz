@@ -9,6 +9,9 @@ import { Slides } from 'ionic-angular';
 import { DataService } from '../../providers/data-service';
 import { CreateNewPage } from '../create-new/create-new';
 import { ToastController } from 'ionic-angular';
+import {Like} from "../../models/like-model";
+import {Post} from "../../models/post-model";
+import {SocialShareProvider} from "../../providers/social-share/social-share";
 
 /**
  * Generated class for the LookbookLeroyPage page.
@@ -40,7 +43,7 @@ export class LookbookLeroyPage {
   post: any;
   tags: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider) {
 
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');
@@ -49,6 +52,8 @@ export class LookbookLeroyPage {
 
     this.start(this.mode);
     this.helpToast();
+      this.checkLiked();
+
 
   }
 
@@ -291,6 +296,57 @@ export class LookbookLeroyPage {
     });
   }
 
+    checkLiked(){
+        // check if you have liked the selected post previously
+        console.log(this.dataService.likes);
+        this.pages.forEach((page, index) => {
+            console.log("PAGE",page);
+            if(this.dataService.likes.filter(item => item.creationCode == page.code).length > 0){
+                let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == page.code)[0];
+                console.log('liked');
+                page.liked = reLikedCreation.liked;
+            }else{
+                console.log('not liked');
+                page.liked = false;
+            }
+        });
+    }
+
+    like(code){
+        //like post, add to likes
+
+        //like post, add to likes
+        console.log("Liked code", code);
+        if(this.dataService.likes.filter(item => item.creationCode == code).length > 0){
+            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == code)[0];
+            reLikedCreation.liked = true;
+            //update database
+        }else{
+            let likedCreation = new Like ('',this.dataService.me.code, code,true);
+            this.dataService.likes.splice(0,0,likedCreation);
+            this.dataService.saveLike(likedCreation);
+            //save like
+        }
+
+        this.checkLiked();
+
+    }
+    facebookShare(creation: Post) {
+        this.socialShare.shareMagazine(creation,'Facebook');
+    }
+    twitterShare(creation: Post){
+        this.socialShare.shareMagazine(creation,'Twitter');
+
+    }
+    instagramShare(creation: Post){
+        this.socialShare.shareMagazine(creation,'Instagram');
+    }
+    whatsappShare(creation: Post){
+        this.socialShare.shareMagazine(creation,'Whatsapp');
+    }
+    emailShare(creation: Post){
+        this.socialShare.shareMagazine(creation,'Email');
+    }
 
 
 }

@@ -154,6 +154,7 @@ export class PaymentHistoryPage {
         <p>{{details[0].balance_transaction}}</p>
       </ion-card-content>
 
+      <p *ngIf="details[0].metadata.status=='true';"><b>Payment Confirmed.</b></p>
       <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
       <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
     </ion-card>
@@ -214,9 +215,9 @@ export class StripeModalContentPage {
       item : details.metadata.item,
       currency : details.currency.toUpperCase(),
       amount :details.amount/100,
-      bankAccountHolder : details.bankAccountHolder,
-      bankAccountNumber : details.bankAccountNumber,
-      bankAccountSortCode : details.bankAccountSortCode
+      bankAccountHolder : details.metadata.bankAccountHolder,
+      bankAccountNumber : details.metadata.bankAccountNumber,
+      bankAccountSortCode : details.metadata.bankAccountSortCode
     }
 
     var paymentId = '' + details.id;
@@ -234,9 +235,11 @@ export class StripeModalContentPage {
         this.db.list('/' + 'stripe-payments' + '/' + userCode + '/' + paymentId + '/' + paymentKey).update('metadata', {status : 'true'})
         this.navCtrl.pop();
       }
+      else {
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
     },
     error => {
-      this.presentAlert("Error", "Payment made, please contact and inform service provider");
       this.loading.dismissAll();
     })
   }
@@ -279,6 +282,7 @@ export class StripeModalContentPage {
         <p>{{details[0].data.tx.txRef}}</p>
       </ion-card-content>
 
+      <p *ngIf="details[0].metadata.status=='true';"><b>Payment Confirmed.</b></p>
       <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
       <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
 
@@ -338,9 +342,9 @@ export class RaveModalContentPage {
       amount : details.data.tx.amount,
       item : details.metadata.item,
       currency : details.data.tx.currency.toUpperCase(),
-      bankAccountHolder : details.bankAccountHolder,
-      bankAccountNumber : details.bankAccountNumber,
-      bankAccountSortCode : details.bankAccountSortCode
+      bankAccountHolder : details.metadata.bankAccountHolder,
+      bankAccountNumber : details.metadata.bankAccountNumber,
+      bankAccountSortCode : details.metadata.bankAccountSortCode
     }
 
     var paymentId = '' + details.id;
@@ -357,9 +361,11 @@ export class RaveModalContentPage {
         this.db.list('/' + 'rave-payments' + '/' + userCode + '/' + paymentId + '/' + 'metadata').update(paymentKey, {status : 'true'})
         this.navCtrl.pop();
       }
+      else {
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
     },
     error => {
-      this.presentAlert("Error", "Payment made, please contact and inform service provider");
       this.loading.dismissAll();
     })
   }

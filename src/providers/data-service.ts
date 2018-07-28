@@ -44,6 +44,8 @@ export class DataService {
   creations: Array<Creation> = new Array<Creation>();
   users: Array<User> = new Array<User>();
   likes: Array<Like> = new Array<Like>();
+  allLikes: Array<Like> = new Array<Like>();
+  userProfileLikes: Array<Like> = new Array<Like>();
 
   lookbook: any;
   coverImage: any;
@@ -84,6 +86,26 @@ export class DataService {
     });
 
   }
+  createBranchLink(model_type,type_id,type_image,social_type){
+      var model_type = model_type; // magazine,item,profile
+      var type_id = type_id; // magazine,item,profile ID
+      var type_image = type_image;
+      var social_type = social_type;
+      var parameters = JSON.stringify({
+          type: model_type,
+          type_id: type_id,
+          type_image: type_image,
+          social_type: social_type
+      });
+
+      let body: string = parameters,
+          type: string = "application/json",
+          headers: any = new Headers({ 'Content-Type': type }),
+          options: any = new RequestOptions({ headers: headers }),
+          url: any = this.apiUrl + 'branchCreateLink';
+
+      return this.http.post(url, body, options).map(response => response.json());
+  }
 
   getUsers() {
 
@@ -112,19 +134,26 @@ export class DataService {
 
   getInspirations() {
 
-    this.posts = []
+    this.posts = [];
     this.posts.length = 0;
-    this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
-
+      let pageLikes;
+      let inspirationPages;
+      this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
       for (let inspiration of data) {
-
         let image = this.apiUrl + "images/" + inspiration.image;
         inspiration.image = image;
-        this.posts.push(inspiration);
-
+        inspiration.likes = 0; // magazine likes - random for testing
+       /* inspirationPages.forEach((page, index) => {
+            pageLikes = this.likes.filter(item => item.creationCode == page.code);
+            console.log("PAGE LIKES");
+            console.log(pageLikes);
+            console.log(pageLikes.length);
+            inspiration.likes = pageLikes.length;
+        }); */
+          this.posts.push(inspiration);
       }
 
-      console.log(this.posts);
+     // console.log(this.posts);
 
       this.getPages();
 
@@ -133,35 +162,45 @@ export class DataService {
   }
 
   getInspirationTags() {
-
+    console.log("INSPIRATION TAGS");
     this.tags.length = 0;
 
     this.http.get(this.apiUrl + 'getInspirationTags').map(res => res.json()).subscribe(data => {
 
-
+      console.log(data);
       for (let tag of data) {
 
-        let newTag = new Tag(tag.tagCode, tag.inspirationCode, tag.userCode);
+        let newTag = new Tag(this.generateCode('tag'), tag.code, tag.taggedUser);
         this.tags.push(newTag);
       }
 
-      console.log(this.tags);
+     console.log(this.tags);
     });
 
   }
 
   getPages() {
 
+    let post;
+    let pageLikes;
     this.pages.length = 0;
 
     this.http.get(this.apiUrl + 'getPages').map(res => res.json()).subscribe(data => {
-
       for (let page of data) {
-
         let image = this.apiUrl + "images/" + page.image;
         page.image = image;
-        this.pages.push(page);
-
+        post = this.posts.filter(item => item.code == page.inspirationCode);
+        console.log(post);
+          // get page likes
+          pageLikes = this.allLikes.filter(item => item.creationCode == page.code);
+          console.log("page likes");
+          console.log(pageLikes);
+          pageLikes.forEach((like,index) => {
+            if(like.liked == true) {
+                post[0].likes++
+            }
+          });
+          this.pages.push(page);
       }
 
     });
@@ -193,7 +232,8 @@ export class DataService {
   getLikes() {
 
     this.likes.length = 0;
-
+    this.userProfileLikes.length = 0;
+    console.log(this.me.code);
     var parameters = JSON.stringify({
       userCode: this.me.code
     });
@@ -204,25 +244,44 @@ export class DataService {
       options: any = new RequestOptions({ headers: headers }),
       url: any = this.apiUrl + 'getLikes';
 
-    console.log('getting likes');
-
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-
-      console.log(data);
       for (let like of data.result) {
-        this.likes.push(like);
+              this.likes.push(like);
       }
-
-      console.log('got likes');
+      console.log("LIKES");
       console.log(this.likes);
     });
-
-
   }
+
+  getAllLikes() {
+    return new Promise((resolve,reject)=>{
+        this.allLikes.length = 0;
+        var parameters = JSON.stringify({
+            userCode: 0
+        });
+
+        let body: string = parameters,
+            type: string = "application/json",
+            headers: any = new Headers({ 'Content-Type': type }),
+            options: any = new RequestOptions({ headers: headers }),
+            url: any = this.apiUrl + 'getLikes';
+
+        this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
+
+            console.log(data);
+            for (let like of data.result) {
+                this.allLikes.push(like);
+            }
+            resolve(true);
+        });
+      });
+}
+
+
 
   saveLike(likeToUpload) {
 
-
+    console.log(likeToUpload);
     var parameters = JSON.stringify({
       newLike: likeToUpload
     });
@@ -329,7 +388,6 @@ export class DataService {
       headers: any = new Headers({ 'Content-Type': type }),
       options: any = new RequestOptions({ headers: headers }),
       url: any = this.apiUrl + 'login';
-
 
     return this.http.post(url, body, options).map(response => response.json());
 

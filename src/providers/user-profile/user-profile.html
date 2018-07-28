@@ -176,7 +176,6 @@
         <div class="storeholder">
         <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of dataService.likes" [style.background-image]="' url('+getImage(creation)+')'">
           <img src="/assets/images/placeholder2.png">
-
         </div>
       </div>
 
@@ -343,8 +342,6 @@
         <ion-icon name="mail" item-start color="mail"></ion-icon>
         <ion-input type="text"  placeholder="@" [(ngModel)]="user.email" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
       </ion-item>
-
-
 
       <ion-item>
         <ion-icon name="logo-twitter" item-start color="twitter"></ion-icon>

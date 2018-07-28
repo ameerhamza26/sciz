@@ -24,26 +24,51 @@
       </b>
     </button>
   </ion-fab>
-
+  <h1 style="color:#fff">Lookbook Leeroy</h1>
   <div *ngIf="showImage">
     <img src={{imageLink}} (click)="closeImage()">
   </div>
 
   <ion-slides (ionSlideDidChange)="slideChanged()" style="height: 100%">
-    <ion-slide (click)="goToSlide(true)" [style.background-image]="' url('+post.image+')'" style="height: 100%">
+    <ion-slide pager (click)="goToSlide(true)" [style.background-image]="' url('+post.image+')'" style="height: 100%">
+      <ion-header  no-border style="background: #eee;opacity: 0.8;">
+        <ion-row>
+          <ion-col col-4><p class="animated bounceInRight" (click)="facebookShare(dataService.lookbook)"><ion-icon name="logo-facebook"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="twitterShare(dataService.lookbook)"><ion-icon name="logo-twitter"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="instagramShare(dataService.lookbook)"><ion-icon name="logo-instagram"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="whatsappShare(dataService.lookbook)"><ion-icon name="logo-whatsapp"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="emailShare(dataService.lookbook)"><ion-icon name="mail"></ion-icon></p></ion-col>
+        </ion-row>
+      </ion-header>
       <div class="postInfo">
         <h2 padding>{{post.title}}</h2>
         <p padding>{{post.description}}</p>
       </div>
+    <!--  <ion-footer>
+        <ion-row style="color:white;">
+          <ion-col style="text-align: center;" col-3><ion-icon name="logo-facebook" class="animated bounceInRight"  style="font-size:2.4rem;padding:11px;" (click)="facebookShare(dataService.lookbook)"></ion-icon></ion-col>
+          <ion-col style="text-align: center;" col-3><ion-icon  class="animated bounceInRight" (click)="twitterShare(post)" style="font-size:2.4rem;padding:11px;"  name="logo-twitter"></ion-icon></ion-col>
+          <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="instagramShare(post)"  style="font-size:2.4rem;padding:11px;"  name="logo-instagram"></ion-icon></ion-col>
+          <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="whatsappShare(post)"  style="font-size:2.4rem;padding:11px;"  name="logo-whatsapp"></ion-icon></ion-col>
+          <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="emailShare(post)"  style="font-size:2.4rem;padding:11px;"  name="mail"></ion-icon></ion-col>
+        </ion-row>
+      </ion-footer> -->
     </ion-slide>
+
     <ion-slide class="slide" *ngFor="let page of pages; let i = index" style="height: 100%">
       <ion-grid style="height: 100%">
         <ion-row>
           <ion-col col-1 class="start" (click)="goToSlide(false)" style="background-size: cover;background-position: right; "></ion-col>
           <ion-col col-1></ion-col>
+            <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
+              <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page.code)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
+              <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && liked" (click)="viewOptions()"  >Options</button>
+              <button ion-button color="light" small outline *ngIf="dataService.permission == 'service'" (click)="viewOptions()"  >Options</button>
+            </ion-col>
           <ion-col col-8 (click)="viewImage(images[i])" [style.background-image]="' url('+images[i]+')'" style="background-position:center; background-size: 100%; background-repeat:no-repeat;">
             <img src="./assets/images/placeholder.png">
           </ion-col>
+
           <ion-col col-1></ion-col>
           <ion-col col-1 class="end" (click)="goToSlide(true)" style="background-position: left;background-size: cover; "></ion-col>
         </ion-row>

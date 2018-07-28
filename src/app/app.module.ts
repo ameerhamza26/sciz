@@ -8,10 +8,10 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { EmailComposer } from '@ionic-native/email-composer';
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
-import { IonicStorageModule } from '@ionic/storage';
+import { IonicStorageModule } from '@ionic/storage'
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Stripe } from '@ionic-native/stripe';
-
+import { SocialSharing } from '@ionic-native/social-sharing';
 import { TabsPage } from '../pages/tabs/tabs';
 import { StartPage } from '../pages/start/start';
 import { LoginPage } from '../pages/login/login';
@@ -21,7 +21,7 @@ import { LookbookPage } from '../pages/lookbook/lookbook';
 import { LookbookLeroyPage } from '../pages/lookbook-leroy/lookbook-leroy';
 import { LookbookFlipPage } from '../pages/lookbook-flip/lookbook-flip';
 import { CreateNewPage } from '../pages/create-new/create-new';
-import { UserProfilePage } from '../pages/user-profile/user-profile';
+import { UserProfilePage } from '../providers/user-profile/user-profile';
 import { CreationPage } from '../pages/creation/creation';
 import { ProfilePage } from '../pages/profile/profile';
 import { ScizzorPage } from '../pages/scizzor/scizzor';
@@ -53,6 +53,7 @@ import { AudioService } from '../providers/audio-service';
 
 import { NativeAudio } from '@ionic-native/native-audio';
 import { UserService } from '../providers/user-service';
+import { SocialShareProvider } from '../providers/social-share/social-share';
 
 import { VerticalLookbook } from '../components/vertical-lookbook/vertical-lookbook';
 import { HorizontalLookbook } from '../components/horizontal-lookbook/horizontal-lookbook';
@@ -143,8 +144,10 @@ var config = {
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     DataService, AppSettings, NativePageTransitions, Camera,
-    AudioService, NativeAudio,
-    UserService, EmailComposer, Push, InAppBrowser, Stripe
+    SocialSharing, AudioService, NativeAudio,
+    UserService, EmailComposer, Push, InAppBrowser, Stripe,
+    SocialShareProvider
+
   ]
 })
 export class AppModule { }
