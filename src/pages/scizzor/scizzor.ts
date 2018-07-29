@@ -26,7 +26,7 @@ export class ScizzorPage {
   storeTypes: Array<string> = ['Corporate','Traditional','Street Wear'];
   stores: Array<string> = ['../assets/images/business4.jpg','../assets/images/african1.jpg','../assets/images/street1.jpg'];
   peopleTypes: Array<string> = ['Tailoring','Leather Work','Manufacturing'];
-  people: Array<string> = ['../assets/images/tailoring2.jpg','../assets/images/leather.jpg','../assets/images/manufacturing.jpg'];
+  people: Array<string> = ['../assets/images/tailoring2.jpg','../assets/images/leather.jpg','../assets/images/manufacturing.png'];
 
   segment:any;
   showStore:any = false;

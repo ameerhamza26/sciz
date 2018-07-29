@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 
 const CONFIG = {
   // apiURL:'http://ec2-18-217-27-194.us-east-2.compute.amazonaws.com/'
-  //apiURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/'
-  apiURL: 'http://localhost:9000/'
-
-  // apiURL: 'http://192.168.43.163:9000/'
+  apiURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
+  apiImageURL: 'http://18.220.1.42/',
+  raveURL: 'http://192.168.0.19:4000/',
+  stripeURL:'http://192.168.0.19:9000/',
+  ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapplkv0/',
+  stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J'
 };
 
 /*
@@ -23,6 +25,26 @@ export class AppSettings {
 
   public getApiURl() {
     return CONFIG.apiURL;
+  }
+
+  public getApiImageURL() {
+    return CONFIG.apiImageURL;
+  }
+
+  public getRaveURL() {
+    return CONFIG.raveURL
+  }
+
+  public getStripeURL() {
+    return CONFIG.stripeURL
+  }
+
+  public getRavePaymentLinkURL() {
+    return CONFIG.ravePaymentLinkURL
+  }
+
+  public getStripePK() {
+    return CONFIG.stripePK
   }
 
 }

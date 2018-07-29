@@ -3,16 +3,17 @@ import { NavController, NavParams, ActionSheetController, Platform, AlertControl
 
 import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
-import { CreationPage } from '../creation/creation';
-import { LoginPage } from '../login/login';
+import { CreationPage } from '../../pages/creation/creation';
+import { LoginPage } from '../../pages/login/login';
+import { PaymentHistoryPage } from '../../pages/payment-history/payment-history';
 
 import { App } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
 import { Storage } from '@ionic/storage';
 import { EmailComposer } from '@ionic-native/email-composer';
-import {LookbookLeroyPage} from "../lookbook-leroy/lookbook-leroy";
-import {LookbookPage} from "../lookbook/lookbook";
-import {LookbookFlipPage} from "../lookbook-flip/lookbook-flip";
+import {LookbookLeroyPage} from "../../pages/lookbook-leroy/lookbook-leroy";
+import {LookbookPage} from "../../pages/lookbook/lookbook";
+import {LookbookFlipPage} from "../../pages/lookbook-flip/lookbook-flip";
 
 /**
  * Generated class for the UserProfilePage page.
@@ -104,15 +105,17 @@ export class UserProfilePage {
 
   createNewCreation() {
 
+    if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
+          this.presentAlert("Error", "Please enter your account details in your profile before proceeding")
+        }
+
     //create new post - > segue
-
-    console.log('creating new ');
-
-    this.navCtrl.push(CreationPage, {
-      creating: true
-    });
-
-
+    else {
+      console.log('creating new ');
+      this.navCtrl.push(CreationPage, {
+        creating: true
+      });
+    }
   }
 
   getCreations() {
@@ -454,11 +457,13 @@ export class UserProfilePage {
     this.emailComposer.open(email);
   }
 
-
-
   logout() {
     this.storage.clear()
     this.app.getRootNav().push(LoginPage);
   }
+
+  openPayments() {
+    this.navCtrl.push(PaymentHistoryPage)
+    };
 
 }
