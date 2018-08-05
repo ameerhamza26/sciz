@@ -7,7 +7,7 @@ const CONFIG = {
   raveURL: 'http://192.168.0.19:4000/',
   stripeURL:'http://192.168.0.19:9000/',
   ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapplkv0/',
-  stripePK: 'pk_test_yxDpD8LSDkxWLByKyiUoMARI'
+  stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J'
 };
 
 /*

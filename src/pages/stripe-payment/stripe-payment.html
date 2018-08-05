@@ -30,7 +30,7 @@
       <ion-col col-8>
         <ion-item>
           <ion-label>Currency</ion-label>
-          <ion-select [(ngModel)]="currency">
+          <ion-select [(ngModel)]="currency" [disabled]="true">
             <ion-option value="ngn">NGN</ion-option>
             <ion-option value="usd">USD</ion-option>
             <ion-option value="eur">EUR</ion-option>
@@ -41,7 +41,7 @@
 
       <ion-col>
         <ion-item>
-          <ion-input [(ngModel)]="amount" type="tel" placeholder="Amount"></ion-input>
+          <ion-input [(ngModel)]="amount" type="tel" placeholder="Amount" [disabled]="true"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>

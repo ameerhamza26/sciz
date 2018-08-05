@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {DataService} from '../../providers/data-service';
+import { UserService } from '../../providers/user-service';
+import { UserProfilePage } from '../../pages/user-profile/user-profile';
 import { NavController  } from 'ionic-angular';
 import { ProfilePage } from '../../pages/profile/profile';
 
@@ -18,7 +20,7 @@ export class HorizontalLookbook {
 
   tags:any;
 
-  constructor(public dataService:DataService,public navCtrl: NavController) {
+  constructor(public userService:UserService, public dataService:DataService,public navCtrl: NavController) {
 
     this.getTags();
   }
@@ -34,8 +36,18 @@ export class HorizontalLookbook {
     return user.name;
   }
 
+  getCreator(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+    return user.name;
+  }
+
   getImage(tag){
     let user = this.dataService.users.filter(item => item.code == tag.userCode)[0];
+    return user.image;
+  }
+
+  getUserImage(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
     return user.image;
   }
 
@@ -48,5 +60,28 @@ export class HorizontalLookbook {
     });
 
   }
+
+  openUserProfile(code){
+    //open profile of service
+    console.log(code)
+    console.log(this.userService.user.code)
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+
+    if (this.userService.user.code == code){
+      this.navCtrl.setRoot(UserProfilePage,{
+        view:'service'
+      });
+      this.navCtrl.parent.select(2);
+    }
+
+    else {
+      this.navCtrl.push(ProfilePage,{
+        userCode:user.code,
+        view:'service'
+      });
+    }
+
+  }
+
 
 }

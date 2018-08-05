@@ -157,7 +157,7 @@ export class ChatPage {
 
     setTimeout(() => {
       this.loading.dismiss();
-    }, 90000);
+    }, 60000);
   }
 
 
@@ -249,6 +249,7 @@ export class ChatPage {
           //message successfully sent
 
         }).catch( () => {
+          this.presentAlert('Error','Unable to send message at this time, please try again later')
 
           //some error and the message wasn't sent
 
@@ -269,7 +270,7 @@ export class ChatPage {
           this.loading.dismissAll();
 
         }).catch( () => {
-
+          this.presentAlert('Error','Unable to send message at this time, please try again later')
           //some error and the message wasn't sent
 
         });
@@ -308,7 +309,7 @@ export class ChatPage {
       //message successfully sent
 
     }).catch( () => {
-
+      this.presentAlert('Error','Unable to send message at this time, please try again later')
       //some error and the message wasn't sent
 
     });
@@ -326,7 +327,7 @@ export class ChatPage {
       //message successfully sent
 
     }).catch( () => {
-
+      this.presentAlert('Error','Unable to send message at this time, please try again later')
       //some error and the message wasn't sent
 
     });

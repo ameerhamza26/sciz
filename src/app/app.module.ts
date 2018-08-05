@@ -2,6 +2,7 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import { AuthService } from './auth.service';
 import { Camera } from '@ionic-native/camera';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
@@ -143,7 +144,7 @@ var config = {
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     DataService, AppSettings, NativePageTransitions, Camera,
-    AudioService, NativeAudio,
+    AudioService, NativeAudio, AuthService,
     UserService, EmailComposer, Push, InAppBrowser, Stripe
   ]
 })

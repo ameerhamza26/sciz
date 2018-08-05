@@ -385,7 +385,7 @@ export class RavePaymentPage {
 
         if (data.data.chargeResponseCode == "02"){
 
-          if (data.data.authModelUsed == "GTB_OTP" || data.data.authModelUsed == "OTP" ){
+          if (data.data.authModelUsed.includes("OTP") ){
             this.presentOtpPrompt(data.data.chargeResponseMessage).then( (result) => {
                if (result != false) {
                  var body = {

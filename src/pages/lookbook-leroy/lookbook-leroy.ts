@@ -4,9 +4,11 @@ import { Component } from '@angular/core';
 import { ProfilePage } from '../profile/profile';
 import { NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
 import { Slides } from 'ionic-angular';
-
+import { UserProfilePage } from '../../pages/user-profile/user-profile';
 
 import { DataService } from '../../providers/data-service';
+import { UserService } from '../../providers/user-service';
+
 import { CreateNewPage } from '../create-new/create-new';
 import { ToastController } from 'ionic-angular';
 
@@ -40,7 +42,7 @@ export class LookbookLeroyPage {
   post: any;
   tags: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController) {
+  constructor(public userService:UserService, public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController) {
 
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');
@@ -59,6 +61,7 @@ export class LookbookLeroyPage {
   start(mode) {
 
     if (mode == 'view') {
+      this.dataService.lookbook = this.post;
       let code = this.post.code;
       console.log(this.dataService.pages)
       console.log(code)
@@ -290,6 +293,38 @@ export class LookbookLeroyPage {
       view: 'service'
     });
   }
+
+  getCreator(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+    return user.name;
+  }
+
+
+  getUserImage(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+    return user.image;
+  }
+
+  openUserProfile(code){
+    console.log(code)
+    console.log(this.userService.user.code)
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+
+    if (this.userService.user.code == code){
+      this.navCtrl.setRoot(UserProfilePage,{
+        view:'service'
+      });
+      this.navCtrl.parent.select(2);
+    }
+
+    else {
+      this.navCtrl.push(ProfilePage,{
+        userCode:user.code,
+        view:'service'
+      });
+    }
+  }
+
 
 
 

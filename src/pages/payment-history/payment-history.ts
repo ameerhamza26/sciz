@@ -93,7 +93,7 @@ export class PaymentHistoryPage {
 
     setTimeout(() => {
       this.loading.dismiss();
-    }, 5000);
+    }, 2500);
   }
 
   presentAlert(title, message) {
@@ -154,6 +154,7 @@ export class PaymentHistoryPage {
         <p>{{details[0].balance_transaction}}</p>
       </ion-card-content>
 
+      <h2 *ngIf="details[0].metadata.status=='true';"><b>Payment already confirmed.</b></h2>
       <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
       <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
     </ion-card>
@@ -279,6 +280,7 @@ export class StripeModalContentPage {
         <p>{{details[0].data.tx.txRef}}</p>
       </ion-card-content>
 
+      <h2 *ngIf="details[0].metadata.status=='true';"><b>Payment already confirmed.</b></h2>
       <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
       <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
 

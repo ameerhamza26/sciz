@@ -7,6 +7,7 @@ import { AlertController } from 'ionic-angular';
 import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
 import { Storage } from '@ionic/storage';
+import { AuthService } from '../../app/auth.service'
 
 
 /**
@@ -31,11 +32,15 @@ export class LoginPage {
   password: any = "";
   permission: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, private alertCtrl: AlertController, public dataService: DataService, public userService: UserService, private storage: Storage) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, private alertCtrl: AlertController, public dataService: DataService, public userService: UserService, private storage: Storage, public auth: AuthService) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LoginPage');
+  }
+
+  signInAnonymously() {
+    this.auth.anonymousLogin();
   }
 
   login() {
@@ -48,6 +53,7 @@ export class LoginPage {
           console.log(data)
           if (data.message == "Successful" && (data.result[0].type == "customer" || data.result[0].type == "service" || data.result[0].type == "admin")) {
             this.setUser(this.username);
+            this.signInAnonymously();
             this.storage.set('data', data);
             this.dataService.getLikes();
             console.log(this.dataService.me);

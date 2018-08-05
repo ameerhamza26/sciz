@@ -8,6 +8,9 @@ import { UserService } from '../providers/user-service';
 import { StartPage } from '../pages/start/start';
 import { TabsPage } from '../pages/tabs/tabs'
 import { Storage } from '@ionic/storage';
+import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
+
+import firebase from 'firebase';
 
 @Component({
   templateUrl: 'app.html'
@@ -17,13 +20,22 @@ export class MyApp {
   username: any = "";
   // rootPage:any = TabsPage;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public dataService: DataService, public userService: UserService, private storage: Storage) {
+  constructor(afAuth: AngularFireAuth, platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public dataService: DataService, public userService: UserService, private storage: Storage) {
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+
+      afAuth.authState.subscribe(auth => {
+          if(auth) {
+            console.log('logged in firebase');
+          } else {
+            console.log('not logged in firebase');
+            this.rootPage = StartPage
+          }
+        });
 
       /* Get Session of Logedin user */
       storage.get('data').then((data) => {

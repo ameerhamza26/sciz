@@ -39,19 +39,19 @@
 
 
     <ion-item>
-      <ion-input [(ngModel)]="cardno" type="tel" placeholder="Card"></ion-input>
+      <ion-input [(ngModel)]="cardno" type="tel" placeholder="Card Number"></ion-input>
     </ion-item>
 
     <ion-row>
       <ion-col>
         <ion-item>
-          <ion-input [(ngModel)]="expirymonth" type="tel" placeholder="Month"></ion-input>
+          <ion-input [(ngModel)]="expirymonth" type="tel" placeholder="Ex Month"></ion-input>
         </ion-item>
       </ion-col>
 
       <ion-col>
         <ion-item>
-          <ion-input [(ngModel)]="expiryyear" type="tel" placeholder="Year"></ion-input>
+          <ion-input [(ngModel)]="expiryyear" type="tel" placeholder="Ex Year"></ion-input>
         </ion-item>
       </ion-col>
 
@@ -68,7 +68,7 @@
       <ion-col col-8>
         <ion-item>
           <ion-label>Currency</ion-label>
-          <ion-select [(ngModel)]="currency">
+          <ion-select [(ngModel)]="currency" [disabled]="true">
             <ion-option value="NGN">NGN</ion-option>
             <ion-option value="USD">USD</ion-option>
             <ion-option value="EUR">EUR</ion-option>
@@ -79,7 +79,7 @@
 
       <ion-col>
         <ion-item>
-          <ion-input [(ngModel)]="amount" type="tel" placeholder="Amount"></ion-input>
+          <ion-input [(ngModel)]="amount" type="tel" placeholder="Amount" [disabled]="true"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
