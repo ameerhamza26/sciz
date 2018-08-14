@@ -10,7 +10,9 @@ import { TabsPage } from '../pages/tabs/tabs'
 import { Storage } from '@ionic/storage';
 import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 
-import firebase from 'firebase';
+import { FCM } from '@ionic-native/fcm';
+
+import { FcmProvider } from '../providers/fcm/fcm';
 
 @Component({
   templateUrl: 'app.html'
@@ -20,7 +22,7 @@ export class MyApp {
   username: any = "";
   // rootPage:any = TabsPage;
 
-  constructor(afAuth: AngularFireAuth, platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public dataService: DataService, public userService: UserService, private storage: Storage) {
+  constructor(fcmprovider: FcmProvider, private fcm: FCM, afAuth: AngularFireAuth, platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public dataService: DataService, public userService: UserService, private storage: Storage) {
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -43,12 +45,35 @@ export class MyApp {
           storage.get('user').then(u_name => {
             this.setUser(u_name);
             this.dataService.getLikes();
+            //fcmprovider.saveToken('TestToken');
             console.log(this.dataService.me);
             if (data.result[0].type == "customer") {
               this.dataService.getSizeFile();
             } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
               this.dataService.loadIllustratorPosts();
             }
+
+            if (platform.is('cordova')) {
+              fcm.getToken().then(token=>{
+                console.log(token);
+                // save to db
+                fcmprovider.saveToken(this.dataService.me.code, token);
+              })
+
+              fcm.onNotification().subscribe(data=>{
+                if(data.wasTapped){
+                  console.log("Received in background");
+                } else {
+                  console.log("Received in foreground");
+                };
+              })
+
+              fcm.onTokenRefresh().subscribe(token=>{
+                //save to db
+                fcmprovider.saveToken(this.dataService.me.code, token);
+              });
+            }
+
             this.rootPage = TabsPage
           })
         }

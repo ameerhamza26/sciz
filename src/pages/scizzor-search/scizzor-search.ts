@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams   } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
 import { ProfilePage } from '../profile/profile';
 import { FormControl } from '@angular/forms';
+import { UserProfilePage } from '../user-profile/user-profile';
 import 'rxjs/add/operator/debounceTime';
 
 /**
@@ -23,9 +24,11 @@ export class ScizzorSearchPage {
   filtereditems;
   searchControl: FormControl;
   searching: any = false;
+  user:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService) {
     this.searchControl = new FormControl();
+    this.user = this.dataService.me;
   }
 
   ionViewDidLoad() {
@@ -48,12 +51,21 @@ export class ScizzorSearchPage {
     }
 
     openProfile(user){
-      //open profile of service
-      this.navCtrl.push(ProfilePage,{
-        userCode:user.code,
-        view:'service'
-      });
+      if (this.user.code == user.code) {
 
+        this.navCtrl.setRoot(UserProfilePage,{
+          view:'service'
+        });
+
+        this.navCtrl.parent.select(2);
+      }
+
+      else {
+        this.navCtrl.push(ProfilePage,{
+          userCode:user.code,
+          view:'service'
+        });
+      }
     }
 
     makeArray(number){

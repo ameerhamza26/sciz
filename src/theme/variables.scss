@@ -5,6 +5,11 @@
 // roboto, and noto sans fonts
 $font-path: "../assets/fonts";
 
+$font-family-base: 'Lato';
+$font-family-ios-base: 'Lato';
+$font-family-md-base: 'Lato';
+$font-family-wp-base: 'Lato';
+
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
@@ -173,3 +178,7 @@ $modal-wp-background-color:black;
 
 @import "roboto";
 @import "noto-sans";
+
+ion-app.ios {
+  font-family: "Lato" !important;
+}

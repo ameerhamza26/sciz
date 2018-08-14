@@ -30,11 +30,13 @@ export class ServicePaymentPage {
   provider: any;
   serviceDetails:any;
   alert: any;
+  minDate: any;
 
   constructor(private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, public userService:UserService, public dataService:DataService) {
     this.user = this.userService.user;
     this.sizeCode = this.user.sizeCode;
     this.provider = this.navParams.get('provider');
+    this.minDate = new Date().toISOString();
   }
 
   ionViewDidLoad() {
@@ -81,6 +83,17 @@ export class ServicePaymentPage {
       this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
     }
 
+    else if ((this.description.length < 5) ) {
+      this.presentAlert('Error','Please provide a description');
+    }
+
+    else if ((this.address.length < 5) ) {
+      this.presentAlert('Error','Please provide an address');
+    }
+
+    else if ((this.completionDate.length == 0) ) {
+      this.presentAlert('Error','Please provide a completion date');
+    }
 
     else {
       this.serviceDetails = {
@@ -89,6 +102,7 @@ export class ServicePaymentPage {
         email : this.provider.email,
         mobile : this.provider.phone,
         item : this.description,
+        itemImage : './assets/images/des1.jpeg',
         completionDate : this.completionDate,
         price : this.amount,
         measurement : this.measurement,

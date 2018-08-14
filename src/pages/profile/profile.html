@@ -25,7 +25,7 @@
         </ion-avatar>
       </ion-col>
       <ion-col col-10>
-        <h2>{{user.name}} &nbsp;  <img src="/assets/images/green.png" style="height:15px;"  ></h2>
+        <h2>{{user.name}} &nbsp;  <img src="./assets/images/green.png" style="height:15px;"  ></h2>
         <p *ngIf="user.type != 'service'">{{user.type}}</p>
         <p *ngIf="user.type == 'service'">{{user.type2}}</p>
         <p *ngIf="user.type == 'service'">{{user.type3}}</p>
@@ -68,7 +68,7 @@
       <ng-container *ngSwitchCase="'work'">
         <div class="storeholder">
         <div class="post animated fadeIn"  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="' url('+creation.image+')'">
-          <img src="/assets/images/placeholder2.png" >
+          <img src="./assets/images/placeholder2.png" >
 
         </div>
       </div>

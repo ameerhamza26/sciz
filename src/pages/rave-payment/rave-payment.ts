@@ -285,7 +285,17 @@ export class RavePaymentPage {
 ////////////////////////////////////////////////////////////////////////////////
 
   initiatePayment(){
+
+    if (this.cardno.length == 0 || this.cvv.length == 0 || this.expirymonth.length == 0 || this.expiryyear.length == 0
+    || this.email.length == 0 || this.phonenumber.length == 0 || this.firstname.length == 0 || this.lastname.length == 0
+    || this.billingaddress.length == 0 || this.billingcity.length == 0 || this.billingcountry.length == 0 || this.billingzip.length == 0){
+      this.presentAlert("Error", "Missing details, please fill in all details");
+      return;
+    }
+
     this.presentLoading('Please wait ..');
+
+
 
     //payload
     var body = {
@@ -301,6 +311,7 @@ export class RavePaymentPage {
       lastname: this.lastname,
       meta: this.purchaseDetails
     }
+
 
     let headers =  new Headers({ "Content-Type": "application/json" });
     let options = new RequestOptions({ headers: headers });
@@ -374,7 +385,7 @@ export class RavePaymentPage {
           promise
           .then( (res) => {
             //message successfully sent
-            this.presentToast("Successfully pushed data to the database")
+            //this.presentToast("Successfully pushed data to the database")
           })
           //.catch(function (err) {
             //some error and the message wasn't sent
@@ -416,7 +427,8 @@ export class RavePaymentPage {
     },
     error => {
       this.loading.dismissAll();
-      this.presentAlert("Error", error);
+      this.presentAlert("Error", "Unable to make payment, please try again later");
+      //this.presentAlert("Error", error);
     })
   }
 
@@ -462,7 +474,7 @@ export class RavePaymentPage {
           promise
           .then( (res) => {
             //message successfully sent
-            this.presentToast("Successfully pushed data to the database")
+            //this.presentToast("Successfully pushed data to the database")
           })
           //.catch(function (err) {
             //some error and the message wasn't sent
@@ -518,7 +530,7 @@ export class RavePaymentPage {
         promise
         .then( (res) => {
           //message successfully sent
-          this.presentToast("Successfully pushed data to the database")
+          //this.presentToast("Successfully pushed data to the database")
         })
         //.catch(function (err) {
           //some error and the message wasn't sent

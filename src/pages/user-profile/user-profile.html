@@ -68,8 +68,8 @@
   <div class="post"  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="' url('+creation.image+')'">
     <ion-row style="height: 100%;">
      <ion-col col-12 text-right padding >
-        <img src="/assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
-        <img src="/assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;"  >
+        <img src="./assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
+        <img src="./assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;"  >
       </ion-col>
     </ion-row>
   </div>
@@ -175,7 +175,7 @@
       <ng-container *ngSwitchCase="'likes'">
         <div class="storeholder">
         <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of dataService.likes" [style.background-image]="' url('+getImage(creation)+')'">
-          <img src="/assets/images/placeholder2.png">
+          <img src="./assets/images/placeholder2.png">
 
         </div>
       </div>
@@ -190,8 +190,8 @@
           <ion-row>
           <ion-col col-6 padding>
             <button ion-button color="light" outline (click)="sendMail()" > Get Measured! </button>
-            <img src="/assets/images/male_front.png"  class="" >
-            <img src="/assets/images/male_back.png"  class="" >
+            <img src="./assets/images/male_front.png"  class="" >
+            <img src="./assets/images/male_back.png"  class="" >
 
           </ion-col>
           <ion-col col-6 >
@@ -259,8 +259,8 @@
           <ion-row>
           <ion-col col-6 padding>
             <button ion-button color="light" outline (click)="sendMail()" > Get Measured! </button>
-            <img src="/assets/images/female_front.png"  class="">
-            <img src="/assets/images/female_back.png"  class="" >
+            <img src="./assets/images/female_front.png"  class="">
+            <img src="./assets/images/female_back.png"  class="" >
           </ion-col>
           <ion-col col-6 >
             <ion-list padding>
