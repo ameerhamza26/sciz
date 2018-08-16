@@ -6,7 +6,7 @@ const CONFIG = {
   apiImageURL: 'http://18.220.1.42/',
   raveURL: 'http://192.168.0.2:4000/',
   stripeURL:'http://192.168.0.2:9000/',
-  ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapplkv0/',
+  ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapp',
   stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J',
   fcmAuthKey: 'key=AIzaSyBfiliUkfoObqceIrXqd0_9PSS1tLJAIHE'
 };

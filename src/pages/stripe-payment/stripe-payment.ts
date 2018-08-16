@@ -137,11 +137,13 @@ export class StripePaymentPage {
 
   }
 
+////////////////////////////////////////////////////////////////////////////////
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad StripePaymentPage');
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   presentLoading(message) {
     this.loading = this.loadingCtrl.create({
@@ -155,7 +157,7 @@ export class StripePaymentPage {
     }, 5000);
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   presentToast(message) {
     let toast = this.toastCtrl.create({
@@ -165,7 +167,7 @@ export class StripePaymentPage {
     toast.present();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   presentAlert(title, message) {
   let alert = this.alertCtrl.create({
@@ -176,7 +178,7 @@ export class StripePaymentPage {
   alert.present();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   sendFirstConfirmationEmail(body) {
     this.presentLoading('Please wait ..');
@@ -190,16 +192,18 @@ export class StripePaymentPage {
         this.loading.dismissAll();
       }
       else {
+        this.loading.dismissAll();
         this.presentAlert("Error", "Payment made, please contact and inform service provider");
       }
     },
     error => {
       this.loading.dismissAll();
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
     })
     this.loading.dismissAll();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   sendEmailtoServiceProviderService(body) {
     this.presentLoading('Please wait ..');
@@ -212,6 +216,10 @@ export class StripePaymentPage {
       if (data == "success") {
         this.loading.dismissAll();
       }
+      else {
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
     },
     error => {
       this.loading.dismissAll();
@@ -220,7 +228,7 @@ export class StripePaymentPage {
     this.loading.dismissAll();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   sendEmailtoServiceProviderStore(body) {
     this.presentLoading('Please wait ..');
@@ -233,6 +241,10 @@ export class StripePaymentPage {
       if (data == "success") {
         this.loading.dismissAll();
       }
+      else {
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
     },
     error => {
       this.loading.dismissAll();
@@ -242,7 +254,7 @@ export class StripePaymentPage {
   }
 
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   pay() {
 
@@ -319,6 +331,7 @@ export class StripePaymentPage {
            //});
 
            this.navCtrl.setRoot(InspirationPage);
+           this.navCtrl.parent.select(0);
          }
          else {
            this.loading.dismissAll();

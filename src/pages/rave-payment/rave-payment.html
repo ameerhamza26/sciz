@@ -129,12 +129,28 @@
   </div>
 
   <div>
-      <p style="text-align:center;color:white">Unable to complete payment?</p>
-      <button ion-button clear (click)="presentPaymentLink()" full color="primary">
-        Use Payment Link
-      </button>
+    <p style="text-align:center;color:white">Unable to complete payment? use payment link</p>
+
+    <ion-row>
+      <ion-col>
+        <button start ion-button clear (click)="presentPaymentLink()" full color="primary">
+          Payment Link
+        </button>
+      </ion-col>
+
+      <ion-col>
+        <button ion-button clear (click)="addExternalPayment()" full color="primary">
+          External Payment
+        </button>
+      </ion-col>
+    </ion-row>
 
   </div>
+
+
+
+
+
 
 </ion-list>
 
