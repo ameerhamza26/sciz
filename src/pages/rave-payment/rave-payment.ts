@@ -221,7 +221,7 @@ export class RavePaymentPage {
     return new Promise((resolve, reject) => {
       let alert = this.alertCtrl.create({
         title: 'Payment Link',
-        message: 'Proceeding will redirect you out of the app. Ensure you add your transaction reference using the external payment link below once payment is complete.',
+        message: 'Proceeding will redirect you out of the app. Ensure the amount paid is the same as the amount for the item being purchased. Add your transaction reference using the external payment link below once payment is complete. Failure to do this may lead to subsequent delays.',
         buttons: [
           {
             text: 'Cancel',
