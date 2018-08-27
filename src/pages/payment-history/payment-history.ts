@@ -66,9 +66,18 @@ export class PaymentHistoryPage {
       data.forEach( data => {
 
         var formatted_data = Object.keys(data.val()).map(e => data.val()[e])
-        var date = new Date(formatted_data[0].data.tx.createdAt);
 
-        formatted_data[0].data.tx.createdAt = date.toUTCString()
+        if (formatted_data[0].externalPayment == 'false'){
+          var date = new Date(formatted_data[0].data.tx.createdAt);
+          formatted_data[0].data.tx.createdAt = date.toUTCString()
+        }
+
+        else {
+          var date = new Date(formatted_data[0].data.transactions[0].date_created);
+          formatted_data[0].data.transactions[0].date_created = date.toUTCString()
+        }
+
+
         formatted_data[0].key = Object.keys(data.val())[0]
         formatted_data[0].id = data.key
 
@@ -93,7 +102,7 @@ export class PaymentHistoryPage {
 
     setTimeout(() => {
       this.loading.dismiss();
-    }, 5000);
+    }, 2500);
   }
 
   presentAlert(title, message) {
@@ -124,6 +133,12 @@ export class PaymentHistoryPage {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// STRIPE
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 @Component({
   template: `
   <ion-header>
@@ -139,7 +154,7 @@ export class PaymentHistoryPage {
 
   <ion-content style="background-color:black;">
     <ion-card padding>
-      <img src={{details[0].metadata.itemImage}} width="300px" height="300px"/>
+      <img src={{details[0].metadata.itemImage}}/>
       <ion-card-content>
         <ion-card-title>
           {{details[0].metadata.item}}
@@ -154,7 +169,7 @@ export class PaymentHistoryPage {
         <p>{{details[0].balance_transaction}}</p>
       </ion-card-content>
 
-      <p *ngIf="details[0].metadata.status=='true';"><b>Payment Confirmed.</b></p>
+      <h2 *ngIf="details[0].metadata.status=='true';"><b>Payment already confirmed.</b></h2>
       <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
       <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
     </ion-card>
@@ -250,7 +265,11 @@ export class StripeModalContentPage {
     this.viewCtrl.dismiss();
   }
 }
-
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// RAVE
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 @Component({
   template: `
@@ -267,22 +286,25 @@ export class StripeModalContentPage {
 
   <ion-content style="background-color:black;">
     <ion-card padding>
-      <img src={{details[0].metadata.itemImage}} width="300px" height="300px"/>
+      <img src={{details[0].metadata.itemImage}} />
       <ion-card-content>
         <ion-card-title>
           {{details[0].metadata.item}}
         </ion-card-title>
         <h2>Amount Paid</h2>
-        <p>{{details[0].data.tx.amount}} {{details[0].data.tx.currency.toUpperCase()}}</p>
+        <p *ngIf="details[0].externalPayment=='true'">{{details[0].data.transactions[0].amount}} {{details[0].data.transactions[0].currency.toUpperCase()}}</p>
+        <p *ngIf="details[0].externalPayment=='false'">{{details[0].data.tx.amount}} {{details[0].data.tx.currency.toUpperCase()}}</p>
         <h2>Purchased From</h2>
         <p>{{details[0].metadata.name}} - {{details[0].metadata.email}}</p>
         <h2>Payment Date</h2>
-        <p>{{details[0].data.tx.createdAt}}</p>
+        <p *ngIf="details[0].externalPayment=='true'">{{details[0].data.transactions[0].date_created}}</p>
+        <p *ngIf="details[0].externalPayment=='false'">{{details[0].data.tx.createdAt}}</p>
         <h2>Transaction Reference</h2>
-        <p>{{details[0].data.tx.txRef}}</p>
+        <p *ngIf="details[0].externalPayment=='true'">{{details[0].data.transactions[0].transaction_reference}}</p>
+        <p *ngIf="details[0].externalPayment=='false'">{{details[0].data.tx.txRef}}</p>
       </ion-card-content>
 
-      <p *ngIf="details[0].metadata.status=='true';"><b>Payment Confirmed.</b></p>
+      <h2 *ngIf="details[0].metadata.status=='true';"><b>Payment already confirmed.</b></h2>
       <p *ngIf="details[0].metadata.status=='false';"><b>Only confirm a payment once you are satisfied with your purchase. This action cannot be undone.</b></p>
       <button *ngIf="details[0].metadata.status=='false';" ion-button button full color="secondary" (click)="sendFinalConfirmationEmail(details[0])">Confirm Payment</button>
 
@@ -336,20 +358,42 @@ export class RaveModalContentPage {
 
   sendFinalConfirmationEmail(details) {
 
-    var body = {
-      sender : this.user.name + ' ' + this.user.email,
-      provider : details.metadata.name + ' ' + details.metadata.email,
-      amount : details.data.tx.amount,
-      item : details.metadata.item,
-      currency : details.data.tx.currency.toUpperCase(),
-      bankAccountHolder : details.metadata.bankAccountHolder,
-      bankAccountNumber : details.metadata.bankAccountNumber,
-      bankAccountSortCode : details.metadata.bankAccountSortCode
+    if (details.externalPayment == 'true'){
+      var body = {
+        sender : this.user.name + ' ' + this.user.email,
+        provider : details.metadata.name + ' ' + details.metadata.email,
+        amount : details.data.transactions[0].amount,
+        item : details.metadata.item,
+        currency : details.data.transactions[0].currency.toUpperCase(),
+        bankAccountHolder : details.metadata.bankAccountHolder,
+        bankAccountNumber : details.metadata.bankAccountNumber,
+        bankAccountSortCode : details.metadata.bankAccountSortCode
+      }
+
+      var paymentId = '' + details.id;
+      var paymentKey = '' + details.key;
+      var userCode = '' + this.user.code;
+
     }
 
-    var paymentId = '' + details.id;
-    var paymentKey = '' + details.key;
-    var userCode = '' + this.user.code;
+    else {
+      var body = {
+        sender : this.user.name + ' ' + this.user.email,
+        provider : details.metadata.name + ' ' + details.metadata.email,
+        amount : details.data.tx.amount,
+        item : details.metadata.item,
+        currency : details.data.tx.currency.toUpperCase(),
+        bankAccountHolder : details.metadata.bankAccountHolder,
+        bankAccountNumber : details.metadata.bankAccountNumber,
+        bankAccountSortCode : details.metadata.bankAccountSortCode
+      }
+
+      var paymentId = '' + details.id;
+      var paymentKey = '' + details.key;
+      var userCode = '' + this.user.code;
+
+    }
+
 
     this.presentLoading('Please wait ..');
     let headers =  new Headers({ "Content-Type": "application/json" });
@@ -358,7 +402,7 @@ export class RaveModalContentPage {
 
     this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
       if (data == "success") {
-        this.db.list('/' + 'rave-payments' + '/' + userCode + '/' + paymentId + '/' + 'metadata').update(paymentKey, {status : 'true'})
+        this.db.list('/' + 'rave-payments' + '/' + userCode + '/' + paymentId + '/' + paymentKey).update('metadata', {status : 'true'})
         this.navCtrl.pop();
       }
       else {

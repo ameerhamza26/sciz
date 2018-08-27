@@ -1,15 +1,12 @@
-import { Component } from '@angular/core';
-import { ModalController,ViewController, NavController, NavParams ,ActionSheetController,Platform,AlertController,LoadingController } from 'ionic-angular';
-
-
+import { Component, ViewChild } from '@angular/core';
+import { Content, ModalController,ViewController, NavController, NavParams ,ActionSheetController,Platform,AlertController,LoadingController } from 'ionic-angular';
+import { Http, Headers, RequestOptions } from '@angular/http';
 import {DataService} from '../../providers/data-service';
 import {UserService} from '../../providers/user-service';
 import {AppSettings} from '../../providers/app-settings';
 import { AngularFireDatabase } from 'angularfire2/database';
 
 import { Camera } from '@ionic-native/camera';
-
-import { Push, PushObject, PushOptions } from '@ionic-native/push';
 
 /**
  * Generated class for the ChatPage page.
@@ -23,6 +20,8 @@ import { Push, PushObject, PushOptions } from '@ionic-native/push';
   templateUrl: 'chat.html',
 })
 export class ChatPage {
+  @ViewChild(Content) content: Content;
+  fcmAuthKey = this.appSettings.getFcmAuthKey();
   apiImageURL = this.appSettings.getApiImageURL();
   messageCode:any;
   userCode:any;
@@ -44,7 +43,8 @@ export class ChatPage {
 
 
 
-  constructor(public appSettings:AppSettings, public modalCtrl: ModalController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public dataService:DataService, public userService:UserService, private camera: Camera,public platform:Platform,private alertCtrl: AlertController,public loadingCtrl: LoadingController, public actionSheetCtrl: ActionSheetController, private push: Push) {
+  constructor(private http: Http, public appSettings:AppSettings, public modalCtrl: ModalController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public dataService:DataService, public userService:UserService, private camera: Camera,public platform:Platform,private alertCtrl: AlertController,public loadingCtrl: LoadingController, public actionSheetCtrl: ActionSheetController) {
+    console.log(this.fcmAuthKey)
     this.userCode = this.navParams.get('userCode');
     this.view = this.navParams.get('view');
     this.start();
@@ -112,6 +112,38 @@ export class ChatPage {
 */
 
 
+  sendNotification(name, receiver)
+  {
+    let body = {
+        "notification":{
+          "title":"New Notification",
+          "body":"New message from " + name,
+          "sound":"default",
+          "click_action":"FCM_PLUGIN_ACTIVITY",
+          "icon":"fcm_push_icon"
+        },
+        "data":{
+          "param1":"value1",
+          "param2":"value2"
+        },
+          "to":receiver,
+          "priority":"high",
+          "restricted_package_name":""
+      }
+
+      let headers = new Headers({'Content-Type' : "application/json",
+        'Authorization': this.fcmAuthKey
+      });
+
+      let options = new RequestOptions({ headers: headers });
+
+
+
+      this.http.post("https://fcm.googleapis.com/fcm/send",body,options)
+        .subscribe();
+  }
+
+
   /*
   GENERATE A NEW IMAGE CODE FOR SAVING THE IMAGE
   */
@@ -156,7 +188,7 @@ export class ChatPage {
 
     setTimeout(() => {
       this.loading.dismiss();
-    }, 90000);
+    }, 60000);
   }
 
 
@@ -200,11 +232,7 @@ export class ChatPage {
     this.camera.getPicture({
       destinationType: this.camera.DestinationType.DATA_URL,
       sourceType: sourceType,
-<<<<<<< HEAD
       quality: 70,
-=======
-      quality: 50,
->>>>>>> master
     }).then((imageData) => {
       // imageData is a base64 encoded string
       newImage = "data:image/png;base64," + imageData;
@@ -237,17 +265,6 @@ export class ChatPage {
       try{
         if(data.message == "Successful"){
 
-<<<<<<< HEAD
-        this.db.list('/' + this.user.code).push({
-          messagecode: this.messageCode,
-          user: this.user.code,
-          participant: this.userCode,
-          displayname: this.provider.name,
-          sender: true,
-          image: true,
-          message: 'http://18.220.90.37/images/' + this.messageCode + '.png',
-          timestamp: this.dateTime.toString()
-=======
           this.db.list('/' + 'chats' + '/' + this.user.code).push({
             messagecode: this.messageCode,
             user: this.user.code,
@@ -257,13 +274,13 @@ export class ChatPage {
             image: true,
             message: this.apiImageURL + 'images/' + this.messageCode + '.png',
             timestamp: this.dateTime.toString()
->>>>>>> master
 
         }).then( () => {
 
           //message successfully sent
 
         }).catch( () => {
+          this.presentAlert('Error','Unable to send message at this time, please try again later')
 
           //some error and the message wasn't sent
 
@@ -279,12 +296,18 @@ export class ChatPage {
           message: this.apiImageURL + 'images/' + this.messageCode + '.png',
           timestamp: this.dateTime.toString()
         }).then( () => {
-
           //message successfully sent
           this.loading.dismissAll();
 
-        }).catch( () => {
+          this.subscription = this.db.list('/' + 'devices' + '/' + this.provider.code);
+          this.subscription.subscribe(snapshots => {
+            if (snapshots.length > 0){
+              this.sendNotification(this.provider.name, snapshots[0].$value)
+            }
+          })
 
+        }).catch( () => {
+          this.presentAlert('Error','Unable to send message at this time, please try again later')
           //some error and the message wasn't sent
 
         });
@@ -312,11 +335,7 @@ export class ChatPage {
     console.log(this.dateTime.toString())
     console.log(this.dateTime.getTime())
 
-<<<<<<< HEAD
-    this.db.list('/' + this.user.id).push({
-=======
     this.db.list('/' + 'chats' + '/' + this.user.code).push({
->>>>>>> master
       messagecode: this.generateCode(),
       user: this.user.id,
       participant: this.userCode,
@@ -329,30 +348,34 @@ export class ChatPage {
 
       //message successfully sent
 
-    }).catch( () => {
+    }).catch( (err) => {
 
+      this.presentAlert('Error','Unable to send message at this time, please try again later')
       //some error and the message wasn't sent
 
     });
 
-<<<<<<< HEAD
-    this.db.list('/' + this.userCode).push({
-=======
     this.db.list('/' + 'chats' + '/' + this.provider.code).push({
->>>>>>> master
       messagecode: this.generateCode(),
-      user: this.user.id,
-      participant: this.userCode,
-      displayname: this.provider.name,
+      user: this.user.code,
+      participant: this.provider.code,
+      displayname: this.user.name,
       sender:false,
       image: false,
       message: this.message,
       timestamp: this.dateTime.toString()
     }).then( () => {
       //message successfully sent
+      this.subscription = this.db.list('/' + 'devices' + '/' + this.provider.code);
+      this.subscription.subscribe(snapshots => {
+        if (snapshots.length > 0){
+          this.sendNotification(this.provider.name, snapshots[0].$value)
+        }
+      })
 
-    }).catch( () => {
-
+    }).catch( (err) => {
+      console.log(err)
+      this.presentAlert('Error','Unable to send message at this time, please try again later')
       //some error and the message wasn't sent
 
     });
@@ -364,6 +387,16 @@ export class ChatPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad ChatPage');
   }
+
+  ionViewWillEnter(): void {
+        this.scrollToBottom();
+    }
+
+    scrollToBottom() {
+        setTimeout(() => {
+            this.content.scrollToBottom();
+        });
+    }
 
   start(){
     console.log("START");

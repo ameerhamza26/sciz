@@ -37,7 +37,10 @@
           <ion-grid>
             <ion-row>
               <ion-col>
-                <h2 style="text-align:center;" padding>Created By</h2>
+                <button center ion-button clear (click)="openUserProfile(dataService.lookbook.accountCode)" color="main">
+                  <h2  style="text-align:center;" padding>Created By : {{getCreator(dataService.lookbook.accountCode)}}</h2>
+                </button>
+
                 <ion-list>
                   <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
                     <ion-avatar item-start>

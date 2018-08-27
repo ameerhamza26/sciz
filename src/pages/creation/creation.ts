@@ -4,13 +4,15 @@ import { Camera } from '@ionic-native/camera';
 
 import {AppSettings} from '../../providers/app-settings';
 import {DataService} from '../../providers/data-service';
-
+import { UserService } from '../../providers/user-service';
 
 import {Creation} from '../../models/creation-model';
 import {Like} from '../../models/like-model';
 
 import { ChatPage } from '../chat/chat';
 import { ProfilePage } from '../profile/profile';
+
+import { UserProfilePage } from '../user-profile/user-profile';
 
 import { PaymentPage } from '../payment/payment';
 import {SocialShareProvider} from "../../providers/social-share/social-share";
@@ -149,54 +151,118 @@ export class CreationPage {
   }
 
   viewOptions(){
+    console.log(this.userService.user.code);
+    console.log(this.creation);
 
-    //if post is already liked --> show options
-    //option to message and view profile
-    console.log("VIEW OPTIONS");
-    let actionSheet = this.actionSheetCtrl.create({
-      title: 'Options',
-      buttons: [
-        {
-          text: 'Message',
-          handler: () => {
-            console.log('message');
-            console.log('message');
-            this.navCtrl.push(ChatPage,{
-              userCode:this.creation.account_id,
-              view:'service'
-            });
+    //if (this.userService.user.userCode != this.creation.userCode)
+    if (this.userService.user.account_id == this.creation.account_id){
+      let actionSheet = this.actionSheetCtrl.create({
+        title: 'Options',
+        buttons: [
+          {
+            text: 'View Profile',
+            handler: () => {
 
+              this.navCtrl.setRoot(UserProfilePage,{
+                view:'service'
+              });
+
+              this.navCtrl.parent.select(2);
+
+            }
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel'
           }
-        },
-        {
-          text: 'Visit Profile',
-          handler: () => {
+        ]
+      });
+      actionSheet.present();
+    }
 
-            this.navCtrl.push(ProfilePage,{
-              userCode:this.creation.account_id,
-              view:'service'
-            });
+    else if (this.creation.availability == 0) {
+      let actionSheet = this.actionSheetCtrl.create({
+        title: 'Options',
+        buttons: [
+          {
+            text: 'Message',
+            handler: () => {
+              console.log('message');
+              console.log('message');
+              this.navCtrl.push(ChatPage,{
+                userCode:this.creation.account_id,
+                view:'service'
+              });
 
+            }
+          },
+          {
+            text: 'Visit Profile',
+            handler: () => {
+
+              this.navCtrl.push(ProfilePage,{
+                userCode:this.creation.account_id,
+                view:'service'
+              });
+
+            }
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel'
           }
-        },
-        {
-          text: 'Purchase Item',
-          handler: () => {
+        ]
+      });
+      actionSheet.present();
+    }
 
-            this.navCtrl.push(PaymentPage,{
-              payload:this.creation,
-              view:'service'
-            });
+    else {
+      let actionSheet = this.actionSheetCtrl.create({
+        title: 'Options',
+        buttons: [
+          {
+            text: 'Message',
+            handler: () => {
+              console.log('message');
+              console.log('message');
+              this.navCtrl.push(ChatPage,{
+                userCode:this.creation.account_id,
+                view:'service'
+              });
 
+            }
+          },
+          {
+            text: 'Visit Profile',
+            handler: () => {
+
+              this.navCtrl.push(ProfilePage,{
+                userCode:this.creation.account_id,
+                view:'service'
+              });
+
+            }
+          },
+          {
+            text: 'Purchase Item',
+            handler: () => {
+
+              this.navCtrl.push(PaymentPage,{
+                payload:this.creation,
+                view:'service'
+              });
+
+            }
+          },
+          {
+            text: 'Cancel',
+            role: 'cancel'
           }
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    actionSheet.present();
+        ]
+      });
+      actionSheet.present();
+    }
+
   }
 
 
@@ -234,6 +300,16 @@ export class CreationPage {
 
   save(){
 // save post
+
+    if ( (this.creation.price.charAt(0) != "N") && (this.creation.price.charAt(0) != "£") && (this.creation.price.charAt(0) != "$") && (this.creation.price.charAt(0) != "€") ){
+      this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+    }
+
+    else if (isNaN(this.creation.price.substring(1,this.creation.price.length))){
+      this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+    }
+
+    else {
 
     this.showLoading('Saving ..');
 
@@ -290,7 +366,7 @@ export class CreationPage {
 
 
 
-
+    }
 
   }
 
@@ -301,7 +377,15 @@ export class CreationPage {
     //if only data changed then update
 
 
-    if(this.imageUpdated){
+    if ( (this.creation.price.charAt(0) != "N") && (this.creation.price.charAt(0) != "£") && (this.creation.price.charAt(0) != "$") && (this.creation.price.charAt(0) != "€") ){
+      this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+    }
+
+    else if (isNaN(this.creation.price.substring(1,this.creation.price.length))){
+      this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+    }
+
+    else if(this.imageUpdated){
 
       this.showLoading('Updating Image..');
 

@@ -16,6 +16,19 @@ page-stripe-payment {
     ion-select{
       color: white;
     }
+
+    input[disabled] {
+      color: #d3a33c !important;
+      background: none !important;
+      opacity: 1 !important;
+    }
+
+    .select-disabled, .item-select-disabled ion-label {
+      color: #d3a33c !important;
+      background: none !important;
+      opacity: 1 !important;
+    }
+    
       background-color: black;
 
   }

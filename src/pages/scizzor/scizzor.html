@@ -52,7 +52,7 @@
       <ng-container *ngSwitchCase="'store'" >
 
         <div class="storeholderscizzor">
-        <div class="store" *ngFor="let store of stores; let i = index "  [style.background-image]="' url('+store+')'" (click)="openStore(storeTypes[i])"  >
+        <div class="store" *ngFor="let store of stores; let i = index "  [style.background-image]="'url('+store+')'" (click)="openStore(storeTypes[i])"  >
 
 
           <div class="storeInfo" >
@@ -128,7 +128,7 @@
               </ion-col>
 
               <ion-col col-5 text-right>
-                <p><img src="/assets/images/green.png" style="height:15px;"></p>
+                <p><img src="./assets/images/green.png" style="height:15px;"></p>
                 <p *ngIf="user.rating == 0">No rating</p>
                 <p *ngIf="user.rating > 0"><ion-icon *ngFor="let key of counter(user.rating)" style="font-size: 15px;" name="star" color="main"></ion-icon> </p>
 

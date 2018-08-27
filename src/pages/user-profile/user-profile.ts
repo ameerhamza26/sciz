@@ -143,6 +143,17 @@ export class UserProfilePage {
   getCreations() {
     //get my posts from data service
     this.creations = this.dataService.creations.filter(item => item.account_id == this.user.id);
+    console.log(this.creations);
+
+    if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
+      for (let creation of this.creations) {
+        if (creation.availability){
+          console.log(creation.availability)
+          creation.availability = false;
+          this.dataService.updateAvailability(creation.code, creation.availability);
+        }
+      }
+    }
   }
 
   getImage(creation) {
@@ -220,56 +231,95 @@ export class UserProfilePage {
 
     creation2Open = this.dataService.creations.filter(item => item.code == creation2Open.code)[0];
 
+    if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
 
-    let actionSheet = this.actionSheetCtrl.create({
-      title: 'Options',
-      buttons: [
-        {
-          text: 'View',
-          handler: () => {
-            console.log('open creation: ' + creation2Open);
-            this.navCtrl.push(CreationPage, {
-              creation: creation2Open
-            });
+          let actionSheet = this.actionSheetCtrl.create({
+            title: 'Options',
+            buttons: [
+              {
+                text: 'View',
+                handler: () => {
+                  console.log('open creation: ' + creation2Open);
+                  this.navCtrl.push(CreationPage, {
+                    creation: creation2Open
+                  });
 
-          }
-        }, {
-          text: 'Edit',
-          handler: () => {
-            console.log('open creation: ' + creation2Open);
-            this.navCtrl.push(CreationPage, {
-              creation: creation2Open,
-              editing: true
-            });
+                }
+              }, {
+                text: 'Edit',
+                handler: () => {
+                  console.log('open creation: ' + creation2Open);
+                  this.navCtrl.push(CreationPage, {
+                    creation: creation2Open,
+                    editing: true
+                  });
 
-          }
-        },
-        {
-          text: this.getAvailability(creation2Open),
-          handler: () => {
-
-
-            if (creation2Open.availability) {
-              creation2Open.availability = false;
-            } else {
-              creation2Open.availability = true;
-            }
+                }
+              },
+              {
+                text: 'Cancel',
+                role: 'cancel'
+              }
+            ]
+          });
+          actionSheet.present();
 
             this.dataService.updateAvailability(creation2Open.id, creation2Open.availability);
 
+    else {
 
-            //update availability
+          let actionSheet = this.actionSheetCtrl.create({
+            title: 'Options',
+            buttons: [
+              {
+                text: 'View',
+                handler: () => {
+                  console.log('open creation: ' + creation2Open);
+                  this.navCtrl.push(CreationPage, {
+                    creation: creation2Open
+                  });
+
+                }
+              }, {
+                text: 'Edit',
+                handler: () => {
+                  console.log('open creation: ' + creation2Open);
+                  this.navCtrl.push(CreationPage, {
+                    creation: creation2Open,
+                    editing: true
+                  });
+
+                }
+              },
+              {
+                text: this.getAvailability(creation2Open),
+                handler: () => {
 
 
-          }
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
-    });
-    actionSheet.present();
+                  if (creation2Open.availability) {
+                    creation2Open.availability = false;
+                  } else {
+                    creation2Open.availability = true;
+                  }
+
+                  this.dataService.updateAvailability(creation2Open.id, creation2Open.availability);
+
+
+                  //update availability
+
+
+                }
+              },
+              {
+                text: 'Cancel',
+                role: 'cancel'
+              }
+            ]
+          });
+          actionSheet.present();
+
+    }
+
 
 
   }

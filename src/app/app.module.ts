@@ -2,12 +2,13 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import { AuthService } from './auth.service';
 import { Camera } from '@ionic-native/camera';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { EmailComposer } from '@ionic-native/email-composer';
-import { Push, PushObject, PushOptions } from '@ionic-native/push';
+//import { Push, PushObject, PushOptions } from '@ionic-native/push';
 import { IonicStorageModule } from '@ionic/storage';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { Stripe } from '@ionic-native/stripe';
@@ -28,17 +29,18 @@ import { ScizzorPage } from '../pages/scizzor/scizzor';
 import { MessengerPage } from '../pages/messenger/messenger';
 import { ChatPage } from '../pages/chat/chat';
 import { ModalContentPage } from '../pages/chat/chat';
-import { ScizzorSearchPage } from '../pages/scizzor-search/scizzor-search';
-import { TagPage } from '../pages/tag/tag';
-import { PaymentPage } from '../pages/payment/payment';
-import { RavePaymentPage } from '../pages/rave-payment/rave-payment';
-import { StripePaymentPage } from '../pages/stripe-payment/stripe-payment';
-import { PaymentHistoryPage } from '../pages/payment-history/payment-history';
+import { ScizzorSearchPageModule } from '../pages/scizzor-search/scizzor-search.module';
+import { TagPageModule } from '../pages/tag/tag.module';
+import { PaymentPageModule } from '../pages/payment/payment.module';
+import { RavePaymentPageModule } from '../pages/rave-payment/rave-payment.module';
+import { StripePaymentPageModule } from '../pages/stripe-payment/stripe-payment.module';
+import { PaymentHistoryPageModule } from '../pages/payment-history/payment-history.module';
 import { StripeModalContentPage } from '../pages/payment-history/payment-history';
 import { RaveModalContentPage } from '../pages/payment-history/payment-history';
-import { ServicePaymentPage } from '../pages/service-payment/service-payment';
+import { ServicePaymentPageModule } from '../pages/service-payment/service-payment.module';
 
 //import { IonicImageLoader } from 'ionic-image-loader';
+import { FCM } from '@ionic-native/fcm';
 
 import { NativePageTransitions } from '@ionic-native/native-page-transitions';
 
@@ -48,6 +50,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { DataService } from '../providers/data-service';
 import { AppSettings } from '../providers/app-settings'
+import { FcmProvider } from '../providers/fcm/fcm';
 import { HttpModule } from '@angular/http';
 import { AudioService } from '../providers/audio-service';
 
@@ -90,16 +93,16 @@ var config = {
     HorizontalLookbook,
     MessengerPage,
     ChatPage,
-    ScizzorSearchPage,
-    TagPage,
-    PaymentPage,
-    RavePaymentPage,
-    StripePaymentPage,
+    //ScizzorSearchPage,
+    //TagPage,
+    //PaymentPage,
+    //RavePaymentPage,
+    //StripePaymentPage,
     ModalContentPage,
-    PaymentHistoryPage,
+    //PaymentHistoryPage,
     StripeModalContentPage,
     RaveModalContentPage,
-    ServicePaymentPage
+    //ServicePaymentPage
   ],
   imports: [
     BrowserModule,
@@ -109,7 +112,15 @@ var config = {
     AngularFireDatabaseModule, // imports firebase/database, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
     //    IonicImageLoader.forRoot(),
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    PaymentPageModule,
+    ScizzorSearchPageModule,
+    TagPageModule,
+    PaymentPageModule,
+    RavePaymentPageModule,
+    StripePaymentPageModule,
+    PaymentHistoryPageModule,
+    ServicePaymentPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -129,26 +140,28 @@ var config = {
     ScizzorPage,
     MessengerPage,
     ChatPage,
-    ScizzorSearchPage,
-    TagPage,
-    PaymentPage,
-    RavePaymentPage,
-    StripePaymentPage,
+    //ScizzorSearchPage,
+    //TagPage,
+    //PaymentPage,
+    //RavePaymentPage,
+    //StripePaymentPage,
     ModalContentPage,
-    PaymentHistoryPage,
+    //PaymentHistoryPage,
     StripeModalContentPage,
     RaveModalContentPage,
-    ServicePaymentPage
+    //ServicePaymentPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     DataService, AppSettings, NativePageTransitions, Camera,
+
     SocialSharing, AudioService, NativeAudio,
     UserService, EmailComposer, Push,
-    SocialShareProvider,
-    ErrorHandlerProvider
+    SocialShareProvider, ErrorHandlerProvider,
+    AuthService, InAppBrowser, Stripe, FCM, FcmProvider
+
   ]
 })
 export class AppModule { }

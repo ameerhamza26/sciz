@@ -47,7 +47,8 @@ export class StripePaymentPage {
   provider: any;
   purchaseDetails: any;
   paymentEmail: any;
-  serviceProviderEmail:any;
+  serviceProviderEmailStore:any;
+  serviceProviderEmailService:any;
 
   constructor(public userService:UserService, public toastCtrl: ToastController, public dataService:DataService, public appSettings:AppSettings, public loadingCtrl: LoadingController, public navCtrl: NavController, public db: AngularFireDatabase, private alertCtrl: AlertController, public navParams: NavParams, public stripe: Stripe, public Http: Http) {
     this.user = this.userService.user;
@@ -74,7 +75,7 @@ export class StripePaymentPage {
         bankAccountSortCode : this.provider.bankAccountSortCode,
         status : 'false'
       }
-      console.log(this.purchaseDetails)
+      console.log(this.purchaseDetails.dueDate)
     }
 
     this.email = this.user.email
@@ -115,7 +116,7 @@ export class StripePaymentPage {
       bankAccountSortCode : this.purchaseDetails.bankAccountSortCode
     }
 
-    this.serviceProviderEmail = {
+    this.serviceProviderEmailService = {
       provider : this.purchaseDetails.email,
       sender : this.user.name + ' ' + this.user.email,
       item : this.purchaseDetails.item,
@@ -126,13 +127,23 @@ export class StripePaymentPage {
       measurements : this.purchaseDetails.measurement,
     }
 
+    this.serviceProviderEmailStore = {
+      provider : this.purchaseDetails.email,
+      sender : this.user.name + ' ' + this.user.email,
+      item : this.purchaseDetails.item,
+      currency : this.currency,
+      amount : this.amount,
+    }
+
   }
+
+////////////////////////////////////////////////////////////////////////////////
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad StripePaymentPage');
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   presentLoading(message) {
     this.loading = this.loadingCtrl.create({
@@ -146,7 +157,7 @@ export class StripePaymentPage {
     }, 5000);
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   presentToast(message) {
     let toast = this.toastCtrl.create({
@@ -156,7 +167,7 @@ export class StripePaymentPage {
     toast.present();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   presentAlert(title, message) {
   let alert = this.alertCtrl.create({
@@ -167,7 +178,7 @@ export class StripePaymentPage {
   alert.present();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
   sendFirstConfirmationEmail(body) {
     this.presentLoading('Please wait ..');
@@ -178,39 +189,84 @@ export class StripePaymentPage {
     this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
       console.log(JSON.stringify(data))
       if (data == "success") {
+        this.loading.dismissAll();
       }
       else {
+        this.loading.dismissAll();
         this.presentAlert("Error", "Payment made, please contact and inform service provider");
-      }
-    },
-    error => {
-      this.loading.dismissAll();
-    })
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////
-
-  sendEmailtoServiceProvider(body) {
-    this.presentLoading('Please wait ..');
-    let headers =  new Headers({ "Content-Type": "application/json" });
-    let options = new RequestOptions({ headers: headers });
-    let url = this.dataService.raveURL + "sendEmailtoServiceProvider";
-
-    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
-      console.log(JSON.stringify(data))
-      if (data == "success") {
       }
     },
     error => {
       this.loading.dismissAll();
       this.presentAlert("Error", "Payment made, please contact and inform service provider");
     })
+    this.loading.dismissAll();
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+  sendEmailtoServiceProviderService(body) {
+    this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendEmailtoServiceProviderService";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      console.log(JSON.stringify(data))
+      if (data == "success") {
+        this.loading.dismissAll();
+      }
+      else {
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
+    },
+    error => {
+      this.loading.dismissAll();
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
+    })
+    this.loading.dismissAll();
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+
+  sendEmailtoServiceProviderStore(body) {
+    this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendEmailtoServiceProviderStore";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      console.log(JSON.stringify(data))
+      if (data == "success") {
+        this.loading.dismissAll();
+      }
+      else {
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
+    },
+    error => {
+      this.loading.dismissAll();
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
+    })
+    this.loading.dismissAll();
+  }
+
+
+////////////////////////////////////////////////////////////////////////////////
 
   pay() {
+
+    if (this.number.length == 0 || this.cvc.length == 0 || this.expMonth.length == 0 || this.expYear.length == 0
+    || this.name.length == 0 || this.address_line1.length == 0 || this.address_city.length == 0
+    || this.address_country.length == 0 || this.postalCode.length == 0 || this.email.length == 0){
+      this.presentAlert("Error", "Missing details, please fill in all details");
+      return;
+    }
+
     this.presentLoading('Please wait ..');
+
     let cardinfo = {
       number : this.number,
       expMonth : this.expMonth,
@@ -249,7 +305,7 @@ export class StripePaymentPage {
          console.log(data)
          if (data.status == "succeeded"){
            this.loading.dismissAll();
-           this.presentAlert("Success", data.outcome.seller_message);
+           this.presentAlert("Success", data.outcome.seller_message + ' | Once your item has been delivered, please remember to confirm your payment in the payments section of your profile.');
 
            //save data to the DB
            const promise = this.db.list('/' + 'stripe-payments' + '/' + this.user.code + '/' + data.id).push(data);
@@ -258,11 +314,16 @@ export class StripePaymentPage {
              //message successfully sent
              this.sendFirstConfirmationEmail(this.paymentEmail);
 
-             if (this.purchaseDetails.type = 'service'){
-               this.sendEmailtoServiceProvider(this.serviceProviderEmail)
+             if (this.purchaseDetails.type == 'service'){
+               this.sendEmailtoServiceProviderService(this.serviceProviderEmailService)
              }
 
-             this.presentToast("Successfully pushed data to the database")
+             else {
+               this.serviceProviderEmailStore.address = this.address_line1 + ', ' + this.address_line2 + ', ' + this.address_city + ', ' + this.postalCode + ', ' + this.address_country;
+               this.sendEmailtoServiceProviderStore(this.serviceProviderEmailStore)
+             }
+
+             //this.presentToast("Successfully pushed data to the database")
            })
            //.catch(function (err) {
              //some error and the message wasn't sent
@@ -270,6 +331,7 @@ export class StripePaymentPage {
            //});
 
            this.navCtrl.setRoot(InspirationPage);
+           this.navCtrl.parent.select(0);
          }
          else {
            this.loading.dismissAll();
@@ -278,13 +340,16 @@ export class StripePaymentPage {
        },
        error => {
          this.loading.dismissAll();
-         this.presentAlert("Error", error);
+         //this.presentAlert("Error", error);
+         this.presentAlert("Error", "Unable to make payment, please try again later");
        })
      }).catch(error => {
        this.loading.dismissAll();
-       this.presentAlert("Error", error)
+       //this.presentAlert("Error", error)
+       this.presentAlert("Error", "Unable to make payment, please try again later");
 
      });
+     this.loading.dismissAll();
    }
 
 }

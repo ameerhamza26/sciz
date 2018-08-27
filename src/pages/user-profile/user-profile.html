@@ -68,8 +68,8 @@
   <div class="post"  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="' url('+creation.imageUrl+')'">
     <ion-row style="height: 100%;">
      <ion-col col-12 text-right padding >
-     <!--   <img src="/assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
-        <img src="/assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;"  > -->
+        <img src="./assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
+        <img src="./assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;"  >
       </ion-col>
     </ion-row>
   </div>
@@ -175,7 +175,13 @@
       <div *ngIf="isPageOpen">
       <ng-container *ngSwitchCase="'likes'">
         <div class="storeholder">
+<<<<<<< HEAD
+        <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of dataService.likes" [style.background-image]="' url('+getImage(creation)+')'">
+          <img src="./assets/images/placeholder2.png">
+
+=======
         <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of likes"  [style.background-image]="' url('+creation.imageUrl+')'">
+>>>>>>> master
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import { AlertController } from 'ionic-angular';
 import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
 import { Storage } from '@ionic/storage';
+import { AuthService } from '../../app/auth.service'
 import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 import {InspirationPage} from "../inspiration/inspiration";
 import {ProfilePage} from "../profile/profile";
@@ -35,7 +36,7 @@ export class LoginPage {
   permission: any;
     Branch;
     branchUniversalObj;
-  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, private errorHandlerProvider: ErrorHandlerProvider, public dataService: DataService, public userService: UserService, private storage: Storage,platform: Platform) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, private errorHandlerProvider: ErrorHandlerProvider, public dataService: DataService, public userService: UserService, private storage: Storage,platform: Platform, public auth: AuthService) {
       const branchInit = () => {
           console.log("Branch init");
           // only on devices
@@ -69,6 +70,9 @@ export class LoginPage {
     console.log('ionViewDidLoad LoginPage');
   }
 
+  signInAnonymously() {
+    this.auth.anonymousLogin();
+  }
 
   login() {
     if ((this.password.length > 6 && this.username.length > 3) || this.username == 'admin') {
@@ -78,8 +82,8 @@ export class LoginPage {
         try {
           this.loading.dismissAll();
           if (data.message == "Successful" && (data.result[0].type == "customer" || data.result[0].type == "service" || data.result[0].type == "admin")) {
-            this.setUser(data.result);
-            //this.dataService.getAllLikes();
+            this.setUser(this.username);
+            this.signInAnonymously();
             this.storage.set('data', data);
             this.dataService.getLikes();
             console.log(this.dataService.me);

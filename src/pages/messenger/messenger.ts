@@ -3,6 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
 import {UserService} from '../../providers/user-service';
 import { AngularFireDatabase } from 'angularfire2/database';
+import { AngularFireAuth } from 'angularfire2/auth';
 import { LoadingController } from 'ionic-angular';
 import { ChatPage } from '../chat/chat';
 import { ToastController } from 'ionic-angular';
@@ -34,8 +35,9 @@ export class MessengerPage {
   chatlist: object[] = [];
   listofchats = new Map<string, object []>();
   listofchatsdb = new Map<string, object []>();
+  authState: any = null;
 
-  constructor(public toastCtrl: ToastController, public loadingCtrl: LoadingController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public dataService:DataService, public userService:UserService) {
+  constructor(public afAuth: AngularFireAuth, public toastCtrl: ToastController, public loadingCtrl: LoadingController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public dataService:DataService, public userService:UserService) {
     this.presentLoading();
     this.presentToast();
 
@@ -47,14 +49,8 @@ export class MessengerPage {
 
     this.start();
 
-<<<<<<< HEAD
-    this.subscription = db.list('/' + this.user.id);
-
-    this.itemsSubscription = this.subscription.subscribe( data => {
-=======
     this.subscription = db.list('/' + 'chats' + '/' + this.user.code);
     this.subscription.subscribe( data => {
->>>>>>> master
       this.chatlist = []
       data.forEach( data => {
         this.listofchatsdb.set(data.$key, data)
@@ -145,7 +141,6 @@ export class MessengerPage {
   }
 
   start(){
-
     //load user and their posts from data service
 
     this.segment = 'work';

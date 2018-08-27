@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import {DataService} from '../../providers/data-service';
+import { UserService } from '../../providers/user-service';
+import { UserProfilePage } from '../../pages/user-profile/user-profile';
 import { NavController  } from 'ionic-angular';
 import { ProfilePage } from '../../pages/profile/profile';
 import {Like} from "../../models/like-model";
@@ -21,7 +23,8 @@ export class HorizontalLookbook {
 
   tags:any;
 
-  constructor(public dataService:DataService,public navCtrl: NavController,private socialShare: SocialShareProvider) {
+  constructor(public dataService:DataService,public navCtrl: NavController,private socialShare: SocialShareProvider, public userService:UserService) {
+
 
     console.log(dataService.lookbook);
     this.getTags();
@@ -42,9 +45,19 @@ export class HorizontalLookbook {
     return user.name;
   }
 
+  getCreator(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+    return user.name;
+  }
+
   getImage(tag){
     let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
     return user.imageUrl;
+  }
+
+  getUserImage(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+    return user.image;
   }
 
   openProfile(tag){
@@ -56,6 +69,29 @@ export class HorizontalLookbook {
     });
 
   }
+
+  openUserProfile(code){
+    //open profile of service
+    console.log(code)
+    console.log(this.userService.user.code)
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+
+    if (this.userService.user.code == code){
+      this.navCtrl.setRoot(UserProfilePage,{
+        view:'service'
+      });
+      this.navCtrl.parent.select(2);
+    }
+
+    else {
+      this.navCtrl.push(ProfilePage,{
+        userCode:user.code,
+        view:'service'
+      });
+    }
+
+  }
+
 
     checkLiked(){
         // check if you have liked the selected post previously

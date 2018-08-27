@@ -46,6 +46,7 @@ export class LookbookPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookPage');
+    console.log(this.dataService.lookbook)
   }
 
 

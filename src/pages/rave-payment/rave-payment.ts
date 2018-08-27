@@ -48,7 +48,10 @@ export class RavePaymentPage {
   provider:any;
   creation: any;
   paymentEmail : any;
-  serviceProviderEmail : any;
+  serviceProviderEmailStore:any;
+  serviceProviderEmailService:any;
+
+  raveSubscription;
 
 
   constructor(public userService:UserService, private iab: InAppBrowser, public dataService:DataService, public appSettings:AppSettings, public loadingCtrl: LoadingController, public toastCtrl: ToastController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public Http: Http,  private alertCtrl: AlertController) {
@@ -117,7 +120,7 @@ export class RavePaymentPage {
       bankAccountSortCode : this.purchaseDetails.bankAccountSortCode
     }
 
-    this.serviceProviderEmail = {
+    this.serviceProviderEmailService = {
       provider : this.purchaseDetails.email,
       sender : this.user.name + ' ' + this.user.email,
       item : this.purchaseDetails.item,
@@ -128,9 +131,20 @@ export class RavePaymentPage {
       measurements : this.purchaseDetails.measurement,
     }
 
+    this.serviceProviderEmailStore = {
+      provider : this.purchaseDetails.email,
+      sender : this.user.name + ' ' + this.user.email,
+      item : this.purchaseDetails.item,
+      currency : this.currency,
+      amount : this.amount,
+    }
+
+
 
     //this.amount = this.navParams.get('price');
   }
+
+////////////////////////////////////////////////////////////////////////////////
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad RavePaymentPage');
@@ -152,7 +166,11 @@ export class RavePaymentPage {
 
 ////////////////////////////////////////////////////////////////////////////////
   presentPaymentLink() {
-    const browser = this.iab.create(this.dataService.ravePaymentLinkURL, '_system', 'location=yes');
+    this.presentPaymentLinkPrompt().then( (result) => {
+      if (result != false) {
+        const browser = this.iab.create(this.dataService.ravePaymentLinkURL, '_system', 'location=yes');
+      }
+    })
   }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,6 +215,67 @@ export class RavePaymentPage {
       alert.present();
     })
   }
+
+////////////////////////////////////////////////////////////////////////////////
+  presentPaymentLinkPrompt() {
+    return new Promise((resolve, reject) => {
+      let alert = this.alertCtrl.create({
+        title: 'Payment Link',
+        message: 'Proceeding will redirect you out of the app. Ensure the amount paid is the same as the amount for the item being purchased. Add your transaction reference using the external payment link below once payment is complete. Failure to do this may lead to subsequent delays.',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: data => {
+              resolve(false);
+            }
+          },
+          {
+            text: 'Proceed',
+            handler: data => {
+              resolve(true);
+            }
+          }
+        ]
+      });
+      alert.present();
+    })
+  }
+
+
+////////////////////////////////////////////////////////////////////////////////
+  presentPaymentReferencePrompt() {
+    return new Promise((resolve, reject) => {
+      let alert = this.alertCtrl.create({
+        title: 'Transaction Reference',
+        message: 'Please enter the transaction reference',
+        inputs: [
+          {
+            name: 'txRef',
+            placeholder: 'Transaction Reference',
+            type: 'text'
+          }
+        ],
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: data => {
+              resolve(false);
+            }
+          },
+          {
+            text: 'Submit',
+            handler: data => {
+              resolve(data.txRef)
+            }
+          }
+        ]
+      });
+      alert.present();
+    })
+  }
+
 
 ////////////////////////////////////////////////////////////////////////////////
   presentOtpPrompt(message) {
@@ -251,41 +330,85 @@ export class RavePaymentPage {
     this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
       console.log(JSON.stringify(data))
       if (data == "success") {
+        this.loading.dismissAll();
       }
       else {
+        this.loading.dismissAll();
         this.presentAlert("Error", "Payment made, please contact and inform service provider");
       }
     },
     error => {
       this.loading.dismissAll();
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
     })
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////
-
-  sendEmailtoServiceProvider(body) {
-    this.presentLoading('Please wait ..');
-    let headers =  new Headers({ "Content-Type": "application/json" });
-    let options = new RequestOptions({ headers: headers });
-    let url = this.dataService.raveURL + "sendEmailtoServiceProvider";
-
-    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
-      console.log(JSON.stringify(data))
-      if (data == "success") {
-      }
-      else {
-        this.presentAlert("Error", "Payment made, please contact and inform service provider");
-      }
-    },
-    error => {
-      this.loading.dismissAll();
-    })
+    this.loading.dismissAll();
   }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-  initiatePayment(){
+  sendEmailtoServiceProviderService(body) {
     this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendEmailtoServiceProviderService";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      console.log(JSON.stringify(data))
+      if (data == "success") {
+        this.loading.dismissAll();
+      }
+      else {
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
+    },
+    error => {
+      this.loading.dismissAll();
+    })
+    this.loading.dismissAll();
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+
+  sendEmailtoServiceProviderStore(body) {
+    this.presentLoading('Please wait ..');
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "sendEmailtoServiceProviderStore";
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+      console.log(JSON.stringify(data))
+      if (data == "success") {
+        this.loading.dismissAll();
+      }
+      else {
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
+    },
+    error => {
+      this.loading.dismissAll();
+      this.presentAlert("Error", "Payment made, please contact and inform service provider");
+    })
+    this.loading.dismissAll();
+  }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+
+  initiatePayment(){
+
+    if (this.cardno.length == 0 || this.cvv.length == 0 || this.expirymonth.length == 0 || this.expiryyear.length == 0
+    || this.email.length == 0 || this.phonenumber.length == 0 || this.firstname.length == 0 || this.lastname.length == 0
+    || this.billingaddress.length == 0 || this.billingcity.length == 0 || this.billingcountry.length == 0 || this.billingzip.length == 0){
+      this.presentAlert("Error", "Missing details, please fill in all details");
+      return;
+    }
+
+    this.presentLoading('Please wait ..');
+
+
 
     //payload
     var body = {
@@ -301,6 +424,7 @@ export class RavePaymentPage {
       lastname: this.lastname,
       meta: this.purchaseDetails
     }
+
 
     let headers =  new Headers({ "Content-Type": "application/json" });
     let options = new RequestOptions({ headers: headers });
@@ -335,7 +459,7 @@ export class RavePaymentPage {
              }
           })
         }
-
+/* Disabling all checks for outside the browser
         if (data.data.suggested_auth == "AVS_VBVSECURECODE" || data.data.suggested_auth == "NOAUTH_INTERNATIONAL") {
           var body = {
             cardno: this.cardno,
@@ -358,34 +482,43 @@ export class RavePaymentPage {
           }
           this.initiatePaymentAVS(body);
         }
+*/
 
         if (data.data.chargeResponseCode == "00"){
-          this.presentAlert("Success", data.data.chargeResponseMessage);
+          this.presentAlert("Success", data.data.chargeResponseMessage + ' | Once your item has been delivered, please remember to confirm your payment in the payments section of your profile.');
 
-          this.sendFirstConfirmationEmail(this.paymentEmail);
-
-          if (this.purchaseDetails.type = 'service'){
-            this.sendEmailtoServiceProvider(this.serviceProviderEmail)
-          }
 
           data.metadata = this.purchaseDetails
+          data.externalPayment = 'false';
           //save data to the DB
           const promise = this.db.list('/' + 'rave-payments' + '/' + this.user.code + '/' + data.data.tx.id).push(data);
           promise
           .then( (res) => {
+            this.sendFirstConfirmationEmail(this.paymentEmail);
+
+            if (this.purchaseDetails.type == 'service'){
+              this.sendEmailtoServiceProviderService(this.serviceProviderEmailService)
+            }
+
+            else {
+              this.serviceProviderEmailStore.address = this.billingaddress + ', ' + this.billingcity + ', ' + this.billingzip + ', ' + this.billingcountry;
+              this.sendEmailtoServiceProviderStore(this.serviceProviderEmailStore)
+            }
+
             //message successfully sent
-            this.presentToast("Successfully pushed data to the database")
+            //this.presentToast("Successfully pushed data to the database")
           })
           //.catch(function (err) {
             //some error and the message wasn't sent
             //this.presentToast("Error while pushing data to the database")
           //});
           this.navCtrl.setRoot(InspirationPage);
+          this.navCtrl.parent.select(0);
         }
 
         if (data.data.chargeResponseCode == "02"){
 
-          if (data.data.authModelUsed == "GTB_OTP" || data.data.authModelUsed == "OTP" ){
+          if (data.data.authModelUsed.includes("OTP") ){
             this.presentOtpPrompt(data.data.chargeResponseMessage).then( (result) => {
                if (result != false) {
                  var body = {
@@ -397,10 +530,11 @@ export class RavePaymentPage {
             })
           }
 
-          else if (data.data.authModelUsed == "AVS_VBVSECURECODE" || data.data.authModelUsed == "NOAUTH_INTERNATIONAL" ){
-            this.presentToast("Card charge successful, running verification checks");
-            let browser = this.iab.create(data.data.authurl, '_system', 'location=yes');
-          }
+          //Disabling all broswer related stuff as this would lead to leaving the app
+          //else if (data.data.authModelUsed == "AVS_VBVSECURECODE" || data.data.authModelUsed == "NOAUTH_INTERNATIONAL" ){
+          //  this.presentToast("Card charge successful, running verification checks");
+          //  let browser = this.iab.create(data.data.authurl, '_system', 'location=yes');
+          //}
         }
       }
 
@@ -411,13 +545,15 @@ export class RavePaymentPage {
 
       else {
         this.loading.dismissAll();
-        this.presentAlert("Error", "Unable to make payment, please contact support");
+        this.presentAlert("Error", "Unable to make payment, please contact support or try using the payment link instead");
       }
     },
     error => {
       this.loading.dismissAll();
-      this.presentAlert("Error", error);
+      this.presentAlert("Error", "Unable to make payment, please contact support or try using the payment link instead");
+      //this.presentAlert("Error", error);
     })
+    this.loading.dismissAll();
   }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -430,10 +566,10 @@ export class RavePaymentPage {
     this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
       console.log(data)
       if (data.status == "success"){
-        if (data.data.chargeResponseCode == "02"){
-          this.loading.dismissAll();
-          this.presentToast("Card charge successful, running verification checks");
+        this.loading.dismissAll();
 
+        if (data.data.chargeResponseCode == "02"){
+          this.presentToast("Card charge successful, running verification checks");
           this.presentOtpPrompt(data.data.chargeResponseMessage).then( (result) => {
              if (result != false) {
                var body = {
@@ -447,22 +583,29 @@ export class RavePaymentPage {
         }
 
         else if (data.data.chargeResponseCode == "00"){
-          this.presentAlert("Success", data.data.chargeResponseMessage);
-
-          this.sendFirstConfirmationEmail(this.paymentEmail);
-
-          if (this.purchaseDetails.type = 'service'){
-            this.sendEmailtoServiceProvider(this.serviceProviderEmail)
-          }
+          this.presentAlert("Success", data.data.chargeResponseMessage + ' | Once your item has been delivered, please remember to confirm your payment in the payments section of your profile.');
 
           data.metadata = this.purchaseDetails
+          data.externalPayment = 'false';
 
           //save data to the DB
           const promise = this.db.list('/' + 'rave-payments' + '/' + this.user.code + '/' + data.data.tx.id).push(data);
           promise
           .then( (res) => {
+            this.sendFirstConfirmationEmail(this.paymentEmail);
+
+            if (this.purchaseDetails.type == 'service'){
+              this.sendEmailtoServiceProviderService(this.serviceProviderEmailService)
+            }
+
+            else {
+              this.serviceProviderEmailStore.address = this.billingaddress + ', ' + this.billingcity + ', ' + this.billingzip + ', ' + this.billingcountry;
+              this.sendEmailtoServiceProviderStore(this.serviceProviderEmailStore)
+            }
+
+
             //message successfully sent
-            this.presentToast("Successfully pushed data to the database")
+            //this.presentToast("Successfully pushed data to the database")
           })
           //.catch(function (err) {
             //some error and the message wasn't sent
@@ -470,6 +613,7 @@ export class RavePaymentPage {
           //});
 
           this.navCtrl.setRoot(InspirationPage);
+          this.navCtrl.parent.select(0);
         }
       }
 
@@ -487,6 +631,7 @@ export class RavePaymentPage {
       this.loading.dismissAll();
       this.presentAlert("Error", error);
     })
+    this.loading.dismissAll();
   }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -503,22 +648,28 @@ export class RavePaymentPage {
 
       if ((data.status == "success") && (data.data.data.responsecode == "00")){
         this.loading.dismissAll();
-        this.presentAlert("Success", data.data.data.responsemessage);
-
-        this.sendFirstConfirmationEmail(this.paymentEmail);
-
-        if (this.purchaseDetails.type = 'service'){
-          this.sendEmailtoServiceProvider(this.serviceProviderEmail)
-        }
+        this.presentAlert("Success", data.data.data.responsemessage + ' | Once your item has been delivered, please remember to confirm your payment in the payments section of your profile.');
 
         data.metadata = this.purchaseDetails;
+        data.externalPayment = 'false';
 
         //save data to the DB
         const promise = this.db.list('/' + 'rave-payments' + '/' + this.user.code + '/' + data.data.tx.id).push(data);
         promise
         .then( (res) => {
+          this.sendFirstConfirmationEmail(this.paymentEmail);
+
+          if (this.purchaseDetails.type == 'service'){
+            this.sendEmailtoServiceProviderService(this.serviceProviderEmailService)
+          }
+
+          else {
+            this.serviceProviderEmailStore.address = this.billingaddress + ', ' + this.billingcity + ', ' + this.billingzip + ', ' + this.billingcountry;
+            this.sendEmailtoServiceProviderStore(this.serviceProviderEmailStore)
+          }
+
           //message successfully sent
-          this.presentToast("Successfully pushed data to the database")
+          //this.presentToast("Successfully pushed data to the database")
         })
         //.catch(function (err) {
           //some error and the message wasn't sent
@@ -526,6 +677,7 @@ export class RavePaymentPage {
         //});
         //Redirect to home page
         this.navCtrl.setRoot(InspirationPage);
+        this.navCtrl.parent.select(0);
         //Transfer money to service provider, need to have his details before hand
       }
       else if (data.status == "error"){
@@ -535,7 +687,6 @@ export class RavePaymentPage {
       else {
         this.loading.dismissAll();
         this.presentAlert("Error", "Unable to validate payment. Reason : " + data.data.data.responsemessage);
-        this.navCtrl.pop();
       }
 
     },
@@ -543,6 +694,7 @@ export class RavePaymentPage {
       this.loading.dismissAll();
       this.presentAlert("Error", error);
     })
+    this.loading.dismissAll();
   }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -582,6 +734,150 @@ export class RavePaymentPage {
       this.loading.dismissAll();
       this.presentAlert("Error", error);
     })
+    this.loading.dismissAll();
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+
+  addExternalPayment(){
+
+    if (this.email.length == 0 || this.firstname.length == 0 || this.lastname.length == 0
+    || this.billingaddress.length == 0 || this.billingcity.length == 0 || this.billingcountry.length == 0 || this.billingzip.length == 0){
+      this.presentAlert("Error", "Email, Address, City, Zip/Postal Code, Country, First Name, Last Name are all required. You will not be charged.");
+      return;
+    }
+
+
+    this.presentPaymentReferencePrompt().then( (result) => {
+       if (result != false) {
+         this.checkReferenceAndUpdateDb(result);
+       }
+    })
+
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+  checkDuplicateReference(id){
+    //RAVE
+    return new Promise((resolve, reject) => {
+      var duplicate = 'false'
+
+      this.raveSubscription = this.db.list('/' + 'rave-payments' + '/' + this.user.code, { preserveSnapshot: true });
+      this.raveSubscription.subscribe( ravedata => {
+
+        for (let data of ravedata){
+          if (data.key == id){
+            console.log(data.key)
+            duplicate = 'true'
+          }
+        }
+      })
+
+      if (duplicate == 'true'){
+        resolve(true)
+      }
+      else {
+        resolve(false)
+      }
+    })
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+
+  checkReferenceAndUpdateDb(txRef){
+    this.presentLoading('Please wait ..');
+
+    let headers =  new Headers({ "Content-Type": "application/json" });
+    let options = new RequestOptions({ headers: headers });
+    let url = this.dataService.raveURL + "listTransactions";
+
+    var body = {
+      status: "successful",
+      customer_email : this.email,
+      transaction_reference : txRef
+    }
+
+    this.Http.post(url, JSON.stringify(body), options).map(response => response.json()).subscribe(data => {
+
+      console.log(data);
+
+      if ((data.status == "success") && (data.data.page_info.total == 1)){
+        this.loading.dismissAll();
+
+        this.checkDuplicateReference(data.data.transactions[0].id).then( (result) => {
+          console.log(result)
+
+          if (data.data.transactions[0].amount != this.amount || data.data.transactions[0].currency.toUpperCase() != this.currency.toUpperCase()){
+            this.presentAlert("Error", "Payment amounts or currency do not match");
+          }
+
+           else if (result == true) {
+
+             this.presentAlert("Error", "Payment already added for the given transaction reference");
+           }
+
+           else {
+             this.presentAlert("Success", 'Transaction Verified | Once your item has been delivered, please remember to confirm your payment in the payments section of your profile.');
+
+             data.metadata = this.purchaseDetails;
+             data.externalPayment = 'true';
+
+             //save data to the DB
+             const promise = this.db.list('/' + 'rave-payments' + '/' + this.user.code + '/' + data.data.transactions[0].id).push(data);
+             promise
+             .then( (res) => {
+               this.sendFirstConfirmationEmail(this.paymentEmail)
+
+
+               if (this.purchaseDetails.type == 'service'){
+                 this.sendEmailtoServiceProviderService(this.serviceProviderEmailService)
+               }
+
+               else {
+                 this.serviceProviderEmailStore.address = this.billingaddress + ', ' + this.billingcity + ', ' + this.billingzip + ', ' + this.billingcountry;
+                 this.sendEmailtoServiceProviderStore(this.serviceProviderEmailStore)
+               }
+
+               //message successfully sent
+               //this.presentToast("Successfully pushed data to the database")
+             })
+             //.catch(function (err) {
+               //some error and the message wasn't sent
+               //this.presentToast("Error while pushing data to the database")
+             //});
+             //Redirect to home page
+             this.navCtrl.setRoot(InspirationPage);
+             this.navCtrl.parent.select(0);
+             //Transfer money to service provider, need to have his details before hand
+           }
+        },
+        error => {
+          this.loading.dismissAll();
+          this.presentAlert("Error", error);
+        })
+      }
+
+      else if ((data.status == "success") && (data.data.page_info.total == 0)){
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Unable to find payment for the given transaction reference, ensure email is the same that was used during payment");
+      }
+
+      else if (data.status == "error"){
+        this.loading.dismissAll();
+        this.presentAlert("Error", data.message);
+      }
+      else {
+        this.loading.dismissAll();
+        this.presentAlert("Error", "Unable to verify payment, please try again later");
+      }
+
+    },
+    error => {
+      this.loading.dismissAll();
+      this.presentAlert("Error", error);
+    })
+    this.loading.dismissAll();
+
   }
 
 }

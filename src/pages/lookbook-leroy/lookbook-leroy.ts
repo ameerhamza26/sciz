@@ -4,9 +4,11 @@ import { Component } from '@angular/core';
 import { ProfilePage } from '../profile/profile';
 import { NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
 import { Slides } from 'ionic-angular';
-
+import { UserProfilePage } from '../../pages/user-profile/user-profile';
 
 import { DataService } from '../../providers/data-service';
+import { UserService } from '../../providers/user-service';
+
 import { CreateNewPage } from '../create-new/create-new';
 import { ToastController } from 'ionic-angular';
 import {Like} from "../../models/like-model";
@@ -447,6 +449,41 @@ export class LookbookLeroyPage {
       view: 'service'
     });
   }
+
+  getCreator(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+    return user.name;
+  }
+
+
+  getUserImage(code){
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+    return user.image;
+  }
+
+  openUserProfile(code){
+    console.log(code)
+    console.log(this.userService.user.code)
+    let user = this.dataService.users.filter(item => item.code == code)[0];
+
+    if (this.userService.user.code == code){
+      this.navCtrl.setRoot(UserProfilePage,{
+        view:'service'
+      });
+      this.navCtrl.parent.select(2);
+    }
+
+    else {
+      this.navCtrl.push(ProfilePage,{
+        userCode:user.code,
+        view:'service'
+      });
+    }
+  }
+
+
+
+
 
     checkLiked(){
         // check if you have liked the selected post previously

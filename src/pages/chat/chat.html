@@ -20,7 +20,7 @@
 
 
 <ion-content class="chat" padding>
-  <div id="chatMessages">
+  <div #scrollMe id="chatMessages">
     <div class="message" *ngFor="let message of messages">
       <div [class]="message.user == user.id ? 'innerMessage messageRight' : 'innerMessage messageLeft' ">
         <div *ngIf="message.image == false" class="message">{{message.message}}</div>

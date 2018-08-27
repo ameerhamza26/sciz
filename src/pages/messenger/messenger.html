@@ -59,7 +59,7 @@
         <ion-item  *ngIf="chats.sender==false;" (click)="openChat(chats.displayname, chats.user)">
 
           <ion-avatar item-start>
-            <img src="{{getAvatar(chats.participant)}}" style="object-fit: cover;">
+            <img src="{{getAvatar(chats.user)}}" style="object-fit: cover;">
           </ion-avatar>
 
           <h2>{{chats.displayname}}</h2>
