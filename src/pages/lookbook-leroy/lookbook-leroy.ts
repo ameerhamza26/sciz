@@ -12,6 +12,7 @@ import { ToastController } from 'ionic-angular';
 import {Like} from "../../models/like-model";
 import {Post} from "../../models/post-model";
 import {SocialShareProvider} from "../../providers/social-share/social-share";
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 
 /**
  * Generated class for the LookbookLeroyPage page.
@@ -43,7 +44,7 @@ export class LookbookLeroyPage {
   post: any;
   tags: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider, private errorHandler: ErrorHandlerProvider) {
 
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');
@@ -64,10 +65,11 @@ export class LookbookLeroyPage {
   start(mode) {
 
     if (mode == 'view') {
-      let code = this.post.code;
+      let code = this.post.id;
       console.log(this.dataService.pages)
-      console.log(code)
-      this.pages = this.dataService.pages.filter(item => item.inspirationCode == code);
+      console.log(code);
+      //this.pages = this.dataService.pages.filter(item => item.inspirationCode == code);
+      this.pages = this.dataService.findPage("inspiration_id",code);
 
 
     } else if (mode == 'edit') {
@@ -82,11 +84,12 @@ export class LookbookLeroyPage {
 
 
 
-    for (let page of this.pages) {
-      this.images.push(page.image);
+  /*  for (let page of this.pages) {
+        this.dataService.getImageUrl(page.image,page);
+    //  this.images.push(page.image);
     }
-
-    this.tags = this.dataService.tags.filter(item => item.inspirationCode == this.post.code);
+*/
+    this.tags = this.dataService.tags.filter(item => item.inspiration_id == this.post.id);
 
   }
 
@@ -108,19 +111,21 @@ export class LookbookLeroyPage {
     toast.present();
   }
 
-  save() {
+  saveOld() {
 
+    console.log("SAVE INSPIRATION ");
     this.showLoading('Saving ..');
     let i = 0;
     let counter = 0;
 
     if (this.mode == 'preview') {
       debugger;
-      this.dataService.saveImage(this.post.image, this.post.code).subscribe(data => {
+      this.dataService.saveImage(this.post.image, "magazine"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
         if (data.message == "Successful") {
+          this.post.image = data.imageName;
           if (this.pages.length > 0) {
             for (let page of this.pages) {
-              this.dataService.saveImage(page.image, page.inspirationCode + i).subscribe(data => {
+              this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
                 if (data.message == "Successful") {
                   counter = counter + 1;
                   if (counter == (this.pages.length - 1)) {
@@ -128,10 +133,10 @@ export class LookbookLeroyPage {
                     // this.post.image = this.post.code + '.png';
                     i = 0;
                     for (let page of this.pages) {
-                      page.image = page.inspirationCode + i + '.png';
+                      page.image = data.imageName;
                       i = i + 1;
                     }
-                    this.loading.dismissAll();
+                    //this.loading.dismissAll();
                     this.dataService.saveNewInspiration(this.post, this.pages).subscribe(data => {
                       try {
                         console.log(data);
@@ -174,17 +179,19 @@ export class LookbookLeroyPage {
     }
     else if (this.mode == 'edit') {
 
-      this.dataService.pages = this.dataService.pages.filter(item => item.inspirationCode != this.post.code);
+      //this.dataService.pages = this.dataService.pages.filter(item => item.inspirationCode != this.post.code);
+      this.dataService.pages = this.dataService.findPage("inspiration_id",this.post.id);
       for (let page of this.dataService.lookbookPages) {
         this.dataService.pages.push(page);
       }
-      this.dataService.saveImage(this.post.image, this.post.code).subscribe(data => {
+      this.dataService.saveImage(this.post.image, "magazine"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
         // if pages found
+          this.post.image = data.imageName;
         if (this.pages.length > 0) {
           for (let page of this.pages) {
-            page.inspirationCode = this.post.code;
+            page.inspirationCode = this.post.id;
             debugger;
-            this.dataService.saveImage(page.image, page.inspirationCode + i).subscribe(data => {
+            this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
               console.log(data.message)
               if (data.message == "Successful") {
                 counter = counter + 1;
@@ -197,12 +204,12 @@ export class LookbookLeroyPage {
                   // this.post.image = this.post.code + '.png';
                   i = 0;
                   for (let page of this.pages) {
-                    page.inspirationCode = this.post.code;
-                    page.image = page.inspirationCode + i + '.png';
+                    page.inspirationCode = this.post.id;
+                    page.image = data.imageName;
                     i = i + 1;
                   }
                   debugger;
-                  this.dataService.updateInspiration(this.post.code, this.post, this.pages).subscribe(data => {
+                  this.dataService.updateInspiration(this.post.id, this.post, this.pages).subscribe(data => {
                     console.log(data)
                     this.loading.dismissAll();
                     this.navCtrl.parent.select(0);
@@ -229,6 +236,151 @@ export class LookbookLeroyPage {
     this.navCtrl.setRoot(CreateNewPage);
   }
 
+
+
+    save() {
+        //admin options
+        console.log("SAVE INSPIRATION LOOKBOK");
+        this.showLoading('Saving ..');
+
+        let counter = 0;
+
+        if (this.mode == 'preview') {
+            this.dataService.saveImage(this.post.image, "magazine"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
+                if (data.message == "Successful") {
+                    this.post.image = data.imageName;
+                    if (this.pages.length > 0) {
+                        console.log("HAS PAGES");
+                        console.log(this.pages.length);
+                        for (let page of this.pages) {
+                            this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
+                                if (data.message == "Successful") {
+                                    counter++;
+                                    if (counter == (this.pages.length)) {
+                                        console.log('all images saved');
+                                        // this.post.image = this.post.code + '.png';
+
+                                        for (let page of this.pages) {
+                                            page.image = data.imageName;
+                                        }
+                                        this.loading.dismissAll();
+                                        this.dataService.saveNewInspiration(this.post, this.pages).subscribe(data => {
+                                            if(data.status) {
+                                                console.log("SAVED INSPIRATION");
+                                                console.log(data);
+                                            }
+                                            else
+                                            {
+                                                console.log("ERROR SAVING INSPIRATION");
+                                                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
+                                            }
+                                        });
+                                        this.navCtrl.parent.select(0);
+                                    }
+                                }
+                                else {
+                                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
+                                }
+                            });
+                        }
+
+
+                    }
+                    else {
+                        console.log("NO PAGES");
+                        this.dataService.saveNewInspiration(this.post, this.pages).subscribe(data => {
+                            try {
+                                if(data.status) {
+                                    console.log(data);
+                                    //  this.loading.dismissAll();
+                                    this.navCtrl.parent.select(0);
+                                }
+                                else{
+                                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
+                                }
+
+                            } catch (error) {
+                                //   this.loading.dismissAll();
+                                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
+                                console.log('inspiration save error');
+                            }
+                        });
+                        //  this.loading.dismissAll();
+                        this.navCtrl.parent.select(0);
+                    }
+                }
+                else {
+                    this.loading.dismissAll();
+                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
+                    this.presentAlert('Oops', 'Please try again');
+                }
+                /* } catch (error) {
+                  this.loading.dismissAll();
+                  this.presentAlert('Oops', 'Please try again');
+                } */
+                this.navCtrl.parent.select(0);
+            });
+        }
+        else if (this.mode == 'edit') {
+            console.log("UPDATE INSPIRATION");
+            console.log(this.post.image);
+            this.dataService.pages = this.dataService.findPage("inspiration_id",this.post.id,false);
+            for (let page of this.dataService.lookbookPages) {
+                this.dataService.pages.push(page);
+            }
+            this.dataService.saveImage(this.post.image, "magazine"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
+                if(data.message = "Successful"){
+                    this.post.image = data.imageName; // new image
+                    this.post.imageUrl = "";
+                    console.log("Image is changed");
+                    console.log(this.post.image);
+                }
+
+                this.dataService.updateInspiration(this.post.id,this.post,this.pages).subscribe(data=>{
+                    if(data.status == 1){
+                        console.log("Inspiration saved");
+                        if(this.pages.length > 0){
+                            for (let page of this.pages) {
+                                page.inspiration_id = this.post.id;
+                                this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
+                                    if (data.message == "Successful") {
+                                        page.image = data.imageName;
+                                        console.log("Page image changed");
+                                        counter++;
+                                    }
+                                    else if(data.status == 2){ // image not updated
+                                        counter++;
+                                    }
+                                    if (counter == (this.pages.length)) {
+                                        console.log('all images saved');
+                                        this.dataService.updateInspirationPages(this.post.id,this.pages).subscribe(data => {
+                                            if(data.status){
+                                                this.loading.dismissAll();
+                                                this.navCtrl.parent.select(0);
+                                            }
+                                            else
+                                            {
+                                                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[2].title,ErrorHandlerProvider.MESSAGES.error.inspiration[2].msg);
+                                            }
+                                        })
+                                    }
+                                });
+                            }
+                        }
+                        else { // no pages
+                            this.loading.dismissAll();
+                            this.navCtrl.parent.select(0);
+                        }
+                    }
+                    else {
+                        this.loading.dismissAll();
+                        this.navCtrl.parent.select(0);
+                        this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[2].title,ErrorHandlerProvider.MESSAGES.error.inspiration[2].msg);
+                    }
+                });
+            });
+        }
+    }
   viewImage(link) {
     this.imageLink = link;
     this.showImage = true;
@@ -254,13 +406,13 @@ export class LookbookLeroyPage {
   }
 
   getUser(tag) {
-    let user = this.dataService.users.filter(item => item.code == tag.userCode)[0];
+    let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
     return user.name;
   }
 
   getImage(tag) {
-    let user = this.dataService.users.filter(item => item.code == tag.userCode)[0];
-    return user.image;
+    let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
+    return user.imageUrl;
   }
 
   showLoading(message) {
@@ -270,7 +422,7 @@ export class LookbookLeroyPage {
     this.loading.present();
     setTimeout(() => {
       this.loading.dismiss();
-    }, 120000);
+    }, 5000);
   }
 
   presentAlert(title, message) {
@@ -301,8 +453,8 @@ export class LookbookLeroyPage {
         console.log(this.dataService.likes);
         this.pages.forEach((page, index) => {
             console.log("PAGE",page);
-            if(this.dataService.likes.filter(item => item.creationCode == page.code).length > 0){
-                let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == page.code)[0];
+            if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+page.id).length > 0){
+                let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+page.id)[0];
                 console.log('liked');
                 page.liked = reLikedCreation.liked;
             }else{
@@ -312,17 +464,17 @@ export class LookbookLeroyPage {
         });
     }
 
-    like(code){
+    like(like){
         //like post, add to likes
 
         //like post, add to likes
-        console.log("Liked code", code);
-        if(this.dataService.likes.filter(item => item.creationCode == code).length > 0){
-            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == code)[0];
+        console.log("Liked code", like.id);
+        if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
+            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
             reLikedCreation.liked = true;
             //update database
         }else{
-            let likedCreation = new Like ('',this.dataService.me.code, code,true);
+            let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
             this.dataService.likes.splice(0,0,likedCreation);
             this.dataService.saveLike(likedCreation);
             //save like

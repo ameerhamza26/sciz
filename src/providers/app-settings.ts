@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 
 const CONFIG = {
-  // apiURL:'http://ec2-18-217-27-194.us-east-2.compute.amazonaws.com/'
+
   apiURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
   apiImageURL: 'http://18.220.1.42/',
   raveURL: 'http://192.168.0.19:4000/',
   stripeURL:'http://192.168.0.19:9000/',
   ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapplkv0/',
   stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J'
+
 };
+
 
 /*
   Generated class for the AppSettingsProvider provider.

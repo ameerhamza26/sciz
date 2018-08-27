@@ -13,6 +13,8 @@ import { Size } from '../models/size-model';
 import { User } from '../models/user-model';
 import { Like } from '../models/like-model';
 import { Tag } from '../models/tag-model';
+import {ErrorHandlerProvider} from "./error-handler/error-handler";
+import {errorHandler} from "@angular/platform-browser/src/browser";
 
 
 
@@ -50,8 +52,8 @@ export class DataService {
   lookbook: any;
   coverImage: any;
 
-  constructor(public http: Http, public appSettings: AppSettings, public userService: UserService) {
-    console.log('Hello DataServiceProvider Provider');
+  constructor(public http: Http, public appSettings: AppSettings, public userService: UserService,private errorHandler: ErrorHandlerProvider) {
+   // console.log('Hello DataServiceProvider Provider');
     this.loadData();
   }
 
@@ -59,6 +61,7 @@ export class DataService {
 
   loadData() {
 
+ // console.log("LOAD DATA");
     this.coverImage = 'assets/images/placeholder.png';
 
     this.getUsers();
@@ -86,6 +89,7 @@ export class DataService {
     });
 
   }
+
   createBranchLink(model_type,type_id,type_image,social_type){
       var model_type = model_type; // magazine,item,profile
       var type_id = type_id; // magazine,item,profile ID
@@ -108,20 +112,22 @@ export class DataService {
   }
 
   getUsers() {
-
     this.users.length = 0;
-
     this.http.get(this.apiUrl + 'getUsers').map(res => res.json()).subscribe(data => {
+      if(data.status){
+          console.log("GET USERS,", data.result);
+          for (let user of data.result) {
 
-      for (let user of data) {
-
-        let image = this.apiUrl + "images/" + user.image;
-        user.image = image;
-        this.users.push(user);
+              let image = user.image;
+              this.getImageUrl(image,user);
+              user.image = image;
+              this.users.push(user);
+          }
+         // console.log(this.users);
       }
-
-      console.log(this.users);
-
+      else{
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].msg);
+      }
     });
 
   }
@@ -131,7 +137,6 @@ export class DataService {
     return this.http.get(this.apiUrl + 'getUsers').map(res => res.json());
   }
 
-
   getInspirations() {
 
     this.posts = [];
@@ -139,42 +144,50 @@ export class DataService {
       let pageLikes;
       let inspirationPages;
       this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
-      for (let inspiration of data) {
-        let image = this.apiUrl + "images/" + inspiration.image;
-        inspiration.image = image;
-        inspiration.likes = 0; // magazine likes - random for testing
-       /* inspirationPages.forEach((page, index) => {
-            pageLikes = this.likes.filter(item => item.creationCode == page.code);
-            console.log("PAGE LIKES");
-            console.log(pageLikes);
-            console.log(pageLikes.length);
-            inspiration.likes = pageLikes.length;
-        }); */
-          this.posts.push(inspiration);
-      }
-
-     // console.log(this.posts);
-
-      this.getPages();
-
+        if(data.status){
+            for (let inspiration of data.result) {
+                let image =  inspiration.image;
+                inspiration.image = image;
+                inspiration.likes = 0; // magazine likes - random for testing
+                this.getImageUrl(inspiration.image,inspiration);
+                /* inspirationPages.forEach((page, index) => {
+                     pageLikes = this.likes.filter(item => item.creationCode == page.code);
+                     console.log("PAGE LIKES");
+                     console.log(pageLikes);
+                     console.log(pageLikes.length);
+                     inspiration.likes = pageLikes.length;
+                 }); */
+                this.posts.push(inspiration);
+            }
+            this.getPages();
+        }
+        else {
+            this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].msg);
+        }
     });
 
   }
 
   getInspirationTags() {
-    console.log("INSPIRATION TAGS");
+  //  console.log("INSPIRATION TAGS");
     this.tags.length = 0;
 
     this.http.get(this.apiUrl + 'getInspirationTags').map(res => res.json()).subscribe(data => {
+      if(data.status){
+         // console.log(data);
+          for (let tag of data.result) {
 
-      console.log(data);
-      for (let tag of data) {
+              let newTag = new Tag(tag.id, tag.code, tag.taggedUser);
+              this.tags.push(newTag);
+          }
 
-        let newTag = new Tag(this.generateCode('tag'), tag.code, tag.taggedUser);
-        this.tags.push(newTag);
+        //  console.log(this.tags);
+      }
+      else
+      {
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[1].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[1].msg);
       }
 
-     console.log(this.tags);
     });
 
   }
@@ -186,39 +199,54 @@ export class DataService {
     this.pages.length = 0;
 
     this.http.get(this.apiUrl + 'getPages').map(res => res.json()).subscribe(data => {
-      for (let page of data) {
-        let image = this.apiUrl + "images/" + page.image;
-        page.image = image;
-        post = this.posts.filter(item => item.code == page.inspirationCode);
-        console.log(post);
-          // get page likes
-          pageLikes = this.allLikes.filter(item => item.creationCode == page.code);
-          console.log("page likes");
-          console.log(pageLikes);
-          pageLikes.forEach((like,index) => {
-            if(like.liked == true) {
-                post[0].likes++
-            }
-          });
-          this.pages.push(page);
+      if(data.status){
+          for (let page of data.result) {
+              let image =  page.image;
+              page.image = image;
+              this.getImageUrl(page.image,page);
+              post = this.findInspiration("id",page.inspiration_id);
+             // console.log("METHOD FIND");
+            //  console.log(post);
+              // get page likes
+              pageLikes = this.allLikes.filter(item => item.creationCode == 'inspirationpage'+page.id);
+            //  console.log("page likes");
+            //  console.log(pageLikes);
+              pageLikes.forEach((like,index) => {
+                  if(like.liked == true) {
+                      post[0].likes++
+                  }
+              });
+              this.pages.push(page);
+          }
       }
+      else{
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataPage[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataPage[0].msg);
+      }
+
 
     });
 
   }
+
   getCreations() {
 
     this.creations.length = 0;
 
     this.http.get(this.apiUrl + 'getCreations').map(res => res.json()).subscribe(data => {
+      if(data.status) {
+          for (let creation of data.result) {
 
-      for (let creation of data) {
+              let image =  creation.image;
+              creation.image = image;
+              this.getImageUrl(image,creation);
+              this.creations.push(creation);
 
-        let image = this.apiUrl + "images/" + creation.image;
-        creation.image = image;
-        this.creations.push(creation);
-
+          }
       }
+      else {
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataCreation[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataCreation[0].msg);
+      }
+
 
     });
 
@@ -231,11 +259,12 @@ export class DataService {
 
   getLikes() {
 
+      this.likes = new Array<Like>();
     this.likes.length = 0;
     this.userProfileLikes.length = 0;
-    console.log(this.me.code);
+   // console.log(this.me.code);
     var parameters = JSON.stringify({
-      userCode: this.me.code
+      userCode: this.me.id
     });
 
     let body: string = parameters,
@@ -245,11 +274,33 @@ export class DataService {
       url: any = this.apiUrl + 'getLikes';
 
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-      for (let like of data.result) {
+      if(data.status) {
+          for (let like of data.result) {
+              if(like.creationCode.substr(0,15) !== "inspirationpage") {
+                  console.log("Get like creation");
+                  let temp = this.creations.filter(item => item.id == like.creationCode.substr(8))[0];
+                  console.log(temp.image);
+                  if(temp.image){
+                      this.getImageUrl(temp.image,like);
+                  }
+              }
+              else {
+                  console.log("Get like page",like.creationCode.substr(15));
+                  let temp = this.findPage("id",like.creationCode.substr(15))[0];
+                  if(temp.image){
+                      this.getImageUrl(temp.image,like);
+                      console.log(temp.image);
+                  }
+              }
               this.likes.push(like);
+          }
+        //  console.log("LIKES");
+          //console.log(this.likes);
       }
-      console.log("LIKES");
-      console.log(this.likes);
+      else {
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].msg);
+      }
+
     });
   }
 
@@ -267,21 +318,25 @@ export class DataService {
             url: any = this.apiUrl + 'getLikes';
 
         this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-
-            console.log(data);
-            for (let like of data.result) {
-                this.allLikes.push(like);
+            if(data.status) {
+              //  console.log(data);
+                for (let like of data.result) {
+                    this.allLikes.push(like);
+                }
+                resolve(true);
             }
-            resolve(true);
+            else {
+                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].msg);
+               reject();
+            }
+
         });
       });
 }
 
-
-
   saveLike(likeToUpload) {
 
-    console.log(likeToUpload);
+   // console.log(likeToUpload);
     var parameters = JSON.stringify({
       newLike: likeToUpload
     });
@@ -296,9 +351,10 @@ export class DataService {
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
       if (data.message == "Successful") {
-        console.log('like saved');
+      //  console.log('like saved');
       } else {
-        console.log('like not saved');
+        //console.log('like not saved');
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.like[0].title,ErrorHandlerProvider.MESSAGES.error.like[0].msg);
       }
 
 
@@ -326,9 +382,9 @@ export class DataService {
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
       if (data.message == "Successful") {
-        console.log('availability saved');
+       // console.log('availability saved');
       } else {
-        console.log('availability not saved');
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.availability[0].title,ErrorHandlerProvider.MESSAGES.error.availability[0].msg);
       }
 
     });
@@ -338,7 +394,7 @@ export class DataService {
 
   saveCreation(creation) {
 
-    console.log(creation);
+   // console.log(creation);
 
     var parameters = JSON.stringify({
       creation: creation
@@ -355,11 +411,9 @@ export class DataService {
 
   }
 
-
-
   updateCreation(creation) {
 
-    console.log(creation);
+    console.log("Update creation, ",creation);
 
     var parameters = JSON.stringify({
       creation: creation
@@ -374,7 +428,6 @@ export class DataService {
     return this.http.post(url, body, options).map(response => response.json());
 
   }
-
 
   login(userLogin, userHash) {
 
@@ -393,6 +446,7 @@ export class DataService {
 
   }
 
+  // Smelly code
   loadIllustratorPosts() {
     for (let inspiration of this.posts) {
 
@@ -402,15 +456,13 @@ export class DataService {
       }
     }
 
-    console.log('Loaded Illustrator posts');
-    console.log(this.illustratorPosts);
+  //  console.log('Loaded Illustrator posts');
+   // console.log(this.illustratorPosts);
   }
-
-
-
 
   tagInspiration(tag) {
 
+      console.log("Tag inspiration,", tag);
     var parameters = JSON.stringify({
       tag: tag
     });
@@ -426,13 +478,12 @@ export class DataService {
 
   }
 
-
   getSizeFile() {
 
     this.sizes.length = 0;
 
     var parameters = JSON.stringify({
-      userCode: this.me.code
+      userCode: this.me.id
     });
 
     let body: string = parameters,
@@ -443,20 +494,28 @@ export class DataService {
 
 
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-
-      for (let sizeFile of data.result) {
-        this.sizes.push(sizeFile);
+      if(data.status) {
+          for (let sizeFile of data.result) {
+              this.sizes.push(sizeFile);
+          }
       }
+      else
+      {
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[0].title,ErrorHandlerProvider.MESSAGES.error.file[0].msg);
+      }
+
 
     });
 
   }
 
   updateInspiration(code, inspiration, inspirationPages) {
+      console.log("Update inspiration method");
+      console.log(inspiration);
     var parameters = JSON.stringify({
       code: code,
       inspiration: inspiration,
-      inspirationPages: inspirationPages
+     // inspirationPages: inspirationPages
     });
     let body: string = parameters,
       type: string = "application/json",
@@ -467,8 +526,22 @@ export class DataService {
     return this.http.post(url, body, options).map(response => response.json());
   }
 
-  updateProfile(user) {
+  updateInspirationPages(inspiration_id,inspirationPages){
+      var parameters = JSON.stringify({
+          inspiration_id: inspiration_id,
+          inspirationPages: inspirationPages
+      });
+      let body: string = parameters,
+          type: string = "application/json",
+          headers: any = new Headers({ 'Content-Type': type }),
+          options: any = new RequestOptions({ headers: headers }),
+          url: any = this.apiUrl + 'updatePages';
 
+      return this.http.post(url, body, options).map(response => response.json());
+  }
+
+  updateProfile(user) {
+      console.log("Update profile,",user);
 
     var parameters = JSON.stringify({
       user: user
@@ -484,7 +557,6 @@ export class DataService {
     return this.http.post(url, body, options).map(response => response.json());
 
   }
-
 
   saveSize(sizeFile) {
 
@@ -502,17 +574,35 @@ export class DataService {
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
       if (data.message == "Successful") {
+          sizeFile.id = data.result.id;
         console.log('size file saved');
       } else {
-        console.log('image not saved');
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[1].title,ErrorHandlerProvider.MESSAGES.error.file[1].msg);
       }
 
     });
 
   }
 
-  updateSize(sizeFile) {
+  getImageUrl(imageName,object){
+      console.log("GET IMAGE URL");
+      var parameters = JSON.stringify({
+          imageName: imageName
+      });
 
+      let body: string = parameters,
+          type: string = "application/json",
+          headers: any = new Headers({ 'Content-Type': type }),
+          options: any = new RequestOptions({ headers: headers }),
+          url: any = this.apiUrl + 'getImageLink';
+
+      this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
+          console.log("image url", data.imageUrl);
+          object.imageUrl = data.imageUrl;
+      });
+  }
+
+  updateSize(sizeFile) {
 
     var parameters = JSON.stringify({
       sizeFile: sizeFile
@@ -528,9 +618,9 @@ export class DataService {
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
       if (data.message == "Successful") {
-        console.log('profile saved');
+        //console.log('profile saved');
       } else {
-        console.log('profile not saved');
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[2].title,ErrorHandlerProvider.MESSAGES.error.file[2].msg);
       }
 
     });
@@ -540,6 +630,8 @@ export class DataService {
 
   saveNewInspiration(inspiration, inspirationPages) {
 
+      console.log("SAVE NEW INSPIRATION POST METHOD");
+      console.log(inspiration);
     var parameters = JSON.stringify({
       inspiration: inspiration,
       inspirationPages: inspirationPages
@@ -575,6 +667,9 @@ export class DataService {
 
   saveImage(imageData, imageName) {
 
+      console.log("Save image");
+      //console.log(imageData);
+      console.log(imageName);
     var parameters = JSON.stringify({
       imageData: imageData,
       imageName: imageName
@@ -590,6 +685,8 @@ export class DataService {
     return this.http.post(url, body, options).map(response => response.json());
   }
 
+ /*
+    Don't need it now
   generateCode(type) {
 
     //new user code
@@ -605,6 +702,44 @@ export class DataService {
 
     return text;
 
+
+  } */
+
+    /**
+     * **************************
+     * FIND METHODS TO KEEP ALL FILTER STUFF ON ONE PLACE
+     */
+
+    /**
+     *  Find inspiration in list by key,value
+     * @param key
+     * @param value
+     * @param is_equal
+     * @returns {Post[]}
+     */
+  findInspiration(key,value,is_equal = true){
+     // console.log("FIND POST");
+      if(is_equal)
+          var postFound = this.posts.filter(item => item[key] == value);
+      else
+          var postFound = this.posts.filter(item => item[key] != value);
+      return postFound;
+  }
+
+    /**
+     *  Find page in list by key,value
+     * @param key
+     * @param value
+     * @param is_equal
+     * @returns {Page[]}
+     */
+  findPage(key,value,is_equal = true){
+    //console.log("FIND PAGE");
+    if(is_equal)
+        var pageFound =  this.pages.filter(item => item[key] == value);
+    else
+        var pageFound =  this.pages.filter(item => item[key] != value);
+    return pageFound;
 
   }
 

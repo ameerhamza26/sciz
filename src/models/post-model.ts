@@ -11,7 +11,7 @@ export class Post {
     public subTitle:string,
     public description:string,
     public image:string,
-    public taggedUser:string,
+    public taggedUser:number,
     public type:any) {
 
     this.id = id;

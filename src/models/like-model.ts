@@ -5,15 +5,17 @@
 export class Like {
 
   constructor(public id:any,
-              public userCode:any,
+              public account_id:number,
               public creationCode:any,
-              public liked:boolean
+              public liked:boolean,
+              public imageUrl:string
              ) {
 
     this.id = id;
-    this.userCode = userCode;
+    this.account_id = account_id;
     this.creationCode = creationCode;
     this.liked = liked;
+    this.imageUrl = imageUrl;
 
   }
 

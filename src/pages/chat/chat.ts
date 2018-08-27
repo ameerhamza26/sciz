@@ -49,18 +49,17 @@ export class ChatPage {
     this.view = this.navParams.get('view');
     this.start();
 
-
-    this.subscription = db.list('/' + 'chats' + '/' + this.user.code, { preserveSnapshot: true });
+    this.subscription = db.list('/' + this.user.id, { preserveSnapshot: true });
     this.subscription.subscribe(snapshots => {
       snapshots.forEach(snapshot => {
-        if ((snapshot.val().participant == this.provider.code) && (snapshot.val().user == this.user.code)){
+        if ((snapshot.val().participant == this.userCode) && (snapshot.val().user == this.user.id)){
           console.log(snapshot.key)
           console.log(snapshot.val())
 
           this.newmessages.push(snapshot.val())
           }
 
-          else if ((snapshot.val().participant == this.user.code) && (snapshot.val().user == this.provider.code)){
+          else if ((snapshot.val().participant == this.user.id) && (snapshot.val().user == this.userCode)){
             this.newmessages.push(snapshot.val())
 
             //this.pushSetup("Scizzor", "New message from " + this.provider.name)
@@ -201,7 +200,11 @@ export class ChatPage {
     this.camera.getPicture({
       destinationType: this.camera.DestinationType.DATA_URL,
       sourceType: sourceType,
+<<<<<<< HEAD
+      quality: 70,
+=======
       quality: 50,
+>>>>>>> master
     }).then((imageData) => {
       // imageData is a base64 encoded string
       newImage = "data:image/png;base64," + imageData;
@@ -229,11 +232,22 @@ export class ChatPage {
 
     this.messageCode = this.generateCode()
 
-    this.dataService.saveImage(imageData,this.messageCode).subscribe(data =>{
+    this.dataService.saveImage(imageData,"chat"+this.messageCode).subscribe(data =>{
 
       try{
         if(data.message == "Successful"){
 
+<<<<<<< HEAD
+        this.db.list('/' + this.user.code).push({
+          messagecode: this.messageCode,
+          user: this.user.code,
+          participant: this.userCode,
+          displayname: this.provider.name,
+          sender: true,
+          image: true,
+          message: 'http://18.220.90.37/images/' + this.messageCode + '.png',
+          timestamp: this.dateTime.toString()
+=======
           this.db.list('/' + 'chats' + '/' + this.user.code).push({
             messagecode: this.messageCode,
             user: this.user.code,
@@ -243,6 +257,7 @@ export class ChatPage {
             image: true,
             message: this.apiImageURL + 'images/' + this.messageCode + '.png',
             timestamp: this.dateTime.toString()
+>>>>>>> master
 
         }).then( () => {
 
@@ -256,8 +271,8 @@ export class ChatPage {
 
         this.db.list('/' + 'chats' + '/' + this.provider.code).push({
           messagecode: this.messageCode,
-          user: this.user.code,
-          participant: this.provider.code,
+          user: this.user.id,
+          participant: this.userCode,
           displayname: this.provider.name,
           sender: false,
           image: true,
@@ -289,15 +304,22 @@ export class ChatPage {
 
 
   sendMessage() {
+    console.log("SEND MESSAGE");
+    console.log(this.user.id);
+    console.log(this.provider);
     this.dateTime = new Date();
     console.log(this.dateTime.toJSON())
     console.log(this.dateTime.toString())
     console.log(this.dateTime.getTime())
 
+<<<<<<< HEAD
+    this.db.list('/' + this.user.id).push({
+=======
     this.db.list('/' + 'chats' + '/' + this.user.code).push({
+>>>>>>> master
       messagecode: this.generateCode(),
-      user: this.user.code,
-      participant: this.provider.code,
+      user: this.user.id,
+      participant: this.userCode,
       displayname: this.provider.name,
       sender:true,
       image: false,
@@ -313,10 +335,14 @@ export class ChatPage {
 
     });
 
+<<<<<<< HEAD
+    this.db.list('/' + this.userCode).push({
+=======
     this.db.list('/' + 'chats' + '/' + this.provider.code).push({
+>>>>>>> master
       messagecode: this.generateCode(),
-      user: this.user.code,
-      participant: this.provider.code,
+      user: this.user.id,
+      participant: this.userCode,
       displayname: this.provider.name,
       sender:false,
       image: false,
@@ -340,23 +366,32 @@ export class ChatPage {
   }
 
   start(){
-
+    console.log("START");
     //load user and their posts from data service
 
     this.segment = 'work';
     this.user = this.userService.user;
-
-    if ((this.dataService.users.filter(item => item.code == this.userCode)[0]) == undefined){
+    console.log("USER");
+    console.log(this.user);
+    console.log("USER CODE");
+    console.log(this.userCode);
+    console.log("USERS");
+    console.log(this.dataService.users);
+    if ((this.dataService.users.filter(item => item.id == this.userCode)[0]) == undefined){
+      console.log("START 1");
       console.log(this.navParams.get('provider'))
       console.log(this.navParams.get('providername'))
-      this.provider = {code : this.navParams.get('provider'), name:this.navParams.get('providername')}
+      this.provider = {id : this.navParams.get('userCode'), name:this.navParams.get('providername')}
     }
     else {
-      this.provider =  this.dataService.users.filter(item => item.code == this.userCode)[0];
+        console.log("START 2");
+      this.provider =  this.dataService.users.filter(item => item.id == this.userCode)[0];
+      console.log(this.provider);
     }
 
-    this.creations =  this.dataService.creations.filter(item => item.userCode == this.userCode);
-
+    this.creations =  this.dataService.creations.filter(item => item.account_id == this.userCode);
+    console.log("KREACIJA");
+    console.log(this.dataService.creations);
   }
 
 }

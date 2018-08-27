@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import {NavController, NavParams, LoadingController, Platform} from 'ionic-angular';
 import { SignUpPage } from '../sign-up/sign-up';
 import { TabsPage } from '../tabs/tabs';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -7,6 +7,10 @@ import { AlertController } from 'ionic-angular';
 import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
 import { Storage } from '@ionic/storage';
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
+import {InspirationPage} from "../inspiration/inspiration";
+import {ProfilePage} from "../profile/profile";
+import {ScizzorPage} from "../scizzor/scizzor";
 
 /**
  * Generated class for the LoginPage page.
@@ -29,11 +33,39 @@ export class LoginPage {
   username: any = "";
   password: any = "";
   permission: any;
+    Branch;
+    branchUniversalObj;
+  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, private errorHandlerProvider: ErrorHandlerProvider, public dataService: DataService, public userService: UserService, private storage: Storage,platform: Platform) {
+      const branchInit = () => {
+          console.log("Branch init");
+          // only on devices
+          if (!platform.is("cordova")) {
+              return;
+          }
+          const Branch = window["Branch"];
+          this.branchUniversalObj = null;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, private alertCtrl: AlertController, public dataService: DataService, public userService: UserService, private storage: Storage) {
+          Branch.initSession().then(data => {
+              if (data["+clicked_branch_link"]) {
+                  console.log("BRANCH LINK DATA");
+                  console.log(JSON.stringify(data));
+                  console.log(data);
+                this.storage.set("branchLink",data);
+                  // read deep link data on click
+
+
+                  //alert("Deep Link Data: " + JSON.stringify(data));
+              }
+          });
+      };
+      branchInit();
   }
 
   ionViewDidLoad() {
+    console.log('user stor',this.storage.get('user'));
+    if(this.dataService.users.length == 0) {
+      this.dataService.getUsers();
+    }
     console.log('ionViewDidLoad LoginPage');
   }
 
@@ -45,9 +77,8 @@ export class LoginPage {
       this.dataService.login(this.username, hash).subscribe(data => {
         try {
           this.loading.dismissAll();
-          console.log(data)
           if (data.message == "Successful" && (data.result[0].type == "customer" || data.result[0].type == "service" || data.result[0].type == "admin")) {
-            this.setUser(this.username);
+            this.setUser(data.result);
             //this.dataService.getAllLikes();
             this.storage.set('data', data);
             this.dataService.getLikes();
@@ -59,41 +90,45 @@ export class LoginPage {
             }
             this.navCtrl.setRoot(TabsPage);
           } else {
-            this.showAlert('Error', 'Incorrect Email or Password');
+              console.log("ERR 5");
 
+              this.errorHandlerProvider.throwWarning(ErrorHandlerProvider.MESSAGES.warning.login[0].title, ErrorHandlerProvider.MESSAGES.warning.login[0].msg);
           }
         } catch (error) {
-          console.log(error);
-          this.showAlert('Oops', 'Please try again');
+            console.log(error);
+            console.log("ERR 4");
+
+            this.errorHandlerProvider.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.login[0].title, ErrorHandlerProvider.MESSAGES.serviceStatus.login[0].msg);
         }
       },
       err => {
+        console.log("ERR 1");
         this.loading.dismissAll();
-        this.showAlert('Error ' + err, 'Unable to login at this time, please try again later');
-        console.log("ERROR 1");
-        console.log(err.toString());
+        this.errorHandlerProvider.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.login[0].title, ErrorHandlerProvider.MESSAGES.serviceStatus.login[0].msg);
       });
     }
     else if ((this.password.length < 6) || (this.username.length < 3)) {
-      this.showAlert('Error', 'Invalid Email or Password ');
-      console.log('Incorrect password or email length');
+        console.log("ERR 2");
+
+        this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.login[0].title, ErrorHandlerProvider.MESSAGES.validation.login[0].msg);
     }
 
     else {
-      this.showAlert('Error', 'Unable to login at this time, please try again later');
-      console.log('will not log in');
+        console.log("ERR 3");
+
+        this.errorHandlerProvider.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.login[0].title, ErrorHandlerProvider.MESSAGES.serviceStatus.login[0].msg);
     }
   }
 
-  setUser(userName) {
-    let user = this.dataService.users.filter(item => item.email == userName)[0];
+  setUser(user) {
+    console.log("SET USER");
     console.log(user);
-    this.storage.set('user', user)
+    this.storage.set('user', user[0]);
     // let newUser = new User('0','testCode',this.permission,'Manufacturer','','images/profile.jpg','Delz','scizzorapp@gmail.com','Auckland','02105976881',true,'short description','@username','@username','@username','http://www.sczr.co.uk','sizeCode',3,'hashTest');
-    this.userService.setUser(user);
+    this.userService.setUser(user[0]);
     // this.dataService.users.push(newUser);
-    this.dataService.permission = this.userService.getPermission(user);
-    this.dataService.me = user;
+    this.dataService.permission = this.userService.getPermission(user[0]);
+    this.dataService.me = user[0];
   }
 
   signUp() {
@@ -114,15 +149,4 @@ export class LoginPage {
 
 
   }
-
-  showAlert(title, message) {
-
-    let alert = this.alertCtrl.create({
-      title: title,
-      subTitle: message,
-      buttons: ['Dismiss']
-    });
-    alert.present();
-  }
-
 }

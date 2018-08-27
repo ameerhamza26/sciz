@@ -9,6 +9,7 @@ import {User} from '../../models/user-model';
 import {Size} from '../../models/size-model';
 import {Md5} from 'ts-md5/dist/md5';
 import { FormControl } from '@angular/forms';
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 
 
 /**
@@ -54,7 +55,7 @@ question:any;
   confirmPassword:any;
   savedUser:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private alertCtrl: AlertController,public userService:UserService,public dataService:DataService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private errorHandlerProvider: ErrorHandlerProvider,public userService:UserService,public dataService:DataService) {
     this.start();
   }
 
@@ -145,7 +146,7 @@ question:any;
         }else if(this.type == "service" && this.serviceType.length > 0){
           valid = true;
         }else{
-          this.showAlert('Validation Error','Please select type');
+          this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.signup[0].title, ErrorHandlerProvider.MESSAGES.validation.signup[0].msg);
         }
         break;
       case 1:
@@ -160,7 +161,7 @@ question:any;
           }
 
         }else{
-          this.showAlert('Validation Error','Enter Valid Email');
+            this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.signup[1].title, ErrorHandlerProvider.MESSAGES.validation.signup[1].msg);
         }
         break;
       case 2:
@@ -168,7 +169,7 @@ question:any;
         if(this.name != ""){
           valid = true;
         }else{
-          this.showAlert('Validation Error','Enter Full Name');
+            this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.signup[2].title,   ErrorHandlerProvider.MESSAGES.validation.signup[2].msg);
         }
         break;
 
@@ -176,7 +177,7 @@ question:any;
         if(this.gender.length > 0 ){
           valid = true;
         }else{
-          this.showAlert('Validation Error','Please select your gender');
+            this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.signup[3].title, ErrorHandlerProvider.MESSAGES.validation.signup[3].msg);
         }
         break;
 
@@ -184,7 +185,7 @@ question:any;
         if(this.city != "" ){
           valid = true;
         }else{
-          this.showAlert('Validation Error','Enter City');
+            this.errorHandlerProvider.throwValideWarning( ErrorHandlerProvider.MESSAGES.validation.signup[4].title, ErrorHandlerProvider.MESSAGES.validation.signup[4].msg);
         }
         break;
 
@@ -201,9 +202,10 @@ question:any;
 
       case 5:
         if(this.password != this.confirmPassword){
-            this.showAlert('Validation Error','Passwords do not match');
-        }else if(this.password.length < 7 ){
-            this.showAlert('Validation Error','Password must be at least 7 characters long');
+            this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.signup[5].title, ErrorHandlerProvider.MESSAGES.validation.signup[5].msg);
+            }else if(this.password.length < 7 ){
+            this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.signup[6].title, ErrorHandlerProvider.MESSAGES.validation.signup[6].msg);
+
         }else{
           this.processUser();
         }
@@ -233,19 +235,20 @@ question:any;
         }
         else{
           console.log('email exists');
-          this.showAlert('Error','Email already exists');
+            this.errorHandlerProvider.throwWarning(ErrorHandlerProvider.MESSAGES.warning.signup[0].title, ErrorHandlerProvider.MESSAGES.warning.signup[0].msg);
         }
       }
       else{
-        this.showAlert('Validation Error','Invalid Email');
-      }
+        console.log("")
+          this.errorHandlerProvider.throwValideWarning(ErrorHandlerProvider.MESSAGES.validation.signup[7].title, ErrorHandlerProvider.MESSAGES.validation.signup[7].msg);
+          }
 
 
 
     },
     err => {
-      this.showAlert('Error','Unable to confirm email, please try again later');
-    }
+        this.errorHandlerProvider.throwError(ErrorHandlerProvider.MESSAGES.error.signup[0].title, ErrorHandlerProvider.MESSAGES.error.signup[0].msg);
+        }
 
   );
 
@@ -255,32 +258,28 @@ question:any;
 
     //send user to database and save
 
-    let newUser = new User('',this.code,this.type,this.serviceType,'','','','','astimlee.png',this.name,this.gender,this.email,this.city,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
-
-    if(this.type == 'customer'){
-      let sizeFile = new Size('',this.sizeCode,this.code,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-      this.dataService.saveSize(sizeFile);
-    }
-
-
+    let newUser = new User('',this.code,this.type,this.serviceType,'','',this.name,this.gender,this.email,this.city,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
     this.userService.saveUser(newUser).subscribe(data =>{
 
         if(data.message == "Successful"){
-          this.showAlert('Sign Up','Successful');
+          this.errorHandlerProvider.throwSuccess(ErrorHandlerProvider.MESSAGES.success.signup[0].title, ErrorHandlerProvider.MESSAGES.success.signup[0].msg);
+          newUser.id = data.insertID;
+          if(this.type == 'customer'){
+              let sizeFile = new Size('', this.sizeCode, newUser.id,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+              this.dataService.saveSize(sizeFile);
+          }
           this.savedUser = newUser;
           this.question = "Thank You.";
           this.stage = this.stage + 1 ;
           this.handleStage();
 
         }else{
-          this.showAlert('Error','Please Try Again');
+            this.errorHandlerProvider.throwError(ErrorHandlerProvider.MESSAGES.error.signup[1].title, ErrorHandlerProvider.MESSAGES.error.signup[1].msg);
         }
-
-
 
     },
     err => {
-      this.showAlert('Error','Please Try Again Later');
+        this.errorHandlerProvider.throwError(ErrorHandlerProvider.MESSAGES.error.signup[1].title, ErrorHandlerProvider.MESSAGES.error.signup[1].msg);
     });
   }
 
@@ -314,7 +313,6 @@ question:any;
 
   done(){
 
-
     this.savedUser.image = this.dataService.apiUrl + "images/" +  this.savedUser.image;
     this.userService.setUser(this.savedUser);
     this.dataService.permission = this.userService.getPermission(this.savedUser);
@@ -325,20 +323,8 @@ question:any;
       this.dataService.getSizeFile();
     }
 
-
     this.navCtrl.setRoot(TabsPage);
     console.log('done- segue now');
-  }
-
-
-  showAlert(title,message){
-
-    let alert = this.alertCtrl.create({
-      title: title,
-      subTitle: message,
-      buttons: ['Close']
-    });
-    alert.present();
   }
 
 }

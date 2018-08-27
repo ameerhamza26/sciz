@@ -25,6 +25,7 @@
   <ion-list class="allchats">
     <div *ngFor="let chats of chatlist">
       <ion-item-sliding>
+        {{chats.sender}}
         <ion-item *ngIf="chats.sender==true;" (click)="openChat(chats.displayname,chats.participant)">
           <ion-avatar item-start>
             <img src="{{getAvatar(chats.participant)}}" style="object-fit: cover;">

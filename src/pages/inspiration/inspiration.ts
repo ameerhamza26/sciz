@@ -8,7 +8,10 @@ import { CreateNewPage } from '../create-new/create-new';
 import { ScizzorSearchPage } from '../scizzor-search/scizzor-search';
 import { TagPage } from '../tag/tag';
 import { DataService } from '../../providers/data-service';
-
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
+import {Storage} from "@ionic/storage";
+import {ProfilePage} from "../profile/profile";
+import {ScizzorPage} from "../scizzor/scizzor";
 
 
 /**
@@ -29,21 +32,61 @@ import { DataService } from '../../providers/data-service';
   templateUrl: 'inspiration.html',
 })
 export class InspirationPage {
+  //images = [1,2,3,4,5];
+  itemMiddle;
+
+
+  //itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
+  //itemMiddle = Math.floor(this.images.length / 2); // Test magazines
+    postLength;
   timestapm = Date.now();
-  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, public loadingCtrl: LoadingController) {
-      var is_deeplink = this.navParams.get('is_deeplink');
-      var deeplink_post = this.navParams.get('post');
-      if(is_deeplink && deeplink_post) {
-          this.openLookbook(deeplink_post);
-      }
+  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, public loadingCtrl: LoadingController,private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider) {
+
+      console.log("INSPIRATION CONSTR",this.dataService.posts);
+    //  this.itemMiddle = Math.floor(this.images.length / 2); //Live magazines
+     // this.postLength = this.images.length;
   }
 
-
+    ionViewWillEnter() {
+        console.log("ENTER INSPIRATION");
+        this.storage.get("branchItem").then(data => {
+            if (data) {
+                switch (data.type){
+                    case 'Profile':
+                        var profile =  this.dataService.users.filter(item => item.id == data.type_id)[0];
+                        this.navCtrl.push(ProfilePage,{
+                            userCode:profile.code,
+                            view:'service'
+                        });
+                        break;
+                    case 'Magazine':
+                        this.storage.remove("branchItem");
+                        var post = this.dataService.findInspiration("id",data.type_id)[0];
+                        this.openLookbook(post);
+                        break;
+                    case 'Item':
+                        this.navCtrl.parent.select(1);
+                        break;
+                    default:
+                        this.erroHandler.throwError(ErrorHandlerProvider.MESSAGES.error.branch[0].title,ErrorHandlerProvider.MESSAGES.error.branch[0].msg);
+                        break;
+                }
+            }
+        });
+    }
   ionViewDidLoad($event) {
     console.log('ionViewDidLoad InspirationPage');
-    this.timestapm = Date.now();
+
+      this.timestapm = Date.now();
       this.dataService.getAllLikes().then((data) => {
         this.dataService.getInspirations();
+        setTimeout(()=>{
+           // console.log("LALALALALALA")  LIVE ONLY
+            this.itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
+            this.postLength = this.dataService.posts.length;
+            console.log(this.itemMiddle);
+            console.log(this.postLength);
+        },5000);
       })
   }
 
@@ -71,7 +114,7 @@ export class InspirationPage {
     console.log(post);
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
     console.log(this.dataService.me.code)
-    if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.code) {
+    if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.id) {
 
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Modify lookbook',
@@ -117,6 +160,7 @@ export class InspirationPage {
   openLookbook(post) {
     //open lookbook according to style -> segue
     console.log('Open Lookbook');
+    console.log(post);
     if (post.type == 'vertical' || post.type == 'horizontal') {
       this.navCtrl.push(LookbookPage, {
         post: post,
@@ -138,6 +182,8 @@ export class InspirationPage {
 
   editLookbook(post2Edit) {
     //admin option,  edit selected  lookbook - > segue
+      console.log("Edit inspiration");
+      console.log(post2Edit);
     this.navCtrl.setRoot(CreateNewPage, {
       mode: 'edit',
       post: post2Edit
@@ -167,18 +213,24 @@ export class InspirationPage {
           handler: () => {
             this.dataService.deleteInspiration(post2Delete).subscribe(data => {
               try {
-                console.log('inspiration deleted');
-                let index = 0;
-                for (let post of this.dataService.posts) {
-                  if (post2Delete != post) {
-                    index = index + 1;
-                  } else {
-                    this.dataService.posts.splice(index, 1);
-                  }
+                if(data.status) {
+                    console.log('inspiration deleted');
+                    let index = 0;
+                    for (let post of this.dataService.posts) {
+                        if (post2Delete != post) {
+                            index = index + 1;
+                        } else {
+                            this.dataService.posts.splice(index, 1);
+                        }
+                    }
+                    this.dataService.getInspirations();
                 }
-                this.dataService.getInspirations();
+                else
+                {
+                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
+                }
               } catch (error) {
-                console.log('inspiration delete error');
+                  this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
               }
             });
           }
@@ -193,13 +245,25 @@ export class InspirationPage {
     });
   }
 
+
   doRefresh(refresher) {
     this.timestapm = Date.now();
     console.log('Begin async operation', refresher);
       this.dataService.getAllLikes().then((data)=>{
           this.dataService.getLikes();
           this.dataService.getInspirations();
+          setTimeout(()=>{
+              this.dataService.getInspirationTags();
+              // console.log("LALALALALALA")  LIVE ONLY
+              this.itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
+              this.postLength = this.dataService.posts.length;
+              console.log(this.itemMiddle);
+              console.log(this.postLength);
+          },5000);
+      }).catch((err)=>{
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.like[1].title,ErrorHandlerProvider.MESSAGES.error.like[1].msg);
       })
+
     /*var getAllLikes = new Promise(function(resolve,reject){
         if(this.dataService.getAllLikes() == true) {
           alert("RESOLVING");

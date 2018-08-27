@@ -4,6 +4,8 @@ import {DataService} from '../../providers/data-service';
 import { CreationPage } from '../creation/creation';
 import { ProfilePage } from '../profile/profile';
 import { ScizzorSearchPage } from '../scizzor-search/scizzor-search';
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
+import {Storage} from "@ionic/storage";
 
 /**
  * Generated class for the ScizzorPage page.
@@ -24,9 +26,9 @@ export class ScizzorPage {
   colours: Array<string> = ['black','light','main'];
   colours2: Array<string> = ['black','main','light'];
   storeTypes: Array<string> = ['Corporate','Traditional','Street Wear'];
-  stores: Array<string> = ['../assets/images/business4.jpg','../assets/images/african1.jpg','../assets/images/street1.jpg'];
+  stores: Array<string> = ['./assets/images/business4.jpg','./assets/images/african1.jpg','./assets/images/street1.jpg'];
   peopleTypes: Array<string> = ['Tailoring','Leather Work','Manufacturing'];
-  people: Array<string> = ['../assets/images/tailoring2.jpg','../assets/images/leather.jpg','../assets/images/manufacturing.png'];
+  people: Array<string> = ['./assets/images/tailoring2.jpg','./assets/images/leather.jpg','./assets/images/manufacturing.jpg'];
 
   segment:any;
   showStore:any = false;
@@ -36,15 +38,38 @@ export class ScizzorPage {
   counter = Array;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService) {
-    console.log('hello');
-      var is_deeplink = this.navParams.get('is_deeplink');
-      var deeplink_creation = this.navParams.get('creation');
-      if(is_deeplink && deeplink_creation) {
-          this.openCreation(deeplink_creation);
-      }
+  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService,private errorHandler: ErrorHandlerProvider,private storage: Storage) {
+
     this.start();
   }
+
+    ionViewWillEnter() {
+        console.log("ENTER SCIZZOR");
+        this.storage.get("branchItem").then(data => {
+            if (data) {
+                switch (data.type){
+                    case 'Profile':
+                        var profile =  this.dataService.users.filter(item => item.id == data.type_id)[0];
+                        this.navCtrl.push(ProfilePage,{
+                            userCode:profile.code,
+                            view:'service'
+                        });
+                        break;
+                    case 'Magazine':
+                        this.navCtrl.parent.select(0);
+                        break;
+                    case 'Item':
+                        var item = this.dataService.creations.filter(item => item.id == data.type_id)[0];
+                        this.storage.remove("branchItem");
+                        this.openCreation(item);
+                        break;
+                    default:
+                        // this.erroHandler.throwError(ErrorHandlerProvider.MESSAGES.error.branch[0].title,ErrorHandlerProvider.MESSAGES.error.branch[0].msg);
+                        break;
+                }
+            }
+        });
+    }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ScizzorPage');
@@ -145,27 +170,42 @@ let animation:any;
 
     this.dataService.reloadCreations().subscribe(data =>{
 
-      for(let creation of data) {
+      if(data.status) {
+          for(let creation of data.result) {
 
-        let image = this.dataService.apiUrl + "images/" + creation.image;
-        creation.image = image;
-        this.dataService.creations.push(creation);
+             // let image = this.dataService.apiUrl + "images/" + creation.image;
+             // creation.image = image;
+              this.dataService.getImageUrl(creation.image,creation);
+              this.dataService.creations.push(creation);
 
+          }
+
+          this.dataService.reloadUsers().subscribe(data =>{
+
+            if(data.status) {
+                for(let user of data.result) {
+
+                    let image = this.dataService.apiUrl + "images/" + user.image;
+                    user.image = image;
+                    this.dataService.users.push(user);
+                }
+
+
+                this.reloadPage();
+            }
+            else
+            {
+                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].msg);
+            }
+
+
+          });
+      }
+      else
+      {
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[1].title,ErrorHandlerProvider.MESSAGES.error.creation[1].msg);
       }
 
-      this.dataService.reloadUsers().subscribe(data =>{
-
-        for(let user of data) {
-
-          let image = this.dataService.apiUrl + "images/" + user.image;
-          user.image = image;
-          this.dataService.users.push(user);
-        }
-
-
-        this.reloadPage();
-
-      });
 
 
 
@@ -201,5 +241,6 @@ let animation:any;
 
 
   }
+
 
 }

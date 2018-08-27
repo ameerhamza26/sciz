@@ -67,9 +67,10 @@ forward:any = true;
 
 
     if(mode == 'view'){
-      let code = this.post.code;
+      let code = this.post.id;
 
-     this.dataService.lookbookPages = this.dataService.pages.filter(item => item.inspirationCode == code);
+     //this.dataService.lookbookPages = this.dataService.pages.filter(item => item.inspirationCode == code);
+     this.dataService.lookbookPages = this.dataService.findPage("inspiration_id",code);
       this.pages =  this.dataService.lookbookPages;
     }else if(mode == 'edit'){
 
@@ -97,6 +98,7 @@ forward:any = true;
 
   save(){
 
+      console.log("SAVE INSPIRATION FLIP");
     if(this.mode == 'preview'){
 
       this.dataService.saveNewInspiration(this.post,this.pages).subscribe(data =>{
@@ -111,7 +113,8 @@ forward:any = true;
 
     }else if(this.mode == 'edit'){
 
-      this.dataService.pages = this.dataService.pages.filter(item => item.inspirationCode != this.post.code);
+      //this.dataService.pages = this.dataService.pages.filter(item => item.inspirationCode != this.post.code);
+      this.dataService.pages = this.dataService.findPage("inspiration_id",this.post.id,false);
 
 
       for(let page of  this.dataService.lookbookPages) {

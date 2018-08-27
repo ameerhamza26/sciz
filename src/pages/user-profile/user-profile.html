@@ -16,8 +16,8 @@
     <ion-row>
 
       <ion-col col-2>
-        <ion-avatar (click)="selectProfileImage()">
-          <img src="{{user.image}}"  style="object-fit: cover;">
+        <ion-avatar (click)="selectProfileImage()" [style.background-image]="'url('+user.imageUrl+')'" style="background-position: center;background-size: cover;">
+         <!-- <img src="'{{user.imageUrl}}"  style="object-fit: cover;">-->
         </ion-avatar>
       </ion-col>
       <ion-col col-10>
@@ -65,11 +65,11 @@
 
     <ng-container *ngIf="!(showSettings)">
       <div class="storeholder">
-  <div class="post"  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="' url('+creation.image+')'">
+  <div class="post"  (click)="openCreation(creation)"  *ngFor="let creation of creations" [style.background-image]="' url('+creation.imageUrl+')'">
     <ion-row style="height: 100%;">
      <ion-col col-12 text-right padding >
-        <img src="/assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
-        <img src="/assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;"  >
+     <!--   <img src="/assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
+        <img src="/assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;"  > -->
       </ion-col>
     </ion-row>
   </div>
@@ -172,14 +172,15 @@
 
     <div [ngSwitch]="segment">
 
+      <div *ngIf="isPageOpen">
       <ng-container *ngSwitchCase="'likes'">
         <div class="storeholder">
-        <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of dataService.likes" [style.background-image]="' url('+getImage(creation)+')'">
-          <img src="/assets/images/placeholder2.png">
+        <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of likes"  [style.background-image]="' url('+creation.imageUrl+')'">
         </div>
       </div>
 
       </ng-container>
+      </div>
 
 
 
@@ -189,12 +190,12 @@
           <ion-row>
           <ion-col col-6 padding>
             <button ion-button color="light" outline (click)="sendMail()" > Get Measured! </button>
-            <img src="/assets/images/male_front.png"  class="" >
-            <img src="/assets/images/male_back.png"  class="" >
+            <img src="./assets/images/male_front.png"  class="" >
+            <img src="./assets/images/male_back.png"  class="" >
 
           </ion-col>
           <ion-col col-6 >
-            <ion-list padding>
+            <ion-list padding *ngIf="size != undefined">
 
               <ion-item>
                 <ion-label floating>Neck</ion-label>
@@ -258,8 +259,8 @@
           <ion-row>
           <ion-col col-6 padding>
             <button ion-button color="light" outline (click)="sendMail()" > Get Measured! </button>
-            <img src="/assets/images/female_front.png"  class="">
-            <img src="/assets/images/female_back.png"  class="" >
+            <img src="./assets/images/female_front.png"  class="">
+            <img src="./assets/images/female_back.png"  class="" >
           </ion-col>
           <ion-col col-6 >
             <ion-list padding>

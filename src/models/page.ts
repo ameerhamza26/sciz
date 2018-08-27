@@ -4,16 +4,16 @@
 export class Page {
 
     public liked = false;
-
+    public imageUrl;
   constructor(public id:any,
-              public inspirationCode :any,
+              public inspiration_id :number,
               public code:string,
               public image:any
             ) {
 
     this.id = id;
     this.code = code;
-    this.inspirationCode = inspirationCode;
+    this.inspiration_id = inspiration_id;
     this.image = image;
 
 

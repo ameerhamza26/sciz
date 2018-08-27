@@ -57,6 +57,7 @@ import { SocialShareProvider } from '../providers/social-share/social-share';
 
 import { VerticalLookbook } from '../components/vertical-lookbook/vertical-lookbook';
 import { HorizontalLookbook } from '../components/horizontal-lookbook/horizontal-lookbook';
+import { ErrorHandlerProvider } from '../providers/error-handler/error-handler';
 
 
 var config = {
@@ -145,9 +146,9 @@ var config = {
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     DataService, AppSettings, NativePageTransitions, Camera,
     SocialSharing, AudioService, NativeAudio,
-    UserService, EmailComposer, Push, InAppBrowser, Stripe,
-    SocialShareProvider
-
+    UserService, EmailComposer, Push,
+    SocialShareProvider,
+    ErrorHandlerProvider
   ]
 })
 export class AppModule { }
