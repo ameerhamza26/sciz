@@ -1,0 +1,63 @@
+<!--
+  Generated template for the PaymentHistoryPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header class="payment-history-header">
+
+  <ion-navbar>
+    <ion-title>My Payments</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="payment-history">
+
+  <br>
+  <div padding>
+    <ion-segment [(ngModel)]="segment" color="main">
+      <ion-segment-button value="rave">
+        Nigerian
+      </ion-segment-button>
+      <ion-segment-button value="stripe">
+        International
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <div [ngSwitch]="segment">
+    <ion-list *ngSwitchCase="'rave'" class="allpayments">
+      <div *ngFor="let paymentData of ravePaymentHistoryData">
+        <div *ngFor="let payment of paymentData">
+        <ion-item (click)="openRavePayment({paymentDetails : paymentData})">
+          <h2>Payment to {{payment.metadata.name}}</h2>
+          <p>{{payment.metadata.item}}</p>
+          <p>{{payment.data.tx.createdAt}}</p>
+          <p>{{payment.data.tx.amount}} {{payment.data.tx.currency.toUpperCase()}}</p>
+          <ion-note item-end>
+            <ion-icon name="arrow-forward"></ion-icon>
+          </ion-note>
+        </ion-item>
+       </div>
+      </div>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'stripe'" class="allpayments">
+      <div *ngFor="let paymentData of stripePaymentHistoryData">
+          <div *ngFor="let payment of paymentData">
+            <ion-item (click)="openStripePayment({paymentDetails : paymentData})">
+              <h2>Payment to {{payment.metadata.name}}</h2>
+              <p>{{payment.metadata.item}}</p>
+              <p>{{payment.created}}</p>
+              <p>{{payment.amount/100}} {{payment.currency.toUpperCase()}}</p>
+              <ion-note item-end>
+                <ion-icon name="arrow-forward"></ion-icon>
+              </ion-note>
+            </ion-item>
+          </div>
+      </div>
+    </ion-list>
+  </div>
+</ion-content>

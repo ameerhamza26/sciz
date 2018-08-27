@@ -4,6 +4,7 @@ import { ModalController,ViewController, NavController, NavParams ,ActionSheetCo
 
 import {DataService} from '../../providers/data-service';
 import {UserService} from '../../providers/user-service';
+import {AppSettings} from '../../providers/app-settings';
 import { AngularFireDatabase } from 'angularfire2/database';
 
 import { Camera } from '@ionic-native/camera';
@@ -22,6 +23,7 @@ import { Push, PushObject, PushOptions } from '@ionic-native/push';
   templateUrl: 'chat.html',
 })
 export class ChatPage {
+  apiImageURL = this.appSettings.getApiImageURL();
   messageCode:any;
   userCode:any;
   user:any;
@@ -42,7 +44,7 @@ export class ChatPage {
 
 
 
-  constructor(public modalCtrl: ModalController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public dataService:DataService, public userService:UserService, private camera: Camera,public platform:Platform,private alertCtrl: AlertController,public loadingCtrl: LoadingController, public actionSheetCtrl: ActionSheetController, private push: Push) {
+  constructor(public appSettings:AppSettings, public modalCtrl: ModalController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public dataService:DataService, public userService:UserService, private camera: Camera,public platform:Platform,private alertCtrl: AlertController,public loadingCtrl: LoadingController, public actionSheetCtrl: ActionSheetController, private push: Push) {
     this.userCode = this.navParams.get('userCode');
     this.view = this.navParams.get('view');
     this.start();
@@ -198,7 +200,11 @@ export class ChatPage {
     this.camera.getPicture({
       destinationType: this.camera.DestinationType.DATA_URL,
       sourceType: sourceType,
+<<<<<<< HEAD
       quality: 70,
+=======
+      quality: 50,
+>>>>>>> master
     }).then((imageData) => {
       // imageData is a base64 encoded string
       newImage = "data:image/png;base64," + imageData;
@@ -231,6 +237,7 @@ export class ChatPage {
       try{
         if(data.message == "Successful"){
 
+<<<<<<< HEAD
         this.db.list('/' + this.user.code).push({
           messagecode: this.messageCode,
           user: this.user.code,
@@ -240,6 +247,17 @@ export class ChatPage {
           image: true,
           message: 'http://18.220.90.37/images/' + this.messageCode + '.png',
           timestamp: this.dateTime.toString()
+=======
+          this.db.list('/' + 'chats' + '/' + this.user.code).push({
+            messagecode: this.messageCode,
+            user: this.user.code,
+            participant: this.provider.code,
+            displayname: this.provider.name,
+            sender: true,
+            image: true,
+            message: this.apiImageURL + 'images/' + this.messageCode + '.png',
+            timestamp: this.dateTime.toString()
+>>>>>>> master
 
         }).then( () => {
 
@@ -251,14 +269,14 @@ export class ChatPage {
 
         });
 
-        this.db.list('/' + this.provider.code).push({
+        this.db.list('/' + 'chats' + '/' + this.provider.code).push({
           messagecode: this.messageCode,
           user: this.user.id,
           participant: this.userCode,
           displayname: this.provider.name,
           sender: false,
           image: true,
-          message: 'http://18.220.90.37/images/' + this.messageCode + '.png',
+          message: this.apiImageURL + 'images/' + this.messageCode + '.png',
           timestamp: this.dateTime.toString()
         }).then( () => {
 
@@ -294,7 +312,11 @@ export class ChatPage {
     console.log(this.dateTime.toString())
     console.log(this.dateTime.getTime())
 
+<<<<<<< HEAD
     this.db.list('/' + this.user.id).push({
+=======
+    this.db.list('/' + 'chats' + '/' + this.user.code).push({
+>>>>>>> master
       messagecode: this.generateCode(),
       user: this.user.id,
       participant: this.userCode,
@@ -313,7 +335,11 @@ export class ChatPage {
 
     });
 
+<<<<<<< HEAD
     this.db.list('/' + this.userCode).push({
+=======
+    this.db.list('/' + 'chats' + '/' + this.provider.code).push({
+>>>>>>> master
       messagecode: this.generateCode(),
       user: this.user.id,
       participant: this.userCode,

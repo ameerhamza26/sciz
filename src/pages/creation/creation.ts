@@ -11,10 +11,13 @@ import {Like} from '../../models/like-model';
 
 import { ChatPage } from '../chat/chat';
 import { ProfilePage } from '../profile/profile';
+
+import { PaymentPage } from '../payment/payment';
 import {SocialShareProvider} from "../../providers/social-share/social-share";
 import {Post} from "../../models/post-model";
 import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 import {Tag} from "../../models/tag-model";
+
 
 
 /**
@@ -171,6 +174,17 @@ export class CreationPage {
 
             this.navCtrl.push(ProfilePage,{
               userCode:this.creation.account_id,
+              view:'service'
+            });
+
+          }
+        },
+        {
+          text: 'Purchase Item',
+          handler: () => {
+
+            this.navCtrl.push(PaymentPage,{
+              payload:this.creation,
               view:'service'
             });
 

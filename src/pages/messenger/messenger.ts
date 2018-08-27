@@ -47,9 +47,14 @@ export class MessengerPage {
 
     this.start();
 
+<<<<<<< HEAD
     this.subscription = db.list('/' + this.user.id);
 
     this.itemsSubscription = this.subscription.subscribe( data => {
+=======
+    this.subscription = db.list('/' + 'chats' + '/' + this.user.code);
+    this.subscription.subscribe( data => {
+>>>>>>> master
       this.chatlist = []
       data.forEach( data => {
         this.listofchatsdb.set(data.$key, data)

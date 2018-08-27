@@ -28,6 +28,10 @@ import {errorHandler} from "@angular/platform-browser/src/browser";
 export class DataService {
 
   apiUrl = this.appSettings.getApiURl();
+  raveURL = this.appSettings.getRaveURL();
+  stripeURL = this.appSettings.getStripeURL();
+  stripePK = this.appSettings.getStripePK();
+  ravePaymentLinkURL = this.appSettings.getRavePaymentLinkURL();
   me: any;
   permission: any;
   openConversation: any;

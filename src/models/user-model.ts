@@ -5,6 +5,9 @@ export class User {
               public type:string,
               public type2:string,
               public type3:string,
+              public bankAccountHolder: string,
+              public bankAccountNumber: string,
+              public bankAccountSortCode : string,
               public image:string,
               public name:string,
               public gender:string,
@@ -26,6 +29,9 @@ export class User {
     this.type = type;
     this.type2= type2;
     this.type3= type3;
+    this.bankAccountHolder = bankAccountHolder;
+    this.bankAccountNumber = bankAccountNumber;
+    this.bankAccountSortCode = bankAccountSortCode;
     this.image = image;
     this.name = name;
     this.gender = gender;

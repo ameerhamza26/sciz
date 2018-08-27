@@ -3,7 +3,7 @@ import {Component, ViewChild} from '@angular/core';
 import { MessengerPage } from '../messenger/messenger';
 import { InspirationPage } from '../inspiration/inspiration';
 import { CreateNewPage } from '../create-new/create-new';
-import { UserProfilePage } from '../user-profile/user-profile';
+import { UserProfilePage } from '../../providers/user-profile/user-profile';
 import { ScizzorPage } from '../scizzor/scizzor';
 
 import { DataService } from '../../providers/data-service';

@@ -1,0 +1,59 @@
+page-payment-history {
+  .payment-history-header {
+    border-bottom: 1px solid black;
+  }
+
+  .toolbar-background {
+    background-color: #000;
+  }
+
+  .toolbar-title {
+    text-align: center;
+  }
+
+  .payment-history {
+    background-color: black;
+    background-size: cover;
+    background-position: center;
+  }
+
+  p {
+    color: white;
+  }
+
+  .payment-segment {
+    color: #d3a33c;
+  }
+
+
+  .allpayments {
+    background-color:black;
+  }
+
+  .list{
+    border-color: #d3a33c;
+  }
+
+  .item{
+    background: transparent;
+    border-color: #d3a33c;
+
+  }
+
+  .item h2 {
+    color:#d3a33c;
+  }
+  .item p {
+    color:white;
+  }
+
+  .icon {
+    color:white;
+  }
+
+  .top{
+    color:black;
+  }
+
+
+}

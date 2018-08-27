@@ -3,8 +3,9 @@ import { NavController, NavParams, ActionSheetController, Platform, AlertControl
 
 import { DataService } from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
-import { CreationPage } from '../creation/creation';
-import { LoginPage } from '../login/login';
+import { CreationPage } from '../../pages/creation/creation';
+import { LoginPage } from '../../pages/login/login';
+import { PaymentHistoryPage } from '../../pages/payment-history/payment-history';
 
 import { App } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
@@ -126,15 +127,17 @@ export class UserProfilePage {
 
   createNewCreation() {
 
+    if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
+          this.presentAlert("Error", "Please enter your account details in your profile before proceeding")
+        }
+
     //create new post - > segue
-
-    console.log('creating new ');
-
-    this.navCtrl.push(CreationPage, {
-      creating: true
-    });
-
-
+    else {
+      console.log('creating new ');
+      this.navCtrl.push(CreationPage, {
+        creating: true
+      });
+    }
   }
 
   getCreations() {
@@ -495,11 +498,13 @@ export class UserProfilePage {
     this.emailComposer.open(email);
   }
 
-
-
   logout() {
     this.storage.clear()
     this.app.getRootNav().push(LoginPage);
   }
+
+  openPayments() {
+    this.navCtrl.push(PaymentHistoryPage)
+    };
 
 }
