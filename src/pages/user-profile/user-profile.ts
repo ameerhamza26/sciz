@@ -13,6 +13,7 @@ import { EmailComposer } from '@ionic-native/email-composer';
 import {LookbookLeroyPage} from "../lookbook-leroy/lookbook-leroy";
 import {LookbookPage} from "../lookbook/lookbook";
 import {LookbookFlipPage} from "../lookbook-flip/lookbook-flip";
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 
 /**
  * Generated class for the UserProfilePage page.
@@ -41,37 +42,56 @@ export class UserProfilePage {
   loading: any;
   options: any;
   likes: any = [];
-
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public userService: UserService, private app: App, public actionSheetCtrl: ActionSheetController, private camera: Camera, public platform: Platform, private alertCtrl: AlertController, public loadingCtrl: LoadingController, private emailComposer: EmailComposer, private storage: Storage) {
+  isPageOpen:boolean;
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public userService: UserService, private app: App, public actionSheetCtrl: ActionSheetController, private camera: Camera, public platform: Platform, private alertCtrl: AlertController, public loadingCtrl: LoadingController, private emailComposer: EmailComposer, private storage: Storage,private errorHandler: ErrorHandlerProvider) {
     this.start();
+    //this.likes = this.dataService.likes;
+    console.log("USER PROF CONSTR");
+    console.log(this.likes);
   }
 
 
   ionViewDidLoad() {
-    this.likes = [];
+    this.isPageOpen = true;
     console.log('ionViewDidLoad UserProfilePage');
     this.start();
   }
 
   ionViewWillEnter() {
-    //reload own posts on entry
-    console.log('re-entry');
 
+
+
+      console.log("Ion will enter profile");
+      this.dataService.getLikes();
+      this.isPageOpen = true;
+      //reload own posts on entry
+      this.likes = [];
+      this.likes = this.dataService.likes;
+
+
+      console.log('re-entry');
+   // this.likes = [];
     if (this.permission == 'customer') {
       this.getSizes();
-      this.likes = this.dataService.getLikes();
-      console.log(this.likes);
+
+      //console.log(this.likes);
 
 
     } else if (this.permission == 'service') {
       this.getCreations();
     }
   }
+    ionViewWillLeave() {
+      this.likes = [];
+      this.isPageOpen = false;
+  }
 
   start() {
 
     this.segment = 'likes';
     this.user = this.userService.user;
+    this.dataService.getImageUrl(this.user.image,this.user);
+      console.log("USER PROFILE USER--",this.user)
     this.userCopy = this.user;
     this.permission = this.dataService.permission;
     this.sizeCode = this.user.sizeCode;
@@ -84,6 +104,8 @@ export class UserProfilePage {
 
     if (this.permission == 'customer') {
       this.getSizes();
+    //  this.dataService.getLikes();
+      //this.likes = this.dataService.likes;
     } else if (this.permission == 'service') {
       this.getCreations();
 
@@ -117,35 +139,50 @@ export class UserProfilePage {
 
   getCreations() {
     //get my posts from data service
-    this.creations = this.dataService.creations.filter(item => item.userCode == this.user.code);
+    this.creations = this.dataService.creations.filter(item => item.account_id == this.user.id);
   }
 
   getImage(creation) {
     if(creation.creationCode.substr(0,15) !== "inspirationpage") {
+        console.log("GET IMAGE 1");
         console.log(creation);
-        let temp = this.dataService.creations.filter(item => item.code == creation.creationCode)[0];
-        return temp.image;
+        let temp = this.dataService.creations.filter(item => item.id == creation.creationCode.substr(8))[0];
+        console.log(temp.image);
+        if(temp.image){
+            this.dataService.getImageUrl(temp.image,creation);
+            return temp.image;
+        }
     }
     else {
-        console.log(creation);
+        console.log("GET IMAGE 2");
+        console.log(creation.creationCode.substr(15));
         //console.log(this.dataService.pages);
-        let temp = this.dataService.pages.filter(item => item.code == creation.creationCode)[0];
-        console.log(temp);
-        return temp.image;
+        //let temp = this.dataService.pages.filter(item => item.code == creation.creationCode)[0];
+        let temp = this.dataService.findPage("id",creation.creationCode.substr(15))[0];
+        if(temp.image){
+            this.dataService.getImageUrl(temp.image,creation);
+            console.log(temp.image);
+            return temp.image;
+        }
     }
   }
 
   openLike(creation2Open) {
+    console.log(creation2Open);
       if(creation2Open.creationCode.substr(0,15) !== "inspirationpage"){
-        creation2Open = this.dataService.creations.filter(item => item.code == creation2Open.creationCode)[0];
+        console.log(this.dataService.creations);
+        creation2Open = this.dataService.creations.filter(item => item.id == creation2Open.creationCode.substr(8))[0];
 
         console.log('open creation: ' + creation2Open);
         this.navCtrl.push(CreationPage, {
             creation: creation2Open
     });
     } else {
-          var page = this.dataService.pages.filter(item => item.code == creation2Open.creationCode);
-          var post = this.dataService.posts.filter(item=>item.code == page[0].inspirationCode)
+         // var page = this.dataService.pages.filter(item => item.code == creation2Open.creationCode);
+          var page = this.dataService.findPage("id",creation2Open.creationCode.substr(15));
+         // var post = this.dataService.posts.filter(item=>item.code == page[0].inspirationCode);
+          console.log("FIND POST OPEN LIKE")
+          var post = this.dataService.findInspiration("id",page[0].inspiration_id);
           console.log(creation2Open);
           this.openLookbook(post[0]);
           console.log(page);
@@ -215,7 +252,7 @@ export class UserProfilePage {
               creation2Open.availability = true;
             }
 
-            this.dataService.updateAvailability(creation2Open.code, creation2Open.availability);
+            this.dataService.updateAvailability(creation2Open.id, creation2Open.availability);
 
 
             //update availability
@@ -252,7 +289,7 @@ export class UserProfilePage {
     console.log('getting sizes');
 
 
-    this.size = this.dataService.sizes.filter(item => item.sizeCode == this.sizeCode)[0];
+    this.size = this.dataService.sizes.filter(item => item.account_id == this.user.id)[0];
 
     console.log(this.size);
 
@@ -302,7 +339,7 @@ export class UserProfilePage {
     this.camera.getPicture({
       destinationType: this.camera.DestinationType.DATA_URL,
       sourceType: sourceType,
-      quality: 100
+      quality: 70
     }).then((imageData) => {
       // imageData is a base64 encoded string
       newImage = "data:image/png;base64," + imageData;
@@ -322,26 +359,30 @@ export class UserProfilePage {
 
     this.showLoading('Updating ..');
 
-    this.dataService.saveImage(imageData, this.user.code).subscribe(data => {
+    console.log("Save user profile image,name is: ",'user_profile'+this.user.id);
+    this.dataService.saveImage(imageData, "user_profile"+this.user.id).subscribe(data => {
 
       try {
         if (data.message == "Successful") {
 
+          console.log("Profile image uploaded,name is: ", data.imageName);
 
-          this.user.image = this.user.code + '.png';
+          this.user.image = data.imageName;
           this.dataService.updateProfile(this.user).subscribe(data => {
 
 
             if (data.message == "Successful") {
               console.log('profile saved');
 
-              this.user.image = imageData;
+              //this.user.image = imageData;
+              console.log("Get image url for user profile, ",this.user.image);
+              this.dataService.getImageUrl(this.user.image,this.user);
 
               this.loading.dismissAll();
               this.navCtrl.parent.select(2);
 
             } else {
-              this.presentAlert('Oops', 'New profile image not saved');
+                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.profile[0].title,ErrorHandlerProvider.MESSAGES.error.profile[0].msg);
             }
 
           });
@@ -350,12 +391,12 @@ export class UserProfilePage {
 
         } else {
           this.loading.dismissAll();
-          this.presentAlert('Oops', 'New profile image not saved');
+            this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[2].title,ErrorHandlerProvider.MESSAGES.error.image[2].msg);
         }
       } catch (error) {
         this.loading.dismissAll();
-        this.presentAlert('Oops', 'Please try again');
-      }
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[2].title,ErrorHandlerProvider.MESSAGES.error.image[2].msg);
+          }
 
     });
 
@@ -389,7 +430,7 @@ export class UserProfilePage {
 
       let cleanUser = this.user;
       cleanUser.image = "";
-      cleanUser.image = cleanUser.code + '.png';
+      cleanUser.image = cleanUser.id + '.png';
       this.dataService.updateProfile(cleanUser).subscribe(data => {
 
         if (data.message == "Successful") {
@@ -399,8 +440,8 @@ export class UserProfilePage {
 
         } else {
           this.loading.dismissAll();
-          this.presentAlert('Oops', 'Please try again');
-        }
+            this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.profile[0].title,ErrorHandlerProvider.MESSAGES.error.profile[0].msg);
+          }
 
       });
 

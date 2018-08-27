@@ -73,9 +73,8 @@ export class MyApp {
 
 
         platform.resume.subscribe(() => {
-
+                console.log("HI resume");
         });
-        //this.dataService.createBranchLink(); testing
 
 
       /* Get Session of Logedin user */

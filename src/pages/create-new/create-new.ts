@@ -9,6 +9,7 @@ import { LookbookPage } from '../lookbook/lookbook';
 import { LookbookLeroyPage } from '../lookbook-leroy/lookbook-leroy';
 import { LookbookFlipPage } from '../lookbook-flip/lookbook-flip';
 import { TagPage } from '../tag/tag';
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 
 /**
  * Generated class for the CreateNewPage page.
@@ -48,7 +49,6 @@ export class CreateNewPage {
   description: any = "";
   lookbook: any = "";
   index: any;
-
   post: any;
 
   selectedRecord: any;
@@ -56,7 +56,7 @@ export class CreateNewPage {
 
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public platform: Platform, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, private camera: Camera, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public platform: Platform, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, private camera: Camera, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController,private errorHandler: ErrorHandlerProvider) {
 
     if (this.navParams.get('mode') == 'edit') {
       //if edit mode then setup edit, get passed post
@@ -96,7 +96,9 @@ export class CreateNewPage {
 
   getPages() {
     //load pages from data service
-    this.pages = this.dataService.pages.filter(item => item.inspirationCode == this.post.code);
+   // this.pages = this.dataService.pages.filter(item => item.inspirationCode == this.post.code);
+    this.pages = this.dataService.findPage("inspiration_id",this.post.id);
+    this.pages["pagesRemoved"] = new Array<Page>();
   }
 
   createNewPost() {
@@ -113,8 +115,8 @@ export class CreateNewPage {
 
     this.code = 'inspiration' + text;
 
-    this.post = new Post('', this.code, this.dataService.me.code, '', '', '', '', '', '');
-
+    this.post = new Post(0, this.code, this.dataService.me.id, '', '', '', '', 0, '');
+    this.post.imageUrl = "";
   }
 
   getPicture(newPost) {
@@ -153,12 +155,13 @@ export class CreateNewPage {
     this.camera.getPicture({
       destinationType: this.camera.DestinationType.DATA_URL,
       sourceType: sourceType,
-      quality: 100
+      quality: 70
     }).then((imageData) => {
       // imageData is a base64 encoded string
       tempImage = "data:image/jpeg;base64," + imageData;
       tempImage = tempImage.replace(/(\r\n|\n|\r)/gm, "");
       newPost.image = tempImage;
+      newPost.imageUrl = tempImage;
       //newPost.image = 'images/1.jpg';
       this.pictureAdded = true;
     }, (err) => {
@@ -219,17 +222,21 @@ export class CreateNewPage {
 
       let pagecode = 'inspirationpage' + text;
   //  let tempPage = new Page('', this.code,pagecode, 'images/image.png');
-    let tempPage = new Page('', this.code,pagecode, 'inspirationrotIf0giEtlnOmsdZZBBnUWK8FY7gCzRDJW2Uui71.png'); // debug
-    this.pages.push(tempPage);
+    let tempPage = new Page('', this.post.id, "",'inspirationrotIf0giEtlnOmsdZZBBnUWK8FY7gCzRDJW2Uui71.png'); // debug
+      tempPage.imageUrl = "";
+      this.pages.push(tempPage);
   }
   minus(index) {
     //delete page from inspiration
+      //this.pages["pagesRemoved"].push(this.pages[index]);
+      //this.pagesRemoved.push(this.pages[index]);
+
     this.pages.splice(index, 1);
   }
 
   savePost() {
     // save post fields into post object
-    this.post.image = "inspirationXOaXhtOaEQ0eyzoSnqTFCB8jPtLZ76H1nAvREIsP.png"; // debug
+   // this.post.image = "inspirationXOaXhtOaEQ0eyzoSnqTFCB8jPtLZ76H1nAvREIsP.png"; // debug
     this.post.title = this.title;
     this.post.subTitle = this.subTitle;
     this.post.description = this.description;
@@ -251,7 +258,7 @@ export class CreateNewPage {
 
   selectLookbook(post) {
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
-    if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.code) {
+    if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.id) {
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Modify lookbook',
         buttons: [
@@ -350,18 +357,25 @@ export class CreateNewPage {
           handler: () => {
             this.dataService.deleteInspiration(post2Delete).subscribe(data => {
               try {
-                console.log('inspiration deleted');
-                let index = 0;
-                for (let post of this.dataService.posts) {
-                  if (post2Delete != post) {
-                    index = index + 1;
-                  } else {
-                    this.dataService.posts.splice(index, 1);
-                  }
+                if(data.status) {
+                    console.log('inspiration deleted');
+                    let index = 0;
+                    for (let post of this.dataService.posts) {
+                        if (post2Delete != post) {
+                            index = index + 1;
+                        } else {
+                            this.dataService.posts.splice(index, 1);
+                        }
+                    }
+                    this.dataService.getInspirations();
                 }
-                this.dataService.getInspirations();
+                else
+                {
+                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
+                }
               } catch (error) {
-                console.log('inspiration delete error');
+                  this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
+                  console.log('inspiration delete error');
               }
             });
           }

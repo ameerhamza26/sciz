@@ -27,24 +27,41 @@
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <!--    <div class="post {{getAnimation(post)}}"  *ngFor="let post of dataService.posts" [style.background-image]="' url('+post.image+')'"  >-->
-  <div class="post" *ngFor="let post of dataService.posts" [style.background-image]="' url('+post.image+'?v='+timestapm+')'">
-    <div class="postInfo" (click)="selectLookbook(post)">
-      <ion-grid>
-        <ion-row>
-          <p style="text-align: right; width: 100%" padding>
-            <ion-icon style="font-size: 30px;" name="" color="black"></ion-icon>
-          </p>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <h2 class="post-title">{{post.title}}</h2>
-            <h1 *ngIf="post.likes > 0" class="post-likes"><span ><ion-icon name="heart" item-start color="danger"></ion-icon> {{post.likes}}</span></h1>
-            <p>{{post.subTitle}}</p>
-          </ion-col>
-        </ion-row>
 
-      </ion-grid>
+
+  <div class="pin-layout even-items" *ngIf="itemMiddle > 0 && postLength > 0 && dataService.posts.length > 0 && postLength % 2 == 0"> <!-- TEST MAGAZINES -->
+    <div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of dataService.posts; let i = index" (click)="selectLookbook(post)"
+         [ngClass]="{'second-even': i >= itemMiddle && i % 2 == 0 ,'second-odd': i >= itemMiddle && i % 2 > 0,'first-even': i < itemMiddle && i != itemMiddle && i % 2 == 0,'first-odd': i < itemMiddle && i != itemMiddle && i % 2 > 0}" [style.background-image]="' url('+post.imageUrl+')'" >
     </div>
   </div>
+
+  <div class="pin-layout odd-items" *ngIf="itemMiddle > 0 && postLength > 0 && dataService.posts.length > 0 && postLength % 2 > 0"> <!-- TEST MAGAZINES -->
+    <div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of dataService.posts; let i = index" (click)="selectLookbook(post)"
+         [ngClass]="{'second-odd': i > itemMiddle && i % 2 > 0,'second-even': i > itemMiddle  && i % 2 == 0 ,'first-start': i <= itemMiddle && i == 0,'first-odd': i <= itemMiddle  && (i % 2 > 0),'first-even': i <= itemMiddle && (i % 2 == 0)}" [style.background-image]="'url('+post.imageUrl+')'"
+        [ngStyle]=" ((i + 1) % 2 > 0 &&  i + 1 < itemMiddle + 1 && i + 1 != 1) && {'height':'180px'} || ((i + 1) % 2 == 0 && i + 1 < itemMiddle + 1 ) && {'height':'200px'}
+        || ( i + 1 > itemMiddle + 1 && ((i + 1 - itemMiddle + 1) % 2) > 0 && {'height':'200px'}) || ( i + 1 > itemMiddle + 1  && ((i + 1 - itemMiddle + 1)  % 2) == 0 && {'height':'180px'})"
+    >
+    </div>
+  </div>
+
+  <!-- TEST MAGAZINES -->
+  <!---<div class="pin-layout even-items" *ngIf="itemMiddle > 0 && postLength > 0 && images.length > 0 && postLength % 2 == 0"> <!-- TEST MAGAZINES -->
+    <!--<div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of images; let i = index" (click)="selectLookbook(post)" [ngClass]="{'second-even': i >= itemMiddle && i % 2 == 0 ,'second-odd': i >= itemMiddle && i % 2 > 0,'first-even': i < itemMiddle && i != itemMiddle && i % 2 == 0,'first-odd': i < itemMiddle && i != itemMiddle && i % 2 > 0}" [style.background-image]="' url(./assets/images/mag'+i+'.jpeg)'" >
+      even
+    </div>
+  </div>-->
+
+  <!--<div class="pin-layout odd-items" *ngIf="itemMiddle > 0 && postLength > 0 && images.length > 0 && postLength % 2 > 0"> <!-- TEST MAGAZINES -->
+   <!-- <div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of images; let i = index" (click)="selectLookbook(post)" [ngClass]="{'second-odd': i > itemMiddle && i % 2 > 0,'second-even': i > itemMiddle && i % 2 == 0,'first-start': i <= itemMiddle && i == 0,'first-odd': i <= itemMiddle && (i % 2 > 0),'first-even': i <= itemMiddle && (i % 2 == 0)}" [style.background-image]="' url(./assets/images/mag'+i+'.jpeg)'" >
+      oddd
+    </div>
+  </div> -->
+
+  <!-- <div class="pin-layout"> <!-- TEST MAGAZINES -->
+
+    <!--<div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of images; let i = index" (click)="selectLookbook(post)" [ngClass]="{'second': i >= itemMiddle && images.length %2 == 0,'second-odd': i > itemMiddle && images.length %2 > 0,'first': i < itemMiddle && images.length %2 == 0, 'first-odd': i <= itemMiddle && images.length %2 > 0}" [style.background-image]="' url(./assets/images/mag'+i+'.jpeg)'" >
+    </div>
+  </div> -->
+
+
 </ion-content>

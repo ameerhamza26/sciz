@@ -22,6 +22,7 @@ import { ToastController } from 'ionic-angular';
 })
 export class MessengerPage {
 
+  itemsSubscription;
   userCode:any;
   user:any;
   provider:any;
@@ -38,30 +39,34 @@ export class MessengerPage {
     this.presentLoading();
     this.presentToast();
 
+    this.user = this.userService.user;
     this.userCode = this.navParams.get('userCode');
+    console.log(this.userCode);
+    console.log(this.user.id);
     this.view = this.navParams.get('view');
 
     this.start();
 
-    this.subscription = db.list('/' + this.user.code);
-    this.subscription.subscribe( data => {
+    this.subscription = db.list('/' + this.user.id);
+
+    this.itemsSubscription = this.subscription.subscribe( data => {
       this.chatlist = []
       data.forEach( data => {
         this.listofchatsdb.set(data.$key, data)
         console.log(data)
         console.log(data.$key)
-        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.code)){
+        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.id)){
           this.listofchats.set(data.participant, data)
         }
-        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.code)){
+        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.id)){
           this.listofchats.set(data.participant, data)
         }
 
-        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.code)){
+        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.id)){
           this.listofchats.set(data.user, data)
         }
 
-        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.code)){
+        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.id)){
           this.listofchats.set(data.user, data)
         }
       });
@@ -86,12 +91,19 @@ export class MessengerPage {
   }
 
   ionViewDidLoad() {
+      this.user = this.userService.user;
+      console.log(this.userCode);
+      console.log(this.user.id);
     console.log('ionViewDidLoad MessengerPage');
 
   }
 
+  ionViewWillLeave(){
+      this.itemsSubscription.unsubscribe();
+  }
+
   deleteMessage(user,participant) {
-    const items = this.db.list('/' + this.user.code);
+    const items = this.db.list('/' + this.user.id);
     this.listofchatsdb.forEach(function(value, key) {
       if ((value as any).participant == participant){
       console.log(key)
@@ -133,12 +145,12 @@ export class MessengerPage {
 
     this.segment = 'work';
     this.user = this.userService.user;
-    this.provider =  this.dataService.users.filter(item => item.code == this.userCode)[0];
-    this.creations =  this.dataService.creations.filter(item => item.userCode == this.userCode);
+    this.provider =  this.dataService.users.filter(item => item.id == this.user.id)[0];
+    this.creations =  this.dataService.creations.filter(item => item.id == this.user.id);
 
   }
 
-  getImage(userCode){
+  /*getImage(userCode){
 
     //should be user.code used not user.name
     //  let tempUser = this.dataService.users.filter(item => item.code == userCode)[0];
@@ -147,12 +159,13 @@ export class MessengerPage {
 
     return tempUser.image;
 
-  }
+  }*/
 
   openChat(participant, participantID) {
-    console.log(participant)
-    console.log(participantID)
+    console.log(participant);
+    console.log(participantID);
     this.navCtrl.push(ChatPage,{
+      userCode:participantID,
       provider:participantID,
       providername: participant,
       view:'service'
@@ -161,8 +174,12 @@ export class MessengerPage {
 
   getAvatar(chat){
 
-  let tempUser = this.dataService.users.filter(item => (item as any).code == chat)[0];
+    console.log(chat);
+  let tempUser = this.dataService.users.filter(item => item.id == chat)[0];
+  if(tempUser != undefined)
     return tempUser.image;
+  else
+    return "";
 
 
 

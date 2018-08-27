@@ -3,10 +3,11 @@
   <h1 style="color: #fff">Vertical lookbook</h1>
   <ion-slides >
 
-  <ion-slide  [style.background-image]="' url('+dataService.lookbook.image+')'"  >
+  <ion-slide  [style.background-image]="' url('+dataService.lookbook.imageUrl+')'"  >
     <div class="postInfo">
       <h2 padding>{{dataService.lookbook.title}}</h2>
       <p padding>{{dataService.lookbook.description}}</p>
+      <h1 *ngIf="dataService.lookbook.likes > 0" class="post-likes"><span style="padding:16px" ><ion-icon name="heart" item-start color="danger"></ion-icon> {{dataService.lookbook.likes}}</span></h1>
     </div>
   </ion-slide>
 
@@ -22,10 +23,10 @@
 </div>
 <div  *ngFor="let page of dataService.lookbookPages" class="center">
 
-  <img src={{page.image}}  >
+  <img src={{page.imageUrl}}  >
   <ion-row>
     <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
-      <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page.code)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
+      <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
     </ion-col>
   </ion-row>
 </div>

@@ -1,5 +1,5 @@
 export class User {
-
+  public imageUrl;
   constructor(public id:any,
               public code:any,
               public type:string,
@@ -41,6 +41,7 @@ export class User {
     this.sizeCode = sizeCode;
     this.rating = rating;
     this.password = password;
+
 
 
   }

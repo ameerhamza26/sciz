@@ -47,9 +47,9 @@ export class SocialShareProvider {
       });*/
   }
 
-  private shareFacebook(shareType,message:string,model:any) {
+  private shareFacebook(shareType,message:string,model:any,modelType) {
       console.log(message);
-      this.dataService.createBranchLink(shareType,model.code,model.image,"Facebook").subscribe(data => {
+      this.dataService.createBranchLink(modelType,model.id,model.image,"Facebook").subscribe(data => {
           this.socialSharing.shareViaFacebookWithPasteMessageHint(message,"",data.url,message).then(()=>{
 
           }).catch(()=>{
@@ -58,9 +58,9 @@ export class SocialShareProvider {
       })
   }
 
-  private shareTwitter(shareType,message:string,model:any) {
+  private shareTwitter(shareType,message:string,model:any,modelType) {
       console.log(message);
-      this.dataService.createBranchLink(shareType,model.code,model.image,"Twitter").subscribe(data => {
+      this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
           this.socialSharing.shareViaTwitter(message,model.image,data.url).then(()=>{
 
           }).catch(()=>{
@@ -70,9 +70,9 @@ export class SocialShareProvider {
 
   }
 
-    private shareInstagram(shareType,message:string,model:any) {
+    private shareInstagram(shareType,message:string,model:any,modelType) {
         console.log(message);
-        this.dataService.createBranchLink(shareType,model.code,model.image,"Twitter").subscribe(data => {
+        this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
             message = message + ' ' + data.url;
             this.socialSharing.shareViaInstagram(message,model.image).then(()=>{
 
@@ -85,18 +85,19 @@ export class SocialShareProvider {
     }
 
     // email
-    private shareWithEmail(shareType,message:string,model:any){
+    private shareWithEmail(shareType,message:string,model:any,modelType){
+      console.log(model);
       console.log(message);
-        this.dataService.createBranchLink(shareType,model.code,model.image,"Twitter").subscribe(data => {
+        this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
             message = message + '. Visit this link '+ data.url;
             this.socialSharing.shareViaEmail(message,"Scizzor app",['Scizzorapp@gmail.com']);
         });
 
     }
-    // Whatsapp
-    private shareWhatsapp(shareType,message:string,model:any){
+    // what's up
+    private shareWhatsapp(shareType,message:string,model:any,modelType){
         console.log(message);
-        this.dataService.createBranchLink(shareType,model.code,model.image,"Twitter").subscribe(data => {
+        this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
             this.socialSharing.shareViaWhatsApp(message,model.image,data.url).then(()=>{
 
             }).catch(()=>{
@@ -112,19 +113,19 @@ export class SocialShareProvider {
       console.log("Share magazine", profile);
       switch (shareType){
           case 'Facebook':
-              this.shareFacebook(shareType,this.buildShareMessage('Profile',profile),profile);
+              this.shareFacebook(shareType,this.buildShareMessage('Profile',profile),profile,'Profile');
               break;
           case 'Twitter':
-              this.shareTwitter(shareType,this.buildShareMessage('Profile',profile),profile);
+              this.shareTwitter(shareType,this.buildShareMessage('Profile',profile),profile,'Profile');
               break;
           case 'Instagram':
-              this.shareInstagram(shareType,this.buildShareMessage('Profile',profile),profile);
+              this.shareInstagram(shareType,this.buildShareMessage('Profile',profile),profile,'Profile');
               break;
           case 'Whatsapp':
-              this.shareWhatsapp(shareType,this.buildShareMessage('Profile',profile),profile);
+              this.shareWhatsapp(shareType,this.buildShareMessage('Profile',profile),profile,'Profile');
               break;
           case 'Email':
-              this.shareWithEmail(shareType,this.buildShareMessage('Profile',profile),profile);
+              this.shareWithEmail(shareType,this.buildShareMessage('Profile',profile),profile,'Profile');
               break;
       }
   }
@@ -133,19 +134,19 @@ export class SocialShareProvider {
       console.log("Share magazine", magazine);
       switch (shareType){
           case 'Facebook':
-              this.shareFacebook(shareType,this.buildShareMessage('Magazine',magazine),magazine);
+              this.shareFacebook(shareType,this.buildShareMessage('Magazine',magazine),magazine,'Magazine');
               break;
           case 'Twitter':
-              this.shareTwitter(shareType,this.buildShareMessage('Magazine',magazine),magazine);
+              this.shareTwitter(shareType,this.buildShareMessage('Magazine',magazine),magazine,'Magazine');
               break;
           case 'Instagram':
-              this.shareInstagram(shareType,this.buildShareMessage('Magazine',magazine),magazine);
+              this.shareInstagram(shareType,this.buildShareMessage('Magazine',magazine),magazine,'Magazine');
               break;
           case 'Whatsapp':
-              this.shareWhatsapp(shareType,this.buildShareMessage('Magazine',magazine),magazine);
+              this.shareWhatsapp(shareType,this.buildShareMessage('Magazine',magazine),magazine,'Magazine');
               break;
           case 'Email':
-              this.shareWithEmail(shareType,this.buildShareMessage('Magazine',magazine),magazine);
+              this.shareWithEmail(shareType,this.buildShareMessage('Magazine',magazine),magazine,'Magazine');
               break;
       }
   }
@@ -153,29 +154,30 @@ export class SocialShareProvider {
   public shareItem(item: Creation,shareType:string) {
       switch (shareType){
           case 'Facebook':
-              this.shareFacebook(shareType,this.buildShareMessage('Item',item),item);
+              this.shareFacebook(shareType,this.buildShareMessage('Item',item),item,'Item');
               break;
           case 'Twitter':
-              this.shareTwitter(shareType,this.buildShareMessage('Item',item),item);
+              this.shareTwitter(shareType,this.buildShareMessage('Item',item),item,'Item');
               break;
           case 'Instagram':
-              this.shareInstagram(shareType,this.buildShareMessage('Item',item),item);
+              this.shareInstagram(shareType,this.buildShareMessage('Item',item),item,'Item');
               break;
           case 'Whatsapp':
-              this.shareWhatsapp(shareType,this.buildShareMessage('Item',item),item);
+              this.shareWhatsapp(shareType,this.buildShareMessage('Item',item),item,'Item');
               break;
           case 'Email':
-              this.shareWithEmail(shareType,this.buildShareMessage('Item',item),item);
+              this.shareWithEmail(shareType,this.buildShareMessage('Item',item),item,'Item');
               break;
       }
       console.log("Share item",item);
   }
 
-  private buildShareMessage(modelType:string,model:any){
+  private buildShareMessage(modelType:string,model:any) {
+      console.log(model);
       var message = "";
       switch (modelType){
           case 'Item':
-              message = SHARE_MSGS.item.prefix +  this.dataService.users.filter(item => item.code == model.userCode)[0].name + SHARE_MSGS.item.seller + model.name + SHARE_MSGS.item.sufix;
+              message = SHARE_MSGS.item.prefix +  this.dataService.users.filter(item => item.id == model.account_id)[0].name + SHARE_MSGS.item.seller + model.name + SHARE_MSGS.item.sufix;
               break;
           case 'Magazine':
               message = SHARE_MSGS.magazine.prefix + model.title + SHARE_MSGS.magazine.sufix;

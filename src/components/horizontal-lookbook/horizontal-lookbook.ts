@@ -30,26 +30,26 @@ export class HorizontalLookbook {
 
   getTags(){
 
-    this.tags  = this.dataService.tags.filter(item => item.inspirationCode == this.dataService.lookbook.code);
+    this.tags  = this.dataService.tags.filter(item => item.inspiration_id == this.dataService.lookbook.code);
       console.log("TAGOVI",this.tags);
   }
 
   getUser(tag){
       console.log("USER tag",tag);
 
-      let user = this.dataService.users.filter(item => item.code == tag.userCode)[0];
+      let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
       console.log(user);
     return user.name;
   }
 
   getImage(tag){
-    let user = this.dataService.users.filter(item => item.code == tag.userCode)[0];
-    return user.image;
+    let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
+    return user.imageUrl;
   }
 
   openProfile(tag){
     //open profile of service
-    let user = this.dataService.users.filter(item => item.code == tag.userCode)[0];
+    let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
     this.navCtrl.push(ProfilePage,{
       userCode:user.code,
       view:'service'
@@ -62,8 +62,8 @@ export class HorizontalLookbook {
         console.log(this.dataService.likes);
         this.dataService.lookbookPages.forEach((page, index) => {
             console.log("PAGE",page);
-            if(this.dataService.likes.filter(item => item.creationCode == page.code).length > 0){
-                let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == page.code)[0];
+            if(this.dataService.likes.filter(item => item.creationCode =='inspirationpage'+page.id).length > 0){
+                let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+page.id)[0];
                 console.log('liked');
                 page.liked = reLikedCreation.liked;
             }else{
@@ -73,17 +73,17 @@ export class HorizontalLookbook {
         });
     }
 
-    like(code){
+    like(like){
         //like post, add to likes
 
         //like post, add to likes
-        console.log("Liked code", code);
-        if(this.dataService.likes.filter(item => item.creationCode == code).length > 0){
-            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == code)[0];
+        console.log("Liked code", like.id);
+        if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
+            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
             reLikedCreation.liked = true;
             //update database
         }else{
-            let likedCreation = new Like ('',this.dataService.me.code, code,true);
+            let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
             this.dataService.likes.splice(0,0,likedCreation);
             this.dataService.saveLike(likedCreation);
             //save like

@@ -5,6 +5,7 @@ import { FormControl } from '@angular/forms';
 import 'rxjs/add/operator/debounceTime';
 
 import{Tag} from '../../models/tag-model';
+import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 /**
  * Generated class for the TagPage page.
  *
@@ -25,7 +26,7 @@ export class TagPage {
   searching: any = false;
   inspiration:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService,private alertCtrl: AlertController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService,private alertCtrl: AlertController,private errorHandler: ErrorHandlerProvider) {
     this.searchControl = new FormControl();
     this.inspiration = this.navParams.get('inspiration');
   }
@@ -47,6 +48,7 @@ export class TagPage {
 
   setFilteredItems() {
     this.filtereditems = this.dataService.filter4Tag(this.searchTerm);
+    console.log("Tag items,", this.filtereditems);
   }
 
   tag(user){
@@ -76,7 +78,7 @@ export class TagPage {
 
   saveTag(user){
 
-    let newTag = new Tag(this.dataService.generateCode('tag'),this.inspiration.code,user.code);
+    let newTag = new Tag(0,this.inspiration.id,user.id);
 
     this.dataService.tagInspiration(newTag).subscribe(data =>{
 
@@ -85,10 +87,12 @@ export class TagPage {
           this.dataService.getInspirations();
 
         }else{
+            this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.tag[0].title,ErrorHandlerProvider.MESSAGES.error.tag[0].msg);
           console.log('error saving tag');
         }
       } catch(error){
-        console.log('error saving tag');
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.tag[0].title,ErrorHandlerProvider.MESSAGES.error.tag[0].msg);
+          console.log('error saving tag');
       }
 
 
