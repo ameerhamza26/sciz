@@ -6,7 +6,7 @@ export class Size {
   constructor(
     public id:any,
     public sizeCode:any,
-    public userCode:any,
+    public account_id:number,
               public neck:any,
               public shoulder:any,
               public chest:any,
@@ -24,7 +24,7 @@ export class Size {
 
     this.id = id;
     this.sizeCode = sizeCode;
-    this.userCode = userCode;
+    this.account_id = account_id;
     this.neck = neck;
     this.shoulder = shoulder;
     this.chest = chest;

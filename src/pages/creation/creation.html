@@ -25,8 +25,8 @@
 
   <div  style="height: 80%;" class="animated fadeIn">
 
-  <img src={{creation.image}} *ngIf="(editing || creating)" (click)="getPicture()" style='height: 100%; width: 100%; object-fit: contain'  >
-    <img src={{creation.image}} *ngIf="!(editing || creating)" style='height: 100%; width: 100%; object-fit: contain'  >
+  <img src={{creation.imageUrl}} *ngIf="(editing || creating)" (click)="getPicture()" style='height: 100%; width: 100%; object-fit: contain'  >
+    <img src={{creation.imageUrl}} *ngIf="!(editing || creating)" style='height: 100%; width: 100%; object-fit: contain'  >
 
     </div>
 
@@ -40,8 +40,15 @@
         <ion-option value="Street Wear">Street Wear</ion-option>
       </ion-select>
     </ion-item>
-
+    <ion-row style="text-align: center">
+      <ion-col col-3><p class="animated bounceInRight" (click)="facebookShare(creation)"><ion-icon name="logo-facebook"></ion-icon></p></ion-col>
+      <ion-col col-3><p class="animated bounceInRight" (click)="twitterShare(creation)"><ion-icon name="logo-twitter"></ion-icon></p></ion-col>
+      <ion-col col-3><p class="animated bounceInRight" (click)="instagramShare(creation)"><ion-icon name="logo-instagram"></ion-icon></p></ion-col>
+      <ion-col col-3><p class="animated bounceInRight" (click)="whatsappShare(creation)"><ion-icon name="logo-whatsapp"></ion-icon></p></ion-col>
+      <ion-col col-3><p class="animated bounceInRight" (click)="emailShare(creation)"><ion-icon name="mail"></ion-icon></p></ion-col>
+    </ion-row>
   <ion-row>
+
     <ion-col col-9 *ngIf="!(editing || creating)"><p class="animated bounceInRight"><b>{{creation.price}}</b></p></ion-col>
     <ion-col col-9 *ngIf="(editing || creating)"><p><b><ion-input type="text" [(ngModel)]="creation.price" ></ion-input></b></p></ion-col>
     <ion-col col-3 text-right padding class="animated slideInDown" >

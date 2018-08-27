@@ -4,13 +4,13 @@
 
 export class Tag {
 
-  constructor(public code:any,
-              public inspirationCode :any,
+  constructor(public id:number,
+              public inspiration_id :any,
               public userCode:any
   ) {
 
-    this.code = code;
-    this.inspirationCode = inspirationCode;
+    this.id = id;
+    this.inspiration_id = inspiration_id;
     this.userCode = userCode;
 
 

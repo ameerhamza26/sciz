@@ -15,10 +15,11 @@
     <ion-row>
       <ion-col>
         <button ion-button color="light" block  (click)="start()" large >Create Magazine</button>
+        <h1>False create</h1>
       </ion-col>
     </ion-row>
 
-    <div class="post"  *ngFor="let post of dataService.illustratorPosts" [style.background-image]="' url('+post.image+')'"  >
+    <div class="post"  *ngFor="let post of dataService.illustratorPosts" [style.background-image]="' url('+post.imageUrl+')'"  >
 
       <div class="postInfo" (click)="selectLookbook(post)">
         <ion-grid>
@@ -46,9 +47,9 @@
       <h2>New Post</h2>
     </ion-card-header>
 
-      <img *ngIf="post.image != ''" src="{{post.image}}"  (click)="getPicture(post)" >
+      <img *ngIf="post.imageUrl != ''" src="{{post.imageUrl}}"  (click)="getPicture(post)" >
 
-      <ion-item   *ngIf="post.image == ''"  >
+      <ion-item   *ngIf="post.imageUrl == ''"  >
         <button ion-button block (click)="getPicture(post)" large color="light"><ion-icon style="font-size: 30px;" name="camera" color="main"></ion-icon></button>
       </ion-item>
 
@@ -71,7 +72,7 @@
       <ion-item no-lines>
         <ion-label floating>Lookbook</ion-label>
         <ion-select [(ngModel)]="lookbook" placeholder="Lookbook Style" text-right >
-          <ion-option value="vertical">Vertical</ion-option>
+         <!-- <ion-option value="vertical">Vertical</ion-option> -->
           <ion-option value="horizontal">Horizontal</ion-option>
           <ion-option value="leroy">Leroy</ion-option>
         </ion-select>
@@ -94,9 +95,9 @@
 
 
 
-        <img *ngIf="page.image != ''  && (page == selectedRecord)" src="{{page.image}}"  (click)="getPicture(page)" >
+        <img *ngIf="page.imageUrl != ''  && (page == selectedRecord)" src="{{page.imageUrl}}"  (click)="getPicture(page)" >
 
-        <ion-item  *ngIf="page.image == '' && (page == selectedRecord)" >
+        <ion-item  *ngIf="page.imageUrl == '' && (page == selectedRecord)" >
           <button ion-button block (click)="getPicture(page)" large color="light"><ion-icon style="font-size: 30px;" name="camera" color="main"></ion-icon></button>
         </ion-item>
 

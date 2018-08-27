@@ -30,7 +30,9 @@ export class UserService {
 
   public setUser(user){
 
+    console.log("set user", user);
     this.user = user;
+    console.log("user!!",user.type);
 
   }
 

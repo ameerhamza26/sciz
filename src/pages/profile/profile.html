@@ -25,7 +25,7 @@
         </ion-avatar>
       </ion-col>
       <ion-col col-10>
-        <h2>{{user.name}} &nbsp;  <img src="./assets/images/green.png" style="height:15px;"  ></h2>
+        <h2>{{user.name}} &nbsp;  <img ng-src="'url('+creation.image+')'" style="height:15px;"  ></h2>
         <p *ngIf="user.type != 'service'">{{user.type}}</p>
         <p *ngIf="user.type == 'service'">{{user.type2}}</p>
         <p *ngIf="user.type == 'service'">{{user.type3}}</p>
@@ -48,7 +48,14 @@
 
 
     </ion-row>
+    <ion-row style="text-align: center;">
+      <ion-col col-3><p style="font-size: 2.1rem;" class="animated bounceInRight" (click)="facebookShare(user)"><ion-icon name="logo-facebook"></ion-icon></p></ion-col>
+      <ion-col col-3><p style="font-size: 2.1rem;" class="animated bounceInRight" (click)="twitterShare(user)"><ion-icon name="logo-twitter"></ion-icon></p></ion-col>
+      <ion-col col-3><p style="font-size: 2.1rem;" class="animated bounceInRight" (click)="instagramShare(user)"><ion-icon name="logo-instagram"></ion-icon></p></ion-col>
+      <ion-col col-3><p style="font-size: 2.1rem;" class="animated bounceInRight" (click)="whatsappShare(dataService.lookbook)"><ion-icon name="logo-whatsapp"></ion-icon></p></ion-col>
+      <ion-col col-3><p style="font-size: 2.1rem;" class="animated bounceInRight" (click)="emailShare(dataService.lookbook)"><ion-icon name="mail"></ion-icon></p></ion-col>
 
+    </ion-row>
 
   </ion-item>
 

@@ -66,15 +66,15 @@
             <ion-input [(ngModel)]="city" type="text" placeholder="" ></ion-input>
           </ion-item>
 
-          <ion-item *ngIf="stage == 5">
+          <!-- <ion-item *ngIf="stage == 5">
             <ion-input [(ngModel)]="phone" type="tel" placeholder="" ></ion-input>
-          </ion-item>
+          </ion-item> -->
 
-          <ion-item *ngIf="stage == 6">
+          <ion-item *ngIf="stage == 5">
             <ion-input [(ngModel)]="password" type="password" placeholder="Password"></ion-input>
           </ion-item>
 
-          <ion-item *ngIf="stage == 7">
+          <ion-item *ngIf="stage == 6">
            <h2>Now let's get started</h2>
           </ion-item>
 
@@ -82,12 +82,12 @@
 
         </ion-list>
 
-        <button color="main" *ngIf="stage == 7" ion-button block large (click)="done()">Done</button>
+        <button color="main" *ngIf="stage == 6" ion-button block large (click)="done()">Done</button>
 
       </ion-col>
     </ion-row>
 
-    <ion-row *ngIf="stage == 6">
+    <ion-row *ngIf="stage == 5">
       <ion-col >
           <ion-item >
             <ion-input [(ngModel)]="confirmPassword" type="password" placeholder="Confirm Password"></ion-input>
@@ -97,9 +97,9 @@
 
 
     <ion-row >
-      <ion-col><button color="light"  ion-button block (click)="back()" *ngIf="stage < 7" large>Back</button></ion-col>
+      <ion-col><button color="light"  ion-button block (click)="back()" *ngIf="stage < 6" large>Back</button></ion-col>
       <ion-col></ion-col>
-      <ion-col><button color="light"  ion-button block (click)="next()" *ngIf="stage < 7" large>Next</button></ion-col>
+      <ion-col><button color="light"  ion-button block (click)="next()" *ngIf="stage < 6" large>Next</button></ion-col>
 
     </ion-row>
 

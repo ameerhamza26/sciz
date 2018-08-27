@@ -250,9 +250,11 @@ export class StripeModalContentPage {
         this.db.list('/' + 'stripe-payments' + '/' + userCode + '/' + paymentId + '/' + paymentKey).update('metadata', {status : 'true'})
         this.navCtrl.pop();
       }
+      else {
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
     },
     error => {
-      this.presentAlert("Error", "Payment made, please contact and inform service provider");
       this.loading.dismissAll();
     })
   }
@@ -403,9 +405,11 @@ export class RaveModalContentPage {
         this.db.list('/' + 'rave-payments' + '/' + userCode + '/' + paymentId + '/' + paymentKey).update('metadata', {status : 'true'})
         this.navCtrl.pop();
       }
+      else {
+        this.presentAlert("Error", "Payment made, please contact and inform service provider");
+      }
     },
     error => {
-      this.presentAlert("Error", "Payment made, please contact and inform service provider");
       this.loading.dismissAll();
     })
   }

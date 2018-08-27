@@ -22,9 +22,7 @@
 
 
   <ion-grid>
-
     <ion-slides (ionSlideDidChange)="slideChanged()" no-swiping >
-
 
       <ion-slide class="slide"  *ngFor="let page of pages; let i = index" (click)="goToSlide(page)"  [ngClass]="{'animated flipOutY' : !(page.show)}" [ngClass]="{'animated rotateOutUpRight !important' : (page.show)}"  >
 

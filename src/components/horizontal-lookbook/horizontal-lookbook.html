@@ -1,7 +1,8 @@
 <ng-container class="horizontal">
   <ion-grid>
+    <h1 style="color:#fff">Horizontal lookbook</h1>
     <ion-slides pager>
-      <ion-slide [style.background-image]="' url('+dataService.lookbook.image+')'">
+      <ion-slide [style.background-image]="' url('+dataService.lookbook.imageUrl+')'">
         <div class="postInfo">
           <ion-grid>
             <ion-row>
@@ -9,12 +10,27 @@
                 <h2 padding>{{dataService.lookbook.title}}</h2>
                 <p padding>{{dataService.lookbook.description}}</p>
               </ion-col>
+
             </ion-row>
           </ion-grid>
         </div>
+        <ion-header  no-border >
+          <ion-row style="background: #eee;opacity: 0.8;">
+            <ion-col col-4><p class="animated bounceInRight" (click)="facebookShare(dataService.lookbook)"><ion-icon name="logo-facebook"></ion-icon></p></ion-col>
+            <ion-col col-4><p class="animated bounceInRight" (click)="twitterShare(dataService.lookbook)"><ion-icon name="logo-twitter"></ion-icon></p></ion-col>
+            <ion-col col-4><p class="animated bounceInRight" (click)="instagramShare(dataService.lookbook)"><ion-icon name="logo-instagram"></ion-icon></p></ion-col>
+            <ion-col col-4><p class="animated bounceInRight" (click)="whatsappShare(dataService.lookbook)"><ion-icon name="logo-whatsapp"></ion-icon></p></ion-col>
+            <ion-col col-4><p class="animated bounceInRight" (click)="emailShare(dataService.lookbook)"><ion-icon name="mail"></ion-icon></p></ion-col>
+          </ion-row>
+        </ion-header>
       </ion-slide>
       <ion-slide class="slide" *ngFor="let page of dataService.lookbookPages">
-        <img src="{{page.image}}" class="center">
+        <img src="{{page.imageUrl}}" class="center">
+        <ion-row>
+          <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
+            <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
+          </ion-col>
+        </ion-row>
       </ion-slide>
       <ion-slide [style.background-image]="'url('+ dataService.coverImage +')'">
         <div class="postInfo">

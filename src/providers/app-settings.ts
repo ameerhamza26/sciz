@@ -10,6 +10,7 @@ const CONFIG = {
   fcmAuthKey: 'key=AIzaSyBfiliUkfoObqceIrXqd0_9PSS1tLJAIHE'
 };
 
+
 /*
   Generated class for the AppSettingsProvider provider.
 
