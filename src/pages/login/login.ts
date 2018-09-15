@@ -127,12 +127,12 @@ export class LoginPage {
   setUser(user) {
     console.log("SET USER");
     console.log(user);
-    this.storage.set('user', user[0]);
+    this.storage.set('user', user);
     // let newUser = new User('0','testCode',this.permission,'Manufacturer','','images/profile.jpg','Delz','scizzorapp@gmail.com','Auckland','02105976881',true,'short description','@username','@username','@username','http://www.sczr.co.uk','sizeCode',3,'hashTest');
-    this.userService.setUser(user[0]);
+    this.userService.setUser(user);
     // this.dataService.users.push(newUser);
-    this.dataService.permission = this.userService.getPermission(user[0]);
-    this.dataService.me = user[0];
+    this.dataService.permission = this.userService.getPermission(user);
+    this.dataService.me = user;
   }
 
   signUp() {

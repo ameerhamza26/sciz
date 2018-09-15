@@ -22,7 +22,7 @@ import { LookbookPage } from '../pages/lookbook/lookbook';
 import { LookbookLeroyPage } from '../pages/lookbook-leroy/lookbook-leroy';
 import { LookbookFlipPage } from '../pages/lookbook-flip/lookbook-flip';
 import { CreateNewPage } from '../pages/create-new/create-new';
-import { UserProfilePage } from '../providers/user-profile/user-profile';
+import { UserProfilePage } from '../pages/user-profile/user-profile';
 import { CreationPage } from '../pages/creation/creation';
 import { ProfilePage } from '../pages/profile/profile';
 import { ScizzorPage } from '../pages/scizzor/scizzor';
@@ -158,7 +158,7 @@ var config = {
     DataService, AppSettings, NativePageTransitions, Camera,
 
     SocialSharing, AudioService, NativeAudio,
-    UserService, EmailComposer, Push,
+    UserService, EmailComposer,
     SocialShareProvider, ErrorHandlerProvider,
     AuthService, InAppBrowser, Stripe, FCM, FcmProvider
 

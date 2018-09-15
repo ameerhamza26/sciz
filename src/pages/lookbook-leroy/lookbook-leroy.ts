@@ -46,7 +46,7 @@ export class LookbookLeroyPage {
   post: any;
   tags: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider, private errorHandler: ErrorHandlerProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider, private errorHandler: ErrorHandlerProvider, public userService: UserService) {
 
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');

@@ -257,8 +257,7 @@ question:any;
   processUser(){
 
     //send user to database and save
-
-    let newUser = new User('',this.code,this.type,this.serviceType,'','',this.name,this.gender,this.email,this.city,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
+    let newUser = new User('',this.code,this.type,this.serviceType,'','','','','',this.name,this.gender,this.email,this.city,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
     this.userService.saveUser(newUser).subscribe(data =>{
 
         if(data.message == "Successful"){

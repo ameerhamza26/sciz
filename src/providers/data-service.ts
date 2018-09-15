@@ -205,16 +205,18 @@ export class DataService {
               page.image = image;
               this.getImageUrl(page.image,page);
               post = this.findInspiration("id",page.inspiration_id);
-             // console.log("METHOD FIND");
-            //  console.log(post);
+              //console.log("METHOD FIND");
+              console.log(post);
               // get page likes
               pageLikes = this.allLikes.filter(item => item.creationCode == 'inspirationpage'+page.id);
-            //  console.log("page likes");
-            //  console.log(pageLikes);
-              pageLikes.forEach((like,index) => {
-                  if(like.liked == true) {
-                      post[0].likes++
+              console.log(pageLikes);
+
+              pageLikes.forEach((like) => {
+                if(like.liked == true) {
+                  if (post.length != 0){
+                    post[0].likes++
                   }
+                }
               });
               this.pages.push(page);
           }

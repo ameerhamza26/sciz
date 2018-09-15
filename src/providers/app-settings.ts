@@ -1,10 +1,19 @@
 import { Injectable } from '@angular/core';
 
 const CONFIG = {
-  apiURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
-  apiImageURL: 'http://18.220.1.42/',
-  raveURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
-  stripeURL:'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
+  //apiURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
+  //apiImageURL: 'http://18.220.1.42/',
+  //raveURL: 'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
+  //stripeURL:'http://ec2-18-220-1-42.us-east-2.compute.amazonaws.com/',
+  //ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapp',
+  //stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J',
+  //fcmAuthKey: 'key=AIzaSyBfiliUkfoObqceIrXqd0_9PSS1tLJAIHE'
+
+
+  apiURL: 'http://ec2-18-191-34-139.us-east-2.compute.amazonaws.com/',
+  apiImageURL: 'http://18.191.34.139/',
+  raveURL: 'http://192.168.0.2:9000/',
+  stripeURL:'http://192.168.0.2:9000/',
   ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapp',
   stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J',
   fcmAuthKey: 'key=AIzaSyBfiliUkfoObqceIrXqd0_9PSS1tLJAIHE'

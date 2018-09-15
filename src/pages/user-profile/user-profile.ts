@@ -265,6 +265,7 @@ export class UserProfilePage {
           actionSheet.present();
 
             this.dataService.updateAvailability(creation2Open.id, creation2Open.availability);
+          }
 
     else {
 

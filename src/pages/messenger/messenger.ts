@@ -43,6 +43,7 @@ export class MessengerPage {
 
     this.user = this.userService.user;
     this.userCode = this.navParams.get('userCode');
+    console.log(this.dataService.me)
     console.log(this.userCode);
     console.log(this.user.id);
     this.view = this.navParams.get('view');
