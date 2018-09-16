@@ -264,6 +264,7 @@ export class DataService {
       this.likes = new Array<Like>();
     this.likes.length = 0;
     this.userProfileLikes.length = 0;
+    console.log(this.me)
    // console.log(this.me.code);
     var parameters = JSON.stringify({
       userCode: this.me.id
@@ -561,6 +562,8 @@ export class DataService {
   }
 
   saveSize(sizeFile) {
+
+    console.log(sizeFile)
 
     var parameters = JSON.stringify({
       sizeFile: sizeFile

@@ -91,8 +91,10 @@ export class MyApp {
       /* Get Session of Logedin user */
       storage.get('data').then((data) => {
         if (data) {
+          console.log(data)
           storage.get('user').then(u_name => {
-            this.setUser(u_name);
+            console.log(u_name)
+            this.setUser(data);
             this.dataService.getLikes();
             //fcmprovider.saveToken('TestToken');
             console.log(this.dataService.me);
@@ -140,9 +142,10 @@ export class MyApp {
 
   setUser(userName) {
     /* Set User Detail and Permission */
-    let user = userName;
+    let user = userName.result[0];
     this.userService.setUser(user);
     this.dataService.permission = this.userService.getPermission(user);
+    console.log(this.dataService.permission)
     this.dataService.me = user;
   }
 

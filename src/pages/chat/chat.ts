@@ -46,20 +46,21 @@ export class ChatPage {
   constructor(private http: Http, public appSettings:AppSettings, public modalCtrl: ModalController, public db: AngularFireDatabase, public navCtrl: NavController, public navParams: NavParams, public dataService:DataService, public userService:UserService, private camera: Camera,public platform:Platform,private alertCtrl: AlertController,public loadingCtrl: LoadingController, public actionSheetCtrl: ActionSheetController) {
     console.log(this.fcmAuthKey)
     this.userCode = this.navParams.get('userCode');
+    console.log(this.userCode)
     this.view = this.navParams.get('view');
     this.start();
 
-    this.subscription = db.list('/' + this.user.id, { preserveSnapshot: true });
+    this.subscription = db.list('/' + 'chats' + '/' + this.user.code, { preserveSnapshot: true });
     this.subscription.subscribe(snapshots => {
       snapshots.forEach(snapshot => {
-        if ((snapshot.val().participant == this.userCode) && (snapshot.val().user == this.user.id)){
+        if ((snapshot.val().participant == this.userCode) && (snapshot.val().user == this.user.code)){
           console.log(snapshot.key)
           console.log(snapshot.val())
 
           this.newmessages.push(snapshot.val())
           }
 
-          else if ((snapshot.val().participant == this.user.id) && (snapshot.val().user == this.userCode)){
+          else if ((snapshot.val().participant == this.user.code) && (snapshot.val().user == this.userCode)){
             this.newmessages.push(snapshot.val())
 
             //this.pushSetup("Scizzor", "New message from " + this.provider.name)
@@ -288,8 +289,8 @@ export class ChatPage {
 
         this.db.list('/' + 'chats' + '/' + this.provider.code).push({
           messagecode: this.messageCode,
-          user: this.user.id,
-          participant: this.userCode,
+          user: this.user.code,
+          participant: this.provider.code,
           displayname: this.provider.name,
           sender: false,
           image: true,
@@ -328,7 +329,7 @@ export class ChatPage {
 
   sendMessage() {
     console.log("SEND MESSAGE");
-    console.log(this.user.id);
+    console.log(this.user.code);
     console.log(this.provider);
     this.dateTime = new Date();
     console.log(this.dateTime.toJSON())
@@ -337,8 +338,8 @@ export class ChatPage {
 
     this.db.list('/' + 'chats' + '/' + this.user.code).push({
       messagecode: this.generateCode(),
-      user: this.user.id,
-      participant: this.userCode,
+      user: this.user.code,
+      participant: this.provider.code,
       displayname: this.provider.name,
       sender:true,
       image: false,
@@ -410,21 +411,17 @@ export class ChatPage {
     console.log(this.userCode);
     console.log("USERS");
     console.log(this.dataService.users);
-    if ((this.dataService.users.filter(item => item.id == this.userCode)[0]) == undefined){
+    if ((this.dataService.users.filter(item => item.code == this.userCode)[0]) == undefined){
       console.log("START 1");
       console.log(this.navParams.get('provider'))
       console.log(this.navParams.get('providername'))
-      this.provider = {id : this.navParams.get('userCode'), name:this.navParams.get('providername')}
+      this.provider = {code : this.navParams.get('provider'), name:this.navParams.get('providername')}
     }
     else {
         console.log("START 2");
-      this.provider =  this.dataService.users.filter(item => item.id == this.userCode)[0];
+      this.provider =  this.dataService.users.filter(item => item.code == this.userCode)[0];
       console.log(this.provider);
     }
-
-    this.creations =  this.dataService.creations.filter(item => item.account_id == this.userCode);
-    console.log("KREACIJA");
-    console.log(this.dataService.creations);
   }
 
 }

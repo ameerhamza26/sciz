@@ -64,7 +64,7 @@ export class RavePaymentPage {
     }
 
     else {
-      this.provider =  this.dataService.users.filter(item => item.code == this.creation.userCode)[0];
+      this.provider =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
       console.log(this.provider);
 
       this.purchaseDetails = {

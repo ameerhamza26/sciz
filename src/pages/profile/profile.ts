@@ -46,6 +46,7 @@ export class ProfilePage {
 
         this.storage.get("branchItem").then(data => {
             if (data) {
+              console.log(data)
                 switch (data.type){
                     case 'Profile':
                         this.storage.remove("branchItem");
@@ -75,7 +76,8 @@ export class ProfilePage {
     //load user and their posts from data service
 
     this.segment = 'work';
-    this.user =  this.dataService.users.filter(item => item.id == this.userCode)[0];
+    this.user =  this.dataService.users.filter(item => item.code == this.userCode)[0];
+    console.log(this.user)
     this.creations =  this.dataService.creations.filter(item => item.account_id == this.userCode);
 
 

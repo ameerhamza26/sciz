@@ -263,6 +263,7 @@ question:any;
         if(data.message == "Successful"){
           this.errorHandlerProvider.throwSuccess(ErrorHandlerProvider.MESSAGES.success.signup[0].title, ErrorHandlerProvider.MESSAGES.success.signup[0].msg);
           newUser.id = data.insertID;
+          console.log(data);
           if(this.type == 'customer'){
               let sizeFile = new Size('', this.sizeCode, newUser.id,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
               this.dataService.saveSize(sizeFile);

@@ -57,18 +57,18 @@ export class MessengerPage {
         this.listofchatsdb.set(data.$key, data)
         console.log(data)
         console.log(data.$key)
-        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.id)){
+        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.code)){
           this.listofchats.set(data.participant, data)
         }
-        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.id)){
+        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.code)){
           this.listofchats.set(data.participant, data)
         }
 
-        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.id)){
+        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.code)){
           this.listofchats.set(data.user, data)
         }
 
-        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.id)){
+        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.code)){
           this.listofchats.set(data.user, data)
         }
       });
@@ -101,7 +101,7 @@ export class MessengerPage {
   }
 
   ionViewWillLeave(){
-      this.itemsSubscription.unsubscribe();
+      //this.itemsSubscription.unsubscribe();
   }
 
   deleteMessage(user,participant) {
@@ -146,9 +146,7 @@ export class MessengerPage {
 
     this.segment = 'work';
     this.user = this.userService.user;
-    this.provider =  this.dataService.users.filter(item => item.id == this.user.id)[0];
-    this.creations =  this.dataService.creations.filter(item => item.id == this.user.id);
-
+    this.provider =  this.dataService.users.filter(item => item.code == this.user.code)[0];
   }
 
   /*getImage(userCode){
@@ -162,21 +160,20 @@ export class MessengerPage {
 
   }*/
 
-  openChat(participant, participantID) {
+  openChat(participant, participantCode) {
     console.log(participant);
-    console.log(participantID);
+    console.log(participantCode);
     this.navCtrl.push(ChatPage,{
-      userCode:participantID,
-      provider:participantID,
+      userCode:participantCode,
+      provider:participantCode,
       providername: participant,
       view:'service'
     });
   }
 
   getAvatar(chat){
-
     console.log(chat);
-  let tempUser = this.dataService.users.filter(item => item.id == chat)[0];
+  let tempUser = this.dataService.users.filter(item => item.code == chat)[0];
   if(tempUser != undefined)
     return tempUser.image;
   else

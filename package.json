@@ -29,6 +29,7 @@
     "@ionic-native/native-audio": "4.3.3",
     "@ionic-native/native-page-transitions": "4.3.3",
     "@ionic-native/push": "4.3.3",
+    "@ionic-native/social-sharing": "4.3.3",
     "@ionic-native/splash-screen": "4.3.3",
     "@ionic-native/status-bar": "4.3.3",
     "@ionic-native/stripe": "4.3.3",

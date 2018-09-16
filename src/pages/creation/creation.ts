@@ -155,7 +155,8 @@ export class CreationPage {
     console.log(this.creation);
 
     //if (this.userService.user.userCode != this.creation.userCode)
-    if (this.userService.user.account_id == this.creation.account_id){
+    if (this.userService.user.id == this.creation.account_id){
+    let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
@@ -181,6 +182,8 @@ export class CreationPage {
     }
 
     else if (this.creation.availability == 0) {
+      let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
+      console.log(creator)
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
@@ -190,7 +193,7 @@ export class CreationPage {
               console.log('message');
               console.log('message');
               this.navCtrl.push(ChatPage,{
-                userCode:this.creation.account_id,
+                userCode:creator.code,
                 view:'service'
               });
 
@@ -201,7 +204,7 @@ export class CreationPage {
             handler: () => {
 
               this.navCtrl.push(ProfilePage,{
-                userCode:this.creation.account_id,
+                userCode:creator.code,
                 view:'service'
               });
 
@@ -217,6 +220,7 @@ export class CreationPage {
     }
 
     else {
+      let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
@@ -226,7 +230,7 @@ export class CreationPage {
               console.log('message');
               console.log('message');
               this.navCtrl.push(ChatPage,{
-                userCode:this.creation.account_id,
+                userCode:creator.code,
                 view:'service'
               });
 
@@ -237,7 +241,7 @@ export class CreationPage {
             handler: () => {
 
               this.navCtrl.push(ProfilePage,{
-                userCode:this.creation.account_id,
+                userCode:creator.code,
                 view:'service'
               });
 

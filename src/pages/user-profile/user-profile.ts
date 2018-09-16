@@ -91,10 +91,13 @@ export class UserProfilePage {
 
     this.segment = 'likes';
     this.user = this.userService.user;
+    console.log(this.user)
     this.dataService.getImageUrl(this.user.image,this.user);
       console.log("USER PROFILE USER--",this.user)
     this.userCopy = this.user;
     this.permission = this.dataService.permission;
+    console.log(this.dataService)
+    console.log(this.userService)
     this.sizeCode = this.user.sizeCode;
 
     if (this.permission == this.user.type) {
