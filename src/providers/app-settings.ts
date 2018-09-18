@@ -9,10 +9,10 @@ const CONFIG = {
   //stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J',
   //fcmAuthKey: 'key=AIzaSyBfiliUkfoObqceIrXqd0_9PSS1tLJAIHE'
 
-  apiURL: 'http://192.168.0.26:9000/',
-  apiImageURL: 'http://192.168.0.26:9000/',
-  raveURL: 'http://192.168.0.26:9000/',
-  stripeURL:'http://192.168.0.26:9000/',
+  apiURL: 'http://localhost:9000/',
+  apiImageURL: 'http://localhost:9000/',
+  raveURL: 'http://localhost:9000/',
+  stripeURL:'http://localhost:9000/',
   ravePaymentLinkURL: 'https://rave.flutterwave.com/pay/scizzorapp',
   stripePK: 'pk_live_9FV6iorOiRugLmRzRP7c715J',
   fcmAuthKey: 'key=AIzaSyBfiliUkfoObqceIrXqd0_9PSS1tLJAIHE'

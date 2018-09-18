@@ -49,28 +49,7 @@ export class ChatPage {
     console.log(this.userCode)
     this.view = this.navParams.get('view');
     this.start();
-
-    this.subscription = db.list('/' + 'chats' + '/' + this.user.code, { preserveSnapshot: true });
-    this.subscription.subscribe(snapshots => {
-      snapshots.forEach(snapshot => {
-        if ((snapshot.val().participant == this.userCode) && (snapshot.val().user == this.user.code)){
-          console.log(snapshot.key)
-          console.log(snapshot.val())
-
-          this.newmessages.push(snapshot.val())
-          }
-
-          else if ((snapshot.val().participant == this.user.code) && (snapshot.val().user == this.userCode)){
-            this.newmessages.push(snapshot.val())
-
-            //this.pushSetup("Scizzor", "New message from " + this.provider.name)
-
-          }
-
-        this.messages = this.newmessages
-      });
-      this.newmessages = [];
-    })
+    this.retrieveMessages();
   }
 
   openModal(displayimage) {
@@ -422,6 +401,30 @@ export class ChatPage {
       this.provider =  this.dataService.users.filter(item => item.code == this.userCode)[0];
       console.log(this.provider);
     }
+  }
+
+  retrieveMessages() {
+    this.subscription = this.db.list('/' + 'chats' + '/' + this.user.code, { preserveSnapshot: true });
+    console.log(this.subscription)
+    this.subscription.subscribe(snapshots => {
+      snapshots.forEach(snapshot => {
+        if ((snapshot.val().participant == this.userCode) && (snapshot.val().user == this.user.code)){
+          console.log(snapshot.key)
+          console.log(snapshot.val())
+
+          this.newmessages.push(snapshot.val())
+          }
+
+          else if ((snapshot.val().participant == this.user.code) && (snapshot.val().user == this.userCode)){
+            console.log(snapshot.key)
+            console.log(snapshot.val())
+            this.newmessages.push(snapshot.val())
+            //this.pushSetup("Scizzor", "New message from " + this.provider.name)
+          }
+        this.messages = this.newmessages
+      });
+      this.newmessages = [];
+    })
   }
 
 }
