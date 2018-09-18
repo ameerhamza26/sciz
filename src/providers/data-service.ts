@@ -486,7 +486,7 @@ export class DataService {
     this.sizes.length = 0;
 
     var parameters = JSON.stringify({
-      userCode: this.me.id
+      userCode: this.me.code
     });
 
     let body: string = parameters,
@@ -579,7 +579,7 @@ export class DataService {
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
       if (data.message == "Successful") {
-          sizeFile.id = data.result.id;
+          //sizeFile.id = data.result.id;
         console.log('size file saved');
       } else {
           this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[1].title,ErrorHandlerProvider.MESSAGES.error.file[1].msg);

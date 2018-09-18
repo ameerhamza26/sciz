@@ -96,11 +96,12 @@ export class ProfilePage {
 
   }
 
-  openChat(participant, participantID) {
+  openChat(participant, participantCode) {
     console.log(participant)
-    console.log(participantID)
+    console.log(participantCode)
     this.navCtrl.push(ChatPage,{
-      provider:participantID,
+      userCode:participantCode,
+      provider:participantCode,
       providername: participant,
       view:'service'
     });

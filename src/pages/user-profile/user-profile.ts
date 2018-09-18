@@ -346,7 +346,7 @@ export class UserProfilePage {
     console.log('getting sizes');
 
 
-    this.size = this.dataService.sizes.filter(item => item.account_id == this.user.id)[0];
+    this.size = this.dataService.sizes.filter(item => item.userCode == this.user.code)[0];
 
     console.log(this.size);
 

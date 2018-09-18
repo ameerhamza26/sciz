@@ -82,7 +82,7 @@ export class LoginPage {
         try {
           this.loading.dismissAll();
           if (data.message == "Successful" && (data.result[0].type == "customer" || data.result[0].type == "service" || data.result[0].type == "admin")) {
-            this.setUser(this.username);
+            this.setUser(data.result[0]);
             this.signInAnonymously();
             this.storage.set('data', data);
             this.dataService.getLikes();

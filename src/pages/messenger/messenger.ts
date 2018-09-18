@@ -49,47 +49,7 @@ export class MessengerPage {
     this.view = this.navParams.get('view');
 
     this.start();
-
-    this.subscription = db.list('/' + 'chats' + '/' + this.user.code);
-    this.subscription.subscribe( data => {
-      this.chatlist = []
-      data.forEach( data => {
-        this.listofchatsdb.set(data.$key, data)
-        console.log(data)
-        console.log(data.$key)
-        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.code)){
-          this.listofchats.set(data.participant, data)
-        }
-        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.code)){
-          this.listofchats.set(data.participant, data)
-        }
-
-        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.code)){
-          this.listofchats.set(data.user, data)
-        }
-
-        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.code)){
-          this.listofchats.set(data.user, data)
-        }
-      });
-
-      this.listofchats.forEach((value: object [], key: string) => {
-        console.log(key, value);
-        this.chatlist.push(value)
-      });
-      //this.chatlist.reverse();
-      console.log(this.chatlist)
-
-      this.chatlist = this.chatlist.sort(function(a,b) {
-        return new Date((a as any).timestamp).getTime() - new Date((b as any).timestamp).getTime()
-      });
-
-      this.chatlist.reverse();
-
-      console.log(this.chatlist)
-      //some way to sort based on timestamp
-    })
-
+    this.retrieveAllChats();
   }
 
   ionViewDidLoad() {
@@ -171,6 +131,49 @@ export class MessengerPage {
     });
   }
 
+  retrieveAllChats(){
+    this.subscription = this.db.list('/' + 'chats' + '/' + this.user.code);
+    this.subscription.subscribe( data => {
+      this.chatlist = []
+      data.forEach( data => {
+        this.listofchatsdb.set(data.$key, data)
+        console.log(data)
+        console.log(data.$key)
+        if ((this.listofchats.get(data.participant) == undefined) && (data.participant != this.user.code)){
+          this.listofchats.set(data.participant, data)
+        }
+        else if ((this.listofchats.get(data.participant) != undefined) && (data.user == this.user.code)){
+          this.listofchats.set(data.participant, data)
+        }
+
+        else if ((this.listofchats.get(data.user) == undefined) && (data.user != this.user.code)){
+          this.listofchats.set(data.user, data)
+        }
+
+        else if ((this.listofchats.get(data.user) != undefined) && (data.participant == this.user.code)){
+          this.listofchats.set(data.user, data)
+        }
+      });
+
+      this.listofchats.forEach((value: object [], key: string) => {
+        console.log(key, value);
+        this.chatlist.push(value)
+      });
+      //this.chatlist.reverse();
+      console.log(this.chatlist)
+
+      this.chatlist = this.chatlist.sort(function(a,b) {
+        return new Date((a as any).timestamp).getTime() - new Date((b as any).timestamp).getTime()
+      });
+
+      this.chatlist.reverse();
+
+      console.log(this.chatlist)
+      //some way to sort based on timestamp
+    })
+
+  }
+
   getAvatar(chat){
     console.log(chat);
   let tempUser = this.dataService.users.filter(item => item.code == chat)[0];
@@ -211,6 +214,7 @@ export class MessengerPage {
 */
 
   }
+
 
 
 
