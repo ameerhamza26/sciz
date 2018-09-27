@@ -62,7 +62,7 @@ var message = "Check out this link";
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage: any;
+  rootPage:any = StartPage;
   username: any = "";
   // rootPage:any = TabsPage;
    Branch;
@@ -91,13 +91,10 @@ export class MyApp {
       /* Get Session of Logedin user */
       storage.get('data').then((data) => {
         if (data) {
-          console.log(data)
           storage.get('user').then(u_name => {
-            console.log(u_name)
             this.setUser(data);
             this.dataService.getLikes();
             //fcmprovider.saveToken('TestToken');
-            console.log(this.dataService.me);
             if (data.result[0].type == "customer") {
               this.dataService.getSizeFile();
             } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
@@ -106,7 +103,6 @@ export class MyApp {
 
             if (platform.is('cordova')) {
               fcm.getToken().then(token=>{
-                console.log(token);
                 // save to db
                 fcmprovider.saveToken(this.dataService.me.code, token);
               })
@@ -145,7 +141,6 @@ export class MyApp {
     let user = userName.result[0];
     this.userService.setUser(user);
     this.dataService.permission = this.userService.getPermission(user);
-    console.log(this.dataService.permission)
     this.dataService.me = user;
   }
 

@@ -49,6 +49,7 @@ import { NativePageTransitions } from '@ionic-native/native-page-transitions';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { DataService } from '../providers/data-service';
+import { HttpService } from "../providers/http.service";
 import { AppSettings } from '../providers/app-settings'
 import { FcmProvider } from '../providers/fcm/fcm';
 import { HttpModule } from '@angular/http';
@@ -152,6 +153,7 @@ var config = {
     //ServicePaymentPage
   ],
   providers: [
+    HttpService,
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },

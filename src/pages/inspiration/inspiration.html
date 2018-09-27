@@ -29,14 +29,14 @@
   </ion-refresher>
 
 
-  <div class="pin-layout even-items" *ngIf="itemMiddle > 0 && postLength > 0 && dataService.posts.length > 0 && postLength % 2 == 0"> <!-- TEST MAGAZINES -->
-    <div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of dataService.posts; let i = index" (click)="selectLookbook(post)"
+  <div class="pin-layout even-items" *ngIf="itemMiddle > 0 && postLength > 0 && posts.length > 0 && postLength % 2 == 0"> <!-- TEST MAGAZINES -->
+    <div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of posts; let i = index" (click)="selectLookbook(post)"
          [ngClass]="{'second-even': i >= itemMiddle && i % 2 == 0 ,'second-odd': i >= itemMiddle && i % 2 > 0,'first-even': i < itemMiddle && i != itemMiddle && i % 2 == 0,'first-odd': i < itemMiddle && i != itemMiddle && i % 2 > 0}" [style.background-image]="' url('+post.imageUrl+')'" >
     </div>
   </div>
 
-  <div class="pin-layout odd-items" *ngIf="itemMiddle > 0 && postLength > 0 && dataService.posts.length > 0 && postLength % 2 > 0"> <!-- TEST MAGAZINES -->
-    <div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of dataService.posts; let i = index" (click)="selectLookbook(post)"
+  <div class="pin-layout odd-items" *ngIf="itemMiddle > 0 && postLength > 0 && posts.length > 0 && postLength % 2 > 0"> <!-- TEST MAGAZINES -->
+    <div class="pin" style="width:88%;background:#fff;position:relative" *ngFor="let post of posts; let i = index" (click)="selectLookbook(post)"
          [ngClass]="{'second-odd': i > itemMiddle && i % 2 > 0,'second-even': i > itemMiddle  && i % 2 == 0 ,'first-start': i <= itemMiddle && i == 0,'first-odd': i <= itemMiddle  && (i % 2 > 0),'first-even': i <= itemMiddle && (i % 2 == 0)}" [style.background-image]="'url('+post.imageUrl+')'"
         [ngStyle]=" ((i + 1) % 2 > 0 &&  i + 1 < itemMiddle + 1 && i + 1 != 1) && {'height':'180px'} || ((i + 1) % 2 == 0 && i + 1 < itemMiddle + 1 ) && {'height':'200px'}
         || ( i + 1 > itemMiddle + 1 && ((i + 1 - itemMiddle + 1) % 2) > 0 && {'height':'200px'}) || ( i + 1 > itemMiddle + 1  && ((i + 1 - itemMiddle + 1)  % 2) == 0 && {'height':'180px'})"

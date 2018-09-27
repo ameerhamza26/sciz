@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable,OnDestroy } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 
 import 'rxjs/add/operator/map';
@@ -15,7 +15,10 @@ import { Like } from '../models/like-model';
 import { Tag } from '../models/tag-model';
 import {ErrorHandlerProvider} from "./error-handler/error-handler";
 
-
+import { HttpService } from "./http.service";
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
+import 'rxjs/add/operator/map';
 
 /*
   Generated class for the DataServiceProvider provider.
@@ -51,7 +54,9 @@ export class DataService {
   lookbook: any;
   coverImage: any;
 
-  constructor(public http: Http, public appSettings: AppSettings, public userService: UserService,private errorHandler: ErrorHandlerProvider) {
+  constructor(public http: Http, 
+    private _httpService: HttpService,
+    public appSettings: AppSettings, public userService: UserService,private errorHandler: ErrorHandlerProvider) {
    // console.log('Hello DataServiceProvider Provider');
     this.loadData();
   }
@@ -64,7 +69,6 @@ export class DataService {
     this.coverImage = 'assets/images/placeholder.png';
 
     this.getUsers();
-    this.getInspirations();
     this.getInspirationTags();
     this.getCreations();
   }
@@ -140,32 +144,38 @@ export class DataService {
     return this.http.get(this.apiUrl + 'get/'+code).map(res => res.json());
   }
 
-  getInspirations() {
-
-    this.posts = [];
-    this.posts.length = 0;
-      this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
-        if(data.status){
-            for (let inspiration of data.result) {
-                let image =  inspiration.image;
-                inspiration.image = image;
-                inspiration.likes = 0; // magazine likes - random for testing
-                this.getImageUrl(inspiration.image,inspiration);
-                /* inspirationPages.forEach((page, index) => {
-                     pageLikes = this.likes.filter(item => item.creationCode == page.code);
-                     console.log("PAGE LIKES");
-                     console.log(pageLikes);
-                     console.log(pageLikes.length);
-                     inspiration.likes = pageLikes.length;
-                 }); */
-                this.posts.push(inspiration);
-            }
-            this.getPages();
-        }
-        else {
-            this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].msg);
-        }
+  getInspirations() : Observable<any> {
+    let getUrl = 'getInspirations';
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
     });
+
+    // this.posts = [];
+    // this.posts.length = 0;
+    //   this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
+    //     if(data.status){
+    //         for (let inspiration of data.result) {
+    //             let image =  inspiration.image;
+    //             inspiration.image = image;
+    //             inspiration.likes = 0; // magazine likes - random for testing
+    //             this.getImageUrl(inspiration.image,inspiration);
+    //             /* inspirationPages.forEach((page, index) => {
+    //                  pageLikes = this.likes.filter(item => item.creationCode == page.code);
+    //                  console.log("PAGE LIKES");
+    //                  console.log(pageLikes);
+    //                  console.log(pageLikes.length);
+    //                  inspiration.likes = pageLikes.length;
+    //              }); */
+    //             this.posts.push(inspiration);
+    //         }
+    //         this.getPages();
+    //     }
+    //     else {
+    //         this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].msg);
+    //     }
+    // });
 
   }
 

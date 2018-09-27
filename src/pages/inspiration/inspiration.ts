@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component , OnInit} from '@angular/core';
 import { NavController, NavParams, ActionSheetController, ModalController, AlertController } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { LookbookPage } from '../lookbook/lookbook';
@@ -12,7 +12,7 @@ import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler"
 import {Storage} from "@ionic/storage";
 import {ProfilePage} from "../profile/profile";
 import {ScizzorPage} from "../scizzor/scizzor";
-
+import { Post } from "../../models/post-model";
 
 /**
  * Generated class for the InspirationPage page.
@@ -31,20 +31,59 @@ import {ScizzorPage} from "../scizzor/scizzor";
   selector: 'page-inspiration',
   templateUrl: 'inspiration.html',
 })
-export class InspirationPage {
+export class InspirationPage implements OnInit {
   //images = [1,2,3,4,5];
   itemMiddle;
 
+  posts: Array<Post>;
 
-  //itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
-  //itemMiddle = Math.floor(this.images.length / 2); // Test magazines
-    postLength;
+  postLength;
   timestapm = Date.now();
+
+  imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
   constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, public loadingCtrl: LoadingController,private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider) {
 
       console.log("INSPIRATION CONSTR",this.dataService.posts);
     //  this.itemMiddle = Math.floor(this.images.length / 2); //Live magazines
      // this.postLength = this.images.length;
+  }
+
+  ngOnInit() {
+    this.getInspirations(null);
+  }
+
+  getInspirations(refresher) {
+    this.posts = new Array<Post>();
+    this.loading = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+    this.loading.present().then(()=> {
+      this.dataService.getInspirations().subscribe((res) => {
+        let data = res.json();
+        
+        for (let inspiration of data.result) {
+            let image =  inspiration.image;
+            inspiration.image = image;
+            inspiration.likes = 0; // magazine likes - random for testing
+            inspiration.imageUrl = this.imageBaseUrl + image;
+            /* inspirationPages.forEach((page, index) => {
+                  pageLikes = this.likes.filter(item => item.creationCode == page.code);
+                  console.log("PAGE LIKES");
+                  console.log(pageLikes);
+                  console.log(pageLikes.length);
+                  inspiration.likes = pageLikes.length;
+              }); */
+            this.posts.push(inspiration);
+        }
+
+        this.itemMiddle = Math.floor(this.posts.length / 2); //Live magazines
+        this.postLength = this.posts.length;
+        this.loading.dismiss();
+        if (refresher) {
+          refresher.complete();
+        }
+      })
+    });
   }
 
     ionViewWillEnter() {
@@ -76,18 +115,6 @@ export class InspirationPage {
     }
   ionViewDidLoad($event) {
     console.log('ionViewDidLoad InspirationPage');
-
-      this.timestapm = Date.now();
-      this.dataService.getAllLikes().then((data) => {
-        this.dataService.getInspirations();
-        setTimeout(()=>{
-           // console.log("LALALALALALA")  LIVE ONLY
-            this.itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
-            this.postLength = this.dataService.posts.length;
-            console.log(this.itemMiddle);
-            console.log(this.postLength);
-        },5000);
-      })
   }
 
   getAnimation(post) {
@@ -101,12 +128,13 @@ export class InspirationPage {
     }
   }
 
+  loading :any;
   presentLoading() {
-    let loader = this.loadingCtrl.create({
+    this.loading = this.loadingCtrl.create({
       content: "Please wait...",
       duration: 1000
     });
-    loader.present();
+    this.loading.present();
   }
 
   selectLookbook(post) {
@@ -159,8 +187,6 @@ export class InspirationPage {
 
   openLookbook(post) {
     //open lookbook according to style -> segue
-    console.log('Open Lookbook');
-    console.log(post);
     if (post.type == 'vertical' || post.type == 'horizontal') {
       this.navCtrl.push(LookbookPage, {
         post: post,
@@ -181,9 +207,6 @@ export class InspirationPage {
   }
 
   editLookbook(post2Edit) {
-    //admin option,  edit selected  lookbook - > segue
-      console.log("Edit inspiration");
-      console.log(post2Edit);
     this.navCtrl.setRoot(CreateNewPage, {
       mode: 'edit',
       post: post2Edit
@@ -247,40 +270,7 @@ export class InspirationPage {
 
 
   doRefresh(refresher) {
-    this.timestapm = Date.now();
-    console.log('Begin async operation', refresher);
-      this.dataService.getAllLikes().then((data)=>{
-          this.dataService.getLikes();
-          this.dataService.getInspirations();
-          setTimeout(()=>{
-              this.dataService.getInspirationTags();
-              // console.log("LALALALALALA")  LIVE ONLY
-              this.itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
-              this.postLength = this.dataService.posts.length;
-              console.log(this.itemMiddle);
-              console.log(this.postLength);
-          },5000);
-      }).catch((err)=>{
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.like[1].title,ErrorHandlerProvider.MESSAGES.error.like[1].msg);
-      })
-
-    /*var getAllLikes = new Promise(function(resolve,reject){
-        if(this.dataService.getAllLikes() == true) {
-          alert("RESOLVING");
-          resolve(true);
-        }
-    }); */
-
-    /*getAllLikes.then(function(response){
-        alert("PROMISE");
-        console.log("Get all likes response");
-        console.log(response);
-    });*/
-
-    setTimeout(() => {
-      console.log('Async operation has ended');
-      refresher.complete();
-    }, 2000);
+    this.getInspirations(refresher);
   }
 
 

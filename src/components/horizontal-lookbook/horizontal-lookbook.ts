@@ -36,14 +36,11 @@ export class HorizontalLookbook implements OnInit {
   }
 
   ngOnInit() {
-    
-    //this.showLoading("Please wait.");
+
     this.dataService.getUserByCode(this.dataService.lookbook.userCode).subscribe((res)=>{
-      console.log("user component is",res);
       if (res.data.length>0) {
         this.user = res.data[0];
       }
-     // this.loading.dismissAll();
     })
   }
 
@@ -53,16 +50,11 @@ export class HorizontalLookbook implements OnInit {
 
 
   getTags(){
-    //console.log("console.log(this.dataService.tags);",this.dataService.tags);
     this.tags  = this.dataService.tags.filter(item => item.inspiration_id == this.dataService.lookbook.code);
-    
   }
 
   getUser(tag){
-      console.log("USER tag",tag);
-
-      let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
-      console.log(user);
+    let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
     return user.name;
   }
 
@@ -93,8 +85,6 @@ export class HorizontalLookbook implements OnInit {
 
   openUserProfile(code){
     //open profile of service
-    console.log(code)
-    console.log(this.userService.user.code)
     let user = this.dataService.users.filter(item => item.code == code)[0];
 
     if (this.userService.user.code == code){
@@ -116,15 +106,11 @@ export class HorizontalLookbook implements OnInit {
 
     checkLiked(){
         // check if you have liked the selected post previously
-        console.log(this.dataService.likes);
         this.dataService.lookbookPages.forEach((page, index) => {
-            console.log("PAGE",page);
             if(this.dataService.likes.filter(item => item.creationCode =='inspirationpage'+page.id).length > 0){
                 let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+page.id)[0];
-                console.log('liked');
                 page.liked = reLikedCreation.liked;
             }else{
-                console.log('not liked');
                 page.liked = false;
             }
         });
@@ -134,7 +120,6 @@ export class HorizontalLookbook implements OnInit {
         //like post, add to likes
 
         //like post, add to likes
-        console.log("Liked code", like.id);
         if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
             let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
             reLikedCreation.liked = true;
