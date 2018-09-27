@@ -44,9 +44,14 @@ export class LookbookPage {
 
   }
 
+  user :any;
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookPage');
     console.log(this.dataService.lookbook)
+    console.log(this.dataService.users)
+
+    this.user = this.dataService.users.filter(item => item.code == this.dataService.lookbook.userCode)[0];
+    console.log("this.user in lookbook",this.user)
   }
 
 
@@ -157,21 +162,22 @@ export class LookbookPage {
               try {
                 if(data.status) {
                     console.log(data);
-                  //  this.loading.dismissAll();
+                    this.loading.dismissAll();
                     this.navCtrl.parent.select(0);
                 }
                 else{
+                  this.loading.dismissAll();
                     this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                 }
 
               } catch (error) {
-               //   this.loading.dismissAll();
+                  this.loading.dismissAll();
                   this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                   console.log('inspiration save error');
               }
             });
-          //  this.loading.dismissAll();
-            this.navCtrl.parent.select(0);
+            //this.loading.dismissAll();
+            //this.navCtrl.parent.select(0);
           }
         }
         else {

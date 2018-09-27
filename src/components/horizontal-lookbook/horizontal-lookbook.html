@@ -37,8 +37,8 @@
           <ion-grid>
             <ion-row>
               <ion-col>
-                <button center ion-button clear (click)="openUserProfile(dataService.lookbook.accountCode)" color="main">
-                  <h2  style="text-align:center;" padding>Created By : {{getCreator(dataService.lookbook.accountCode)}}</h2>
+                <button center ion-button clear (click)="openUserProfile(dataService.lookbook.userCode)" color="main">
+                  <h2  style="text-align:center;" padding>Created By : {{user.name}}</h2>
                 </button>
 
                 <ion-list>
@@ -46,7 +46,7 @@
                     <ion-avatar item-start>
                       <img src="{{getImage(tag)}}" class="center">
                     </ion-avatar>
-                    <h3>{{getUser(tag)}}</h3>
+                    <h3>{{user.name}}</h3>
                   </ion-item>
                 </ion-list>
               </ion-col>

@@ -1,4 +1,4 @@
-import { ViewChild } from '@angular/core';
+import { ViewChild, OnInit } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ProfilePage } from '../profile/profile';
@@ -27,7 +27,7 @@ import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler"
   selector: 'page-lookbook-leroy',
   templateUrl: 'lookbook-leroy.html',
 })
-export class LookbookLeroyPage {
+export class LookbookLeroyPage implements OnInit {
 
   @ViewChild(Content) content: Content;
   @ViewChild(Slides) slides: Slides;
@@ -60,8 +60,22 @@ export class LookbookLeroyPage {
 
   }
 
+  user: any;
+
+  ngOnInit() {
+        this.showLoading("Please wait.");
+        console.log("in on init leroy")
+        this.dataService.getUserByCode(this.post.userCode).subscribe((res)=>{
+          console.log("user component is",res);
+          if (res.data.length>0) {
+            this.user = res.data[0];
+          }
+          this.loading.dismissAll();
+        })
+  }
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookLeroyPage');
+
   }
 
   start(mode) {

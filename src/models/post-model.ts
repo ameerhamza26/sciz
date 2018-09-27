@@ -6,7 +6,7 @@ export class Post {
   constructor(
     public id:any,
     public code:string,
-    public accountCode:string,
+    public userCode:string,
     public title:string,
     public subTitle:string,
     public description:string,
@@ -16,7 +16,7 @@ export class Post {
 
     this.id = id;
     this.code = code;
-    this.accountCode = accountCode;
+    this.userCode = userCode;
     this.title = title;
     this.subTitle = subTitle;
     this.description = description;

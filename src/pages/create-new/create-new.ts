@@ -240,7 +240,6 @@ export class CreateNewPage {
     this.post.title = this.title;
     this.post.subTitle = this.subTitle;
     this.post.description = this.description;
-    this.post.who = this.who;
     this.post.type = this.lookbook;
 
     console.log(this.post);

@@ -14,7 +14,6 @@ import { User } from '../models/user-model';
 import { Like } from '../models/like-model';
 import { Tag } from '../models/tag-model';
 import {ErrorHandlerProvider} from "./error-handler/error-handler";
-import {errorHandler} from "@angular/platform-browser/src/browser";
 
 
 
@@ -137,12 +136,14 @@ export class DataService {
     return this.http.get(this.apiUrl + 'getUsers').map(res => res.json());
   }
 
+  getUserByCode(code) {
+    return this.http.get(this.apiUrl + 'get/'+code).map(res => res.json());
+  }
+
   getInspirations() {
 
     this.posts = [];
     this.posts.length = 0;
-      let pageLikes;
-      let inspirationPages;
       this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
         if(data.status){
             for (let inspiration of data.result) {
@@ -453,7 +454,7 @@ export class DataService {
   loadIllustratorPosts() {
     for (let inspiration of this.posts) {
 
-      if (inspiration.accountCode == this.me.code) {
+      if (inspiration.userCode == this.me.code) {
 
         this.illustratorPosts.push(inspiration);
       }
@@ -724,10 +725,11 @@ export class DataService {
      */
   findInspiration(key,value,is_equal = true){
      // console.log("FIND POST");
-      if(is_equal)
-          var postFound = this.posts.filter(item => item[key] == value);
+     var postFound ; 
+     if(is_equal)
+          postFound = this.posts.filter(item => item[key] == value);
       else
-          var postFound = this.posts.filter(item => item[key] != value);
+          postFound = this.posts.filter(item => item[key] != value);
       return postFound;
   }
 
@@ -740,10 +742,11 @@ export class DataService {
      */
   findPage(key,value,is_equal = true){
     //console.log("FIND PAGE");
+    var pageFound ;
     if(is_equal)
-        var pageFound =  this.pages.filter(item => item[key] == value);
+      pageFound =this.pages.filter(item => item[key] == value);
     else
-        var pageFound =  this.pages.filter(item => item[key] != value);
+      pageFound =  this.pages.filter(item => item[key] != value);
     return pageFound;
 
   }

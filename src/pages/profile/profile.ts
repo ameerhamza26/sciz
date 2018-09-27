@@ -31,6 +31,8 @@ export class ProfilePage {
   segment:any;
   view:any;
 
+  imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
+
   constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService,private socialShare:SocialShareProvider, private storage: Storage) {
 
     //get usercode to load

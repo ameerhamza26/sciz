@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnChanges, OnInit, SimpleChanges, Input } from '@angular/core';
 import {DataService} from '../../providers/data-service';
 import { UserService } from '../../providers/user-service';
 import { UserProfilePage } from '../../pages/user-profile/user-profile';
@@ -19,22 +19,43 @@ import {SocialShareProvider} from "../../providers/social-share/social-share";
   selector: 'horizontal-lookbook',
   templateUrl: 'horizontal-lookbook.html'
 })
-export class HorizontalLookbook {
+export class HorizontalLookbook implements OnInit {
 
   tags:any;
+  name: any;
 
+  @Input()
+  user: any;
   constructor(public dataService:DataService,public navCtrl: NavController,private socialShare: SocialShareProvider, public userService:UserService) {
 
 
-    console.log(dataService.lookbook);
+
+  
     this.getTags();
     this.checkLiked();
   }
 
-  getTags(){
+  ngOnInit() {
+    
+    //this.showLoading("Please wait.");
+    this.dataService.getUserByCode(this.dataService.lookbook.userCode).subscribe((res)=>{
+      console.log("user component is",res);
+      if (res.data.length>0) {
+        this.user = res.data[0];
+      }
+     // this.loading.dismissAll();
+    })
+  }
 
+  ngOnChanges(changes: SimpleChanges) {
+
+  }
+
+
+  getTags(){
+    //console.log("console.log(this.dataService.tags);",this.dataService.tags);
     this.tags  = this.dataService.tags.filter(item => item.inspiration_id == this.dataService.lookbook.code);
-      console.log("TAGOVI",this.tags);
+    
   }
 
   getUser(tag){
