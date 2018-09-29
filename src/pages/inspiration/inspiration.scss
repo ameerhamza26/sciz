@@ -197,7 +197,82 @@ page-inspiration {
     height:200px;
   }
 
+  .even-post {
+    width: 49%;
+    height: 300px;
+    background-size: cover;
+    float:left;
+    border-radius: 10px;
+    position: relative;
+    &:before {
+      content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    opacity: .4; 
+    border-radius: 10px;
+    }
+  }
+  
+  .section {
+    padding: 5px;
+  }
 
+  .odd-post {
+    width: 49%;
+    margin-left: 51%;
+    height: 300px;
+    background-size: cover;
+    border-radius: 10px;
+    position: relative;
+    &:before {
+      content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: black;
+    opacity: .4; 
+    border-radius: 10px;
+    }
+  }
 
+  .title-span {
+    position: absolute;
+    text-align: center;
+    width: 80%;
+    font-weight: bold;
+    top: 10px;
+    font-family: Consolas,monaco,monospace;
+    margin: 10px;
+    font-size: 16px;
+  }
+
+  .likes-span {
+    color: white;
+    /* height: 20px; */
+    /* width: 100%; */
+    bottom: 10px;
+    left: 10px;
+    position: absolute;
+    /* text-align: center; */
+    font-size: 25px;
+    /* font-family: Consolas,monaco,monospace; */
+    font-family: Consolas;
+  }
+
+  .share-span {
+    position: absolute;
+    bottom: 10px;
+    /* width: 100%; */
+    /* height: 20px; */
+    /* text-align: center; */
+    font-size: 25px;
+    right: 10px;
+  }
 
 }
