@@ -93,7 +93,7 @@ export class MyApp {
         if (data) {
           storage.get('user').then(u_name => {
             this.setUser(data);
-            this.dataService.getLikes();
+            //this.dataService.getLikes();
             //fcmprovider.saveToken('TestToken');
             if (data.result[0].type == "customer") {
               this.dataService.getSizeFile();

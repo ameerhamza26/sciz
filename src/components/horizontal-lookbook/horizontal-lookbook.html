@@ -1,6 +1,5 @@
 <ng-container class="horizontal">
   <ion-grid>
-    <h1 style="color:#fff">Horizontal lookbook</h1>
     <ion-slides pager>
       <ion-slide [style.background-image]="' url('+dataService.lookbook.imageUrl+')'">
         <div class="postInfo">
@@ -9,6 +8,7 @@
               <ion-col>
                 <h2 padding>{{dataService.lookbook.title}}</h2>
                 <p padding>{{dataService.lookbook.description}}</p>
+                <p >{{dataService.lookbook.totalLikes}} likes</p>
               </ion-col>
 
             </ion-row>
@@ -24,11 +24,11 @@
           </ion-row>
         </ion-header>
       </ion-slide>
-      <ion-slide class="slide" *ngFor="let page of dataService.lookbookPages">
+      <ion-slide class="slide" *ngFor="let page of dataService.lookbook.pages">
         <img src="{{page.imageUrl}}" class="center">
         <ion-row>
           <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
-            <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
+            <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.isLikedByMe)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
           </ion-col>
         </ion-row>
       </ion-slide>

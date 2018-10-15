@@ -64,10 +64,6 @@ export class LoginPage {
 
   ionViewDidLoad() {
     console.log('user stor',this.storage.get('user'));
-    if(this.dataService.users.length == 0) {
-      this.dataService.getUsers();
-    }
-    console.log('ionViewDidLoad LoginPage');
   }
 
   signInAnonymously() {
@@ -85,7 +81,7 @@ export class LoginPage {
             this.setUser(data.result[0]);
             this.signInAnonymously();
             this.storage.set('data', data);
-            this.dataService.getLikes();
+            //this.dataService.getLikes();
             console.log(this.dataService.me);
             if (data.result[0].type == "customer") {
               this.dataService.getSizeFile();

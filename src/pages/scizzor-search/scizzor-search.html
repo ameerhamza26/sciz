@@ -37,7 +37,9 @@
   <ion-list>
     <ion-item *ngFor="let item of filtereditems" (click)="openProfile(item)">
       <ion-avatar item-start>
-        <img src="{{item.image}}"  style="object-fit: cover;">
+
+        <img *ngIf="!item.imageUrl" src="../../assets/images/default.png"  style="object-fit: cover;">
+        <img *ngIf="item.imageUrl" src="{{item.imageUrl}}"  style="object-fit: cover;">
       </ion-avatar>
       <h2><small>{{item.name}}</small></h2>
       <p><small>{{item.type3}}</small></p>

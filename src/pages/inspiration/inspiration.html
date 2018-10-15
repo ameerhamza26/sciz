@@ -31,21 +31,19 @@
   <div *ngFor="let post of posts; let i = index; let even = even;">
     <div *ngIf="even" class="section" >
       <div class="even-post" *ngIf="posts[i]"  (click)="selectLookbook(posts[i])" [style.background-image]="' url('+posts[i].imageUrl+')'">
-         <span class="title-span "> {{posts[i].title}}</span>
          <span class="likes-span">
-            <ion-icon name="thumbs-up"></ion-icon> 25
+            <ion-icon name="thumbs-up"></ion-icon> {{posts[i].totalLikes}}
          </span>
 
-         <span class="share-span">
+         <span class="share-span" *ngIf="false" (click)="shareLookBook(posts[i])"> 
             <ion-icon name="md-share"></ion-icon>
          </span>
       </div>
       <div  class="odd-post" *ngIf="posts[i+1]"  (click)="selectLookbook(posts[i+1])" [style.background-image]="' url('+posts[i+1].imageUrl+')'">
-         <span class="title-span "> {{posts[i+1].title}}</span>
          <span class="likes-span">
-            <ion-icon name="thumbs-up"></ion-icon> 50
+            <ion-icon name="thumbs-up"></ion-icon> {{posts[i+1].totalLikes}}
          </span>
-         <span class="share-span">
+         <span class="share-span" *ngIf="false" (click)="shareLookBook(posts[i+1])">
             <ion-icon name="md-share"></ion-icon>
          </span>
         </div>

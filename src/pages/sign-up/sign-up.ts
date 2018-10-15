@@ -315,7 +315,7 @@ question:any;
     this.userService.setUser(this.savedUser);
     this.dataService.permission = this.userService.getPermission(this.savedUser);
     this.dataService.me = this.savedUser;
-    this.dataService.getLikes();
+    //this.dataService.getLikes();
 
     if(this.savedUser.type == "customer"){
       this.dataService.getSizeFile();

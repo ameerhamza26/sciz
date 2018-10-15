@@ -55,20 +55,15 @@ export class UserProfilePage {
   ionViewDidLoad() {
     this.isPageOpen = true;
     console.log('ionViewDidLoad UserProfilePage');
-    this.start();
+   
   }
 
   ionViewWillEnter() {
 
-
-
+ this.start();
       console.log("Ion will enter profile");
       this.dataService.getLikes();
       this.isPageOpen = true;
-      //reload own posts on entry
-      this.likes = [];
-      this.likes = this.dataService.likes;
-
 
       console.log('re-entry');
    // this.likes = [];
@@ -89,8 +84,20 @@ export class UserProfilePage {
 
   start() {
 
+
+
     this.segment = 'likes';
     this.user = this.userService.user;
+    this.loading = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+
+    this.loading.present().then(()=> {
+      this.dataService.getLikesByUser(this.user.id).subscribe((res)=> {
+        this.likes = res.json().result;
+        this.loading.dismissAll();
+      })
+    })
     console.log(this.user)
     this.dataService.getImageUrl(this.user.image,this.user);
       console.log("USER PROFILE USER--",this.user)
@@ -176,7 +183,7 @@ export class UserProfilePage {
         //console.log(this.dataService.pages);
         //let temp = this.dataService.pages.filter(item => item.code == creation.creationCode)[0];
         let temp = this.dataService.findPage("id",creation.creationCode.substr(15))[0];
-        if(temp.image){
+        if(temp != undefined && temp.image){
             this.dataService.getImageUrl(temp.image,creation);
             console.log(temp.image);
             return temp.image;
@@ -184,33 +191,57 @@ export class UserProfilePage {
     }
   }
 
+  imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
   openLike(creation2Open) {
     console.log(creation2Open);
       if(creation2Open.creationCode.substr(0,15) !== "inspirationpage"){
         console.log(this.dataService.creations);
-        creation2Open = this.dataService.creations.filter(item => item.id == creation2Open.creationCode.substr(8))[0];
-
+        //creation2Open = this.dataService.creations.filter(item => item.id == creation2Open.creationCode.substr(8))[0];
+        this.dataService.getCreationById(creation2Open.code).subscribe((res)=> {
+          var data =res.json().result[0]
+          data.imageUrl = this.imageBaseUrl + data.image;
+          this.navCtrl.push(CreationPage, {
+            creation:data
+          });
+        }) 
         console.log('open creation: ' + creation2Open);
-        this.navCtrl.push(CreationPage, {
-            creation: creation2Open
-    });
+        
     } else {
-         // var page = this.dataService.pages.filter(item => item.code == creation2Open.creationCode);
-          var page = this.dataService.findPage("id",creation2Open.creationCode.substr(15));
-         // var post = this.dataService.posts.filter(item=>item.code == page[0].inspirationCode);
-          console.log("FIND POST OPEN LIKE")
-          var post = this.dataService.findInspiration("id",page[0].inspiration_id);
-          console.log(creation2Open);
-          this.openLookbook(post[0]);
-          console.log(page);
-          console.log(post);
+          this.dataService.getInspirationsByPageId(creation2Open.code).subscribe((res)=> {
+            var result = res.json().result;
+            if (result.length >0) {
+              for (let inspiration of result) {
+                let image =  inspiration.image;
+                inspiration.image = image;
+                inspiration.likes = 0; // magazine likes - random for testing
+                inspiration.imageUrl = this.imageBaseUrl + image;
+                let likes = 0;
+                for (let pages of inspiration.pages) {
+                  console.log("pages",pages, pages.likes);
+                  likes = likes + pages.likes ;
+                  pages.imageUrl = this.imageBaseUrl + pages.image;
+                }
+                inspiration.totalLikes = likes;
+                /* inspirationPages.forEach((page, index) => {
+                      pageLikes = this.likes.filter(item => item.creationCode == page.code);
+                      console.log("PAGE LIKES");
+                      console.log(pageLikes);
+                      console.log(pageLikes.length);
+                      inspiration.likes = pageLikes.length;
+                  }); */
+                
+            }
+            this.openLookbook(result[0]);
+              
+            }
+          })
       }
 
   }
 
     openLookbook(post) {
         //open lookbook according to style -> segue
-        console.log('Open Lookbook');
+        console.log('Open Lookbook',post);
         if (post.type == 'vertical' || post.type == 'horizontal') {
             this.navCtrl.push(LookbookPage, {
                 post: post,

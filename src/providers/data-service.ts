@@ -67,10 +67,7 @@ export class DataService {
 
  // console.log("LOAD DATA");
     this.coverImage = 'assets/images/placeholder.png';
-
-    this.getUsers();
     this.getInspirationTags();
-    this.getCreations();
   }
 
   filterItems(searchTerm) {
@@ -93,7 +90,7 @@ export class DataService {
 
   }
 
-  createBranchLink(model_type,type_id,type_image,social_type){
+  createBranchLink(model_type,type_id,type_image,social_type, message, model){
       var model_type = model_type; // magazine,item,profile
       var type_id = type_id; // magazine,item,profile ID
       var type_image = type_image;
@@ -102,7 +99,9 @@ export class DataService {
           type: model_type,
           type_id: type_id,
           type_image: type_image,
-          social_type: social_type
+          social_type: social_type,
+          message: message,
+          custom_obj : model
       });
 
       let body: string = parameters,
@@ -115,22 +114,11 @@ export class DataService {
   }
 
   getUsers() {
-    this.users.length = 0;
-    this.http.get(this.apiUrl + 'getUsers').map(res => res.json()).subscribe(data => {
-      if(data.status){
-          console.log("GET USERS,", data.result);
-          for (let user of data.result) {
-
-              let image = user.image;
-              this.getImageUrl(image,user);
-              user.image = image;
-              this.users.push(user);
-          }
-         // console.log(this.users);
-      }
-      else{
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].msg);
-      }
+    let getUrl = 'getUsers';
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
     });
 
   }
@@ -141,9 +129,31 @@ export class DataService {
   }
 
   getUserByCode(code) {
-    return this.http.get(this.apiUrl + 'get/'+code).map(res => res.json());
+    let getUrl = 'get/' + code;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
   }
 
+  getInspirationsByPageId(pageId) : Observable<any> {
+    let getUrl = 'getInspiration/' + pageId;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
+
+  getCreationById(id) : Observable<any> {
+    let getUrl = 'getCreationsById/'+id;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
   getInspirations() : Observable<any> {
     let getUrl = 'getInspirations';
     return this._httpService.getRequest(getUrl)
@@ -241,6 +251,24 @@ export class DataService {
 
   }
 
+  getCreationByUser(userId) : Observable<any> {
+    let getUrl = 'getCreations/'+userId;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
+  
+  getCreationsByType(type) : Observable<any> {
+    let getUrl = 'getCreationsByType/'+type;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
+
   getCreations() {
 
     this.creations.length = 0;
@@ -270,6 +298,15 @@ export class DataService {
     return this.http.get(this.apiUrl + 'getCreations').map(res => res.json());
   }
 
+  getLikesByUser(userId)  : Observable<any> { 
+    let getUrl = 'getLikes/'+userId;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
+
   getLikes() {
 
       this.likes = new Array<Like>();
@@ -291,7 +328,7 @@ export class DataService {
       if(data.status) {
           for (let like of data.result) {
               if(like.creationCode.substr(0,15) !== "inspirationpage") {
-                  console.log("Get like creation");
+                  console.log("Get like creation", like);
                   let temp = this.creations.filter(item => item.id == like.creationCode.substr(8))[0];
                   console.log(temp.image);
                   if(temp.image){
@@ -301,7 +338,7 @@ export class DataService {
               else {
                   console.log("Get like page",like.creationCode.substr(15));
                   let temp = this.findPage("id",like.creationCode.substr(15))[0];
-                  if(temp.image){
+                  if(temp!= undefined && temp.image){
                       this.getImageUrl(temp.image,like);
                       console.log(temp.image);
                   }
@@ -347,6 +384,15 @@ export class DataService {
         });
       });
 }
+
+  likeInspirationPage(body): Observable<any>  {
+    let url = 'inspirationpage/like';
+    return this._httpService.postRequest(url,body)
+        .map((res: Response) => res)
+        .catch((error: any) => {
+            return Observable.throw(error);
+        });
+  }
 
   saveLike(likeToUpload) {
 
@@ -761,6 +807,39 @@ export class DataService {
 
   }
 
+  getPagesByInspirationId(id) {
+    let getUrl = 'getPages/'+id;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
 
+  checkLikedByMe(userid,pageids) : Observable<any>  {
+    let getUrl = 'checkinspiration/like';
+    let body = {
+      userid: userid,
+      pageids: pageids
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
+
+  checkLikedByMeCreation(userid,creationid) : Observable<any>  {
+    let getUrl = 'checkcreation/like';
+    let body = {
+      userid: userid,
+      creationid: creationid
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
 
 }

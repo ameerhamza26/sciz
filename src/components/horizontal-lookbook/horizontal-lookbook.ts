@@ -7,7 +7,7 @@ import { ProfilePage } from '../../pages/profile/profile';
 import {Like} from "../../models/like-model";
 import {Post} from "../../models/post-model";
 import {SocialShareProvider} from "../../providers/social-share/social-share";
-
+import { LoadingController } from 'ionic-angular';
 
 /**
  * Generated class for the HorizontalLookbookComponent component.
@@ -26,22 +26,43 @@ export class HorizontalLookbook implements OnInit {
 
   @Input()
   user: any;
-  constructor(public dataService:DataService,public navCtrl: NavController,private socialShare: SocialShareProvider, public userService:UserService) {
+  loading: any;
+  pages: Array<any> = new Array<any>();
 
-
-
-  
+  imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
+  constructor(public dataService:DataService,
+    public loadingCtrl: LoadingController,public navCtrl: NavController,private socialShare: SocialShareProvider, public userService:UserService) {
     this.getTags();
-    this.checkLiked();
   }
 
   ngOnInit() {
+    this.loading = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
 
-    this.dataService.getUserByCode(this.dataService.lookbook.userCode).subscribe((res)=>{
-      if (res.data.length>0) {
-        this.user = res.data[0];
-      }
-    })
+    this.loading.present().then(()=> {
+      this.dataService.getUserByCode(this.dataService.lookbook.userCode).subscribe((res)=>{
+        if (res.json().data.length>0) {
+          this.user = res.json().data[0];
+        }
+        var ids = [];
+        for (let pages of this.dataService.lookbook.pages) {
+          ids.push('inspirationpage'+pages.id);
+        }
+        this.dataService.checkLikedByMe(this.dataService.me.id,ids).subscribe((res)=> {
+          let data = res.json().data;
+          for (let pages of this.dataService.lookbook.pages ) {
+            pages["isLikedByMe"] = false;
+            for (let r of data) {
+              if (pages.id == r.pageid) {
+                pages["isLikedByMe"] = true;
+              }
+            }
+          } 
+        })
+        this.loading.dismiss();
+      })
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -77,7 +98,7 @@ export class HorizontalLookbook implements OnInit {
     //open profile of service
     let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
     this.navCtrl.push(ProfilePage,{
-      userCode:user.code,
+      userCode:this.user.code,
       view:'service'
     });
 
@@ -96,7 +117,7 @@ export class HorizontalLookbook implements OnInit {
 
     else {
       this.navCtrl.push(ProfilePage,{
-        userCode:user.code,
+        userCode: this.user.id,
         view:'service'
       });
     }
@@ -119,19 +140,10 @@ export class HorizontalLookbook implements OnInit {
     like(like){
         //like post, add to likes
 
-        //like post, add to likes
-        if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
-            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
-            reLikedCreation.liked = true;
-            //update database
-        }else{
-            let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
-            this.dataService.likes.splice(0,0,likedCreation);
-            this.dataService.saveLike(likedCreation);
-            //save like
-        }
-
-        this.checkLiked();
+        let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
+        this.dataService.likes.splice(0,0,likedCreation);
+        this.dataService.saveLike(likedCreation); 
+        like.isLikedByMe = true;
 
     }
 

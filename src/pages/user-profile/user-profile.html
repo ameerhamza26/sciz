@@ -5,7 +5,9 @@
   Ionic pages and navigation.
 -->
 <ion-header>
+    <ion-navbar>
 
+      </ion-navbar>
 </ion-header>
 
 
@@ -167,10 +169,9 @@
       <div *ngIf="isPageOpen">
         <ng-container *ngSwitchCase="'likes'">
           <div class="storeholder">
-            <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of dataService.likes" [style.background-image]="' url('+getImage(creation)+')'">
-              <img src="./assets/images/placeholder2.png">
-              <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of likes"  [style.background-image]="' url('+creation.imageUrl+')'">
-              </div>
+            <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of likes" [style.background-image]="' url('+creation.image+')'">
+              <img src="../../assets/images/placeholder2.png">
+             
             </div>
           </div>
         </ng-container>

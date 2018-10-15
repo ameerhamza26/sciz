@@ -25,7 +25,6 @@ export class VerticalLookbook {
   tags:any;
 
   constructor(public dataService:DataService, public navCtrl: NavController,private socialShare: SocialShareProvider, public userService:UserService) {
-    console.log('Hello VerticalLookbook Component Component');
     this.text = 'Hello World';
     this.getTags();
     this.checkLiked();
@@ -34,14 +33,11 @@ export class VerticalLookbook {
   getTags(){
 
     this.tags  = this.dataService.tags.filter(item => item.inspiration_id == this.dataService.lookbook.code);
-    console.log("TAGOVI",this.tags);
 
   }
   getUser(tag){
 
-      console.log("USER tag",tag);
     let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
-  console.log(user);
     return user.name;
   }
 
@@ -52,7 +48,6 @@ export class VerticalLookbook {
 
   getImage(tag){
     let user = this.dataService.users.filter(item => item.id == tag.userCode)[0];
-    console.log("Get tag user image,",user);
     return user.imageUrl;
   }
 
@@ -72,8 +67,6 @@ export class VerticalLookbook {
   }
 
   openUserProfile(code){
-    console.log(code)
-    console.log(this.userService.user.code)
     let user = this.dataService.users.filter(item => item.code == code)[0];
 
     if (this.userService.user.code == code){
@@ -93,24 +86,19 @@ export class VerticalLookbook {
 
 
     checkLiked(){
-        // check if you have liked the selected post previously
-        console.log(this.dataService.likes);
+
         this.dataService.lookbookPages.forEach((page, index) => {
-            console.log("PAGE",page);
             if(this.dataService.likes.filter(item => item.creationCode ==  'inspirationpage'+page.id).length > 0){
                 let reLikedCreation = this.dataService.likes.filter(item => item.creationCode ==  'inspirationpage'+page.id)[0];
-                console.log('liked');
                 page.liked = reLikedCreation.liked;
             }else{
-                console.log('not liked');
                 page.liked = false;
             }
         });
     }
 
     like(like){
-        //like post, add to likes
-        console.log("Liked code", like.id);
+
         if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
             let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
             reLikedCreation.liked = true;

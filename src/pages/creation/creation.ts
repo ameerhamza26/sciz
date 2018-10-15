@@ -67,9 +67,9 @@ export class CreationPage {
     if(navParams.get('creation')){
       // view selected post mode
       this.creation = navParams.get('creation');
-      console.log(this.creation.code);
+      console.log(this.creation);
       this.originalImage = this.creation.image;
-      this.checkLiked();
+      this.checkLiked( this.creation);
     }
 
   }
@@ -90,7 +90,7 @@ export class CreationPage {
 
     this.creationCode = 'creation' + code;
 
-    this.creation = new Creation('',this.creationCode,user.id,'type',this.defaultImage,'title','long description',true,'price');
+    this.creation = new Creation('',this.creationCode,user.id,'type',this.defaultImage,'','',true,'');
   }
 
 
@@ -164,11 +164,10 @@ export class CreationPage {
             text: 'View Profile',
             handler: () => {
 
-              this.navCtrl.setRoot(UserProfilePage,{
+              this.navCtrl.push(ProfilePage,{
+                userCode: this.creation.account_id,
                 view:'service'
               });
-
-              this.navCtrl.parent.select(2);
 
             }
           },
@@ -182,8 +181,6 @@ export class CreationPage {
     }
 
     else if (this.creation.availability == 0) {
-      let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
-      console.log(creator)
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
@@ -193,7 +190,7 @@ export class CreationPage {
               console.log('message');
               console.log('message');
               this.navCtrl.push(ChatPage,{
-                userCode:creator.code,
+                userCode:this.creation.account_id,
                 view:'service'
               });
 
@@ -204,7 +201,7 @@ export class CreationPage {
             handler: () => {
 
               this.navCtrl.push(ProfilePage,{
-                userCode:creator.code,
+                userCode: this.creation.account_id,
                 view:'service'
               });
 
@@ -220,17 +217,14 @@ export class CreationPage {
     }
 
     else {
-      let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
           {
             text: 'Message',
             handler: () => {
-              console.log('message');
-              console.log('message');
               this.navCtrl.push(ChatPage,{
-                userCode:creator.code,
+                userCode:this.creation.account_id,
                 view:'service'
               });
 
@@ -241,7 +235,7 @@ export class CreationPage {
             handler: () => {
 
               this.navCtrl.push(ProfilePage,{
-                userCode:creator.code,
+                userCode: this.creation.account_id,
                 view:'service'
               });
 
@@ -271,18 +265,17 @@ export class CreationPage {
 
 
 
-  checkLiked(){
+  checkLiked(creation){
     // check if you have liked the selected post previously
-  console.log( this.creation.code);
-    if(this.dataService.likes.filter(item => item.creationCode == 'creation'+this.creation.id).length > 0){
-      let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'creation'+this.creation.id)[0];
 
-      console.log('liked');
-      this.liked = reLikedCreation.liked;
-    }else{
-      console.log('not liked');
-      this.liked = false;
-    }
+    this.dataService.checkLikedByMeCreation(this.dataService.me.id,creation.id).subscribe((res)=> {
+      var data = res.json().data;
+      if(data.length > 0) {
+        this.liked = true;
+      } else {
+        this.liked = false;
+      }
+    })
   }
 
   like(){
@@ -299,7 +292,7 @@ export class CreationPage {
       //save like
     }
 
-    this.checkLiked();
+    this.checkLiked(this.creation);
   }
 
   save(){

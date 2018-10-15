@@ -45,13 +45,14 @@ export class LookbookLeroyPage implements OnInit {
   pages: any;
   post: any;
   tags: any;
+  lookbook: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider, private errorHandler: ErrorHandlerProvider, public userService: UserService) {
 
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');
     this.post = navParams.get('post');
-
+    this.lookbook = this.post.type;
 
     this.start(this.mode);
     this.helpToast();
@@ -63,16 +64,35 @@ export class LookbookLeroyPage implements OnInit {
   user: any;
 
   ngOnInit() {
-        this.showLoading("Please wait.");
-        console.log("in on init leroy")
-        this.dataService.getUserByCode(this.post.userCode).subscribe((res)=>{
-          console.log("user component is",res);
-          if (res.data.length>0) {
-            this.user = res.data[0];
-          }
-          this.loading.dismissAll();
-        })
+        this.loading = this.loadingCtrl.create({
+          content: "Please wait..."
+        });
+    
+        this.loading.present().then(()=> {
+          this.dataService.getUserByCode(this.post.userCode).subscribe((res)=>{
+            if (res.json().data.length>0) {
+              this.user = res.json().data[0];
+            }
+            var ids = [];
+            for (let pages of this.post.pages) {
+              ids.push('inspirationpage'+pages.id);
+            }
+            this.dataService.checkLikedByMe(this.dataService.me.id,ids).subscribe((res)=> {
+              let data = res.json().data;
+              for (let pages of this.post.pages ) {
+                pages["isLikedByMe"] = false;
+                for (let r of data) {
+                  if (pages.id == r.pageid) {
+                    pages["isLikedByMe"] = true;
+                  }
+                }
+              } 
+            })
+            this.loading.dismiss();
+          })
+        });
   }
+  
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookLeroyPage');
 
@@ -489,7 +509,7 @@ export class LookbookLeroyPage implements OnInit {
 
     else {
       this.navCtrl.push(ProfilePage,{
-        userCode:user.code,
+        userCode:this.user.id,
         view:'service'
       });
     }

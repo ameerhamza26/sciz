@@ -176,7 +176,7 @@ export class CreateNewPage {
   preview() {
     //preview inspiration, send post to whateva lookbook style is selected
     this.savePost();
-    console.log('preview page');
+    console.log('preview page', this.post);
     console.log('open ' + this.lookbook);
     var modesection = this.mode;
     console.log(this.pages)
@@ -241,7 +241,7 @@ export class CreateNewPage {
     this.post.subTitle = this.subTitle;
     this.post.description = this.description;
     this.post.type = this.lookbook;
-
+    this.post.pages = this.pages;
     console.log(this.post);
   }
 

@@ -41,7 +41,8 @@ export class InspirationPage implements OnInit {
   timestapm = Date.now();
 
   imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
-  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, public loadingCtrl: LoadingController,private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, 
+    public loadingCtrl: LoadingController,private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider) {
 
       console.log("INSPIRATION CONSTR",this.dataService.posts);
     //  this.itemMiddle = Math.floor(this.images.length / 2); //Live magazines
@@ -66,6 +67,13 @@ export class InspirationPage implements OnInit {
             inspiration.image = image;
             inspiration.likes = 0; // magazine likes - random for testing
             inspiration.imageUrl = this.imageBaseUrl + image;
+            let likes = 0;
+            for (let pages of inspiration.pages) {
+              console.log("pages",pages, pages.likes);
+              likes = likes + pages.likes ;
+              pages.imageUrl = this.imageBaseUrl + pages.image;
+            }
+            inspiration.totalLikes = likes;
             /* inspirationPages.forEach((page, index) => {
                   pageLikes = this.likes.filter(item => item.creationCode == page.code);
                   console.log("PAGE LIKES");
@@ -90,17 +98,18 @@ export class InspirationPage implements OnInit {
         console.log("ENTER INSPIRATION");
         this.storage.get("branchItem").then(data => {
             if (data) {
+                console.log("branchitem dataaa",data);
                 switch (data.type){
                     case 'Profile':
                         var profile =  this.dataService.users.filter(item => item.id == data.type_id)[0];
                         this.navCtrl.push(ProfilePage,{
-                            userCode:profile.code,
+                            userCode: data.type_id,
                             view:'service'
                         });
                         break;
                     case 'Magazine':
+                        var post =data.custom_object;
                         this.storage.remove("branchItem");
-                        var post = this.dataService.findInspiration("id",data.type_id)[0];
                         this.openLookbook(post);
                         break;
                     case 'Item':
@@ -138,10 +147,7 @@ export class InspirationPage implements OnInit {
   }
 
   selectLookbook(post) {
-
-    console.log(post);
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
-    console.log(this.dataService.me.code)
     if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.id) {
 
       let actionSheet = this.actionSheetCtrl.create({
@@ -184,6 +190,9 @@ export class InspirationPage implements OnInit {
   }
 
 
+  shareLookBook(post) {
+    console.log("post",post);
+  }
 
   openLookbook(post) {
     //open lookbook according to style -> segue

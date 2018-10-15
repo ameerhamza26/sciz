@@ -48,9 +48,9 @@ export class SocialShareProvider {
   }
 
   private shareFacebook(shareType,message:string,model:any,modelType) {
-      console.log(message);
-      this.dataService.createBranchLink(modelType,model.id,model.image,"Facebook").subscribe(data => {
-          this.socialSharing.shareViaFacebookWithPasteMessageHint(message,"",data.url,message).then(()=>{
+      this.dataService.createBranchLink(modelType,model.id,model.image,"Facebook", message, model).subscribe(data => {
+
+          this.socialSharing.shareViaFacebookWithPasteMessageHint(message, null,data.url, message).then(()=>{
 
           }).catch(()=>{
               this.showAlert('Error', 'Cannot share with facebook. Check if you have facebook installed or try again later');
@@ -59,25 +59,23 @@ export class SocialShareProvider {
   }
 
   private shareTwitter(shareType,message:string,model:any,modelType) {
-      console.log(message);
-      this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
+      this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter", message, model).subscribe(data => {
           this.socialSharing.shareViaTwitter(message,model.image,data.url).then(()=>{
 
           }).catch(()=>{
-              this.showAlert('Error', 'Cannot share with twitter. Check if you have twitter installed or try again later');
+              //this.showAlert('Error', 'Cannot share with twitter. Check if you have twitter installed or try again later');
           });
       });
 
   }
 
     private shareInstagram(shareType,message:string,model:any,modelType) {
-        console.log(message);
-        this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
+        this.dataService.createBranchLink(modelType,model.id,model.image,"Instagram", message, model).subscribe(data => {
             message = message + ' ' + data.url;
-            this.socialSharing.shareViaInstagram(message,model.image).then(()=>{
+            this.socialSharing.shareViaInstagram(message, model.imageUrl).then(()=>{
 
             }).catch(()=>{
-                this.showAlert('Error', 'Cannot share with instagram. Check if you have instagram installed or try again later');
+               // this.showAlert('Error', 'Cannot share with instagram. Check if you have instagram installed or try again later');
 
             });
         });
@@ -86,9 +84,7 @@ export class SocialShareProvider {
 
     // email
     private shareWithEmail(shareType,message:string,model:any,modelType){
-      console.log(model);
-      console.log(message);
-        this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
+        this.dataService.createBranchLink(modelType,model.id,model.image,"Email", message, model).subscribe(data => {
             message = message + '. Visit this link '+ data.url;
             this.socialSharing.shareViaEmail(message,"Scizzor app",['Scizzorapp@gmail.com']);
         });
@@ -96,17 +92,14 @@ export class SocialShareProvider {
     }
     // what's up
     private shareWhatsapp(shareType,message:string,model:any,modelType){
-        console.log(message);
-        this.dataService.createBranchLink(modelType,model.id,model.image,"Twitter").subscribe(data => {
-            this.socialSharing.shareViaWhatsApp(message,model.image,data.url).then(()=>{
+        this.dataService.createBranchLink(modelType,model.id,model.image,"Whatsapp", message, model).subscribe(data => {
+            this.socialSharing.shareViaWhatsApp(message,model.imageUrl,data.url).then(()=>{
 
             }).catch(()=>{
                 this.showAlert('Error', 'Cannot share with whatsapp. Check if you have whatsapp installed or try again later');
 
             });
         });
-
-
     }
 
   public shareProfile(profile:User,shareType:string) {
@@ -177,7 +170,7 @@ export class SocialShareProvider {
       var message = "";
       switch (modelType){
           case 'Item':
-              message = SHARE_MSGS.item.prefix +  this.dataService.users.filter(item => item.id == model.account_id)[0].name + SHARE_MSGS.item.seller + model.name + SHARE_MSGS.item.sufix;
+              message = SHARE_MSGS.item.prefix +  model.account_name + SHARE_MSGS.item.seller + model.name + SHARE_MSGS.item.sufix;
               break;
           case 'Magazine':
               message = SHARE_MSGS.magazine.prefix + model.title + SHARE_MSGS.magazine.sufix;

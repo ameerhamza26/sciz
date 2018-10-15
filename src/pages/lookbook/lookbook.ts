@@ -47,11 +47,7 @@ export class LookbookPage {
   user :any;
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookPage');
-    console.log(this.dataService.lookbook)
-    console.log(this.dataService.users)
-
-    this.user = this.dataService.users.filter(item => item.code == this.dataService.lookbook.userCode)[0];
-    console.log("this.user in lookbook",this.user)
+ 
   }
 
 
@@ -73,7 +69,7 @@ export class LookbookPage {
 
     } else if (mode == 'preview') {
 
-      console.log('preview new lookbook');
+      console.log('preview new lookbook',this.post);
       this.dataService.lookbook = this.post;
       this.dataService.lookbookPages = this.pages;
 
