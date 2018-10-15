@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams , LoadingController } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
-import { LoaderService } from "../../providers/loader-service";
 import { CreationPage } from '../creation/creation';
 import { ChatPage } from '../chat/chat';
 import { ServicePaymentPage } from '../service-payment/service-payment';
