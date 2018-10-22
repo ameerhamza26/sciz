@@ -53,27 +53,26 @@ export class ScizzorSearchPage {
 
     openProfile(user){
 
-      console.log("user",user); 
-      if (user.type == 'customer') {
-
-        this.navCtrl.push(UserProfilePage,{
-          userCode:user.id,
-          view:'service'
-        });
-      }
-
-      else {
-        this.navCtrl.push(ProfilePage,{
-          userCode:user.id,
-          view:'service'
-        });
+      console.log("user",user, this.dataService.me); 
+      if (this.dataService.me.id == user.id) {
+        this.navCtrl.parent.select(2); 
+      } else {
+        if (user.type == 'customer') {
+          this.navCtrl.push(UserProfilePage,{
+            user:user,
+            view:'customer'
+          });
+        }
+        else {
+          this.navCtrl.push(ProfilePage,{
+            userCode:user.id,
+            view:'service'
+          });
+        }
       }
     }
 
     makeArray(number){
       return new Array(number)
     }
-
-
-
 }

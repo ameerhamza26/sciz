@@ -68,11 +68,14 @@ export class InspirationPage implements OnInit {
             inspiration.likes = 0; // magazine likes - random for testing
             inspiration.imageUrl = this.imageBaseUrl + image;
             let likes = 0;
-            for (let pages of inspiration.pages) {
-              console.log("pages",pages, pages.likes);
-              likes = likes + pages.likes ;
-              pages.imageUrl = this.imageBaseUrl + pages.image;
+            if (inspiration.pages) {
+              for (let pages of inspiration.pages) {
+                console.log("pages",pages, pages.likes);
+                likes = likes + pages.likes ;
+                pages.imageUrl = this.imageBaseUrl + pages.image;
+              }
             }
+           
             inspiration.totalLikes = likes;
             /* inspirationPages.forEach((page, index) => {
                   pageLikes = this.likes.filter(item => item.creationCode == page.code);
@@ -147,8 +150,10 @@ export class InspirationPage implements OnInit {
   }
 
   selectLookbook(post) {
+    console.log("post",post)
+    console.log("this.dataService.me",this.dataService.me)
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
-    if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.id) {
+    if (this.dataService.permission == 'admin' || (this.dataService.me.type2 == "Illustrator" && +post.userCode == this.dataService.me.id)) {
 
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Modify lookbook',

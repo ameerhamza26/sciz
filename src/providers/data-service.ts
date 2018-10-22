@@ -154,6 +154,16 @@ export class DataService {
         return Observable.throw(error);
     });
   }
+
+  getSizesByUserCode(code) : Observable<any> {
+    let getUrl = 'getSizeByUserCode/'+code;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
+    });
+  }
+
   getInspirations() : Observable<any> {
     let getUrl = 'getInspirations';
     return this._httpService.getRequest(getUrl)
@@ -330,7 +340,6 @@ export class DataService {
               if(like.creationCode.substr(0,15) !== "inspirationpage") {
                   console.log("Get like creation", like);
                   let temp = this.creations.filter(item => item.id == like.creationCode.substr(8))[0];
-                  console.log(temp.image);
                   if(temp.image){
                       this.getImageUrl(temp.image,like);
                   }
@@ -427,27 +436,38 @@ export class DataService {
   updateAvailability(creationCode, availability) {
 
 
-    var parameters = JSON.stringify({
+    let getUrl = 'updateAvailability';
+    let body = {
       creationCode: creationCode,
       availability: availability
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
     });
 
-    let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'updateAvailability';
+    // var parameters = JSON.stringify({
+    //   creationCode: creationCode,
+    //   availability: availability
+    // });
+
+    // let body: string = parameters,
+    //   type: string = "application/json",
+    //   headers: any = new Headers({ 'Content-Type': type }),
+    //   options: any = new RequestOptions({ headers: headers }),
+    //   url: any = this.apiUrl + 'updateAvailability';
 
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
+    // this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
-      if (data.message == "Successful") {
-       // console.log('availability saved');
-      } else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.availability[0].title,ErrorHandlerProvider.MESSAGES.error.availability[0].msg);
-      }
+    //   if (data.message == "Successful") {
+    //    // console.log('availability saved');
+    //   } else {
+    //       this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.availability[0].title,ErrorHandlerProvider.MESSAGES.error.availability[0].msg);
+    //   }
 
-    });
+    // });
 
 
   }
@@ -664,30 +684,16 @@ export class DataService {
       });
   }
 
-  updateSize(sizeFile) {
-
-    var parameters = JSON.stringify({
+  updateSize(sizeFile) {    
+    let getUrl = 'updateSize';
+    let body = {
       sizeFile: sizeFile
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
     });
-
-    let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'updateSize';
-
-
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-
-      if (data.message == "Successful") {
-        //console.log('profile saved');
-      } else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[2].title,ErrorHandlerProvider.MESSAGES.error.file[2].msg);
-      }
-
-    });
-
-
   }
 
   saveNewInspiration(inspiration, inspirationPages) {
@@ -746,6 +752,27 @@ export class DataService {
 
     return this.http.post(url, body, options).map(response => response.json());
   }
+
+  savePageImage(imageCode, imageData, imageName) {
+
+    console.log("Save image");
+    //console.log(imageData);
+    console.log(imageName);
+  var parameters = JSON.stringify({
+    imageData: imageData,
+    imageName: imageName,
+    imageCode: imageCode
+  });
+
+  let body: string = parameters,
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'uploadImage';
+
+
+  return this.http.post(url, body, options).map(response => response.json());
+}
 
  /*
     Don't need it now

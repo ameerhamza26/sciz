@@ -62,47 +62,80 @@ export class UserProfilePage {
 
  this.start();
       console.log("Ion will enter profile");
-      this.dataService.getLikes();
+      //this.dataService.getLikes();
       this.isPageOpen = true;
-
-      console.log('re-entry');
-   // this.likes = [];
-    if (this.permission == 'customer') {
-      this.getSizes();
-
-      //console.log(this.likes);
-
-
-    } else if (this.permission == 'service') {
-      this.getCreations();
-    }
   }
-    ionViewWillLeave() {
+    
+  ionViewWillLeave() {
       this.likes = [];
       this.isPageOpen = false;
   }
-
+  navParamUserCode: any;
   start() {
-
-
 
     this.segment = 'likes';
     this.user = this.userService.user;
+    this.permission = this.dataService.permission;
+
+    this.navParamUserCode = this.navParams.get("user");
+    if (this.navParamUserCode != undefined) {
+      this.user  = this.navParamUserCode;
+      this.permission = this.navParams.get("view");
+    }
     this.loading = this.loadingCtrl.create({
       content: "Please wait..."
     });
 
     this.loading.present().then(()=> {
-      this.dataService.getLikesByUser(this.user.id).subscribe((res)=> {
-        this.likes = res.json().result;
-        this.loading.dismissAll();
-      })
+      if (this.permission == 'service') {
+        this.dataService.getUserByCode(this.user.id).subscribe((res)=> {
+          this.user= res.json().data[0];
+          this.dataService.getCreationByUser(this.user.id).subscribe((res)=> {
+            this.creations = res.json().result;
+            if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
+              let promises_array:Array<any> = [];
+              let that = this;
+              for (let creation of this.creations) {
+                if (creation.availability){
+                  creation.availability = false;
+                  promises_array.push(new Promise(function(resolve,reject) {
+                    that.dataService.updateAvailability(creation.code, creation.availability).subscribe((data) => {
+                      resolve(data);
+                    }, (err)=> {
+                      reject(err);
+                    });
+                  }));
+                }
+              }
+              if (promises_array.length > 0)  {
+                Promise.all(promises_array).then((data)=> {
+                  this.loading.dismissAll();
+                });
+              } else {
+                this.loading.dismissAll();
+              }
+            } else {
+              this.loading.dismissAll();
+            }
+          })
+        })
+      } else {
+        this.dataService.getUserByCode(this.user.id).subscribe((res)=> {
+          this.user= res.json().data[0];
+          this.dataService.getLikesByUser(this.user.id).subscribe((res)=> {
+            this.likes = res.json().result;
+            this.dataService.getSizesByUserCode(this.user.code).subscribe((res)=> {
+              this.size = res.json().result[0];
+              this.loading.dismissAll();
+            })
+          })
+        })
+      }
+
     })
-    console.log(this.user)
-    this.dataService.getImageUrl(this.user.image,this.user);
-      console.log("USER PROFILE USER--",this.user)
+
     this.userCopy = this.user;
-    this.permission = this.dataService.permission;
+
     console.log(this.dataService)
     console.log(this.userService)
     this.sizeCode = this.user.sizeCode;
@@ -114,12 +147,10 @@ export class UserProfilePage {
     }
 
     if (this.permission == 'customer') {
-      this.getSizes();
+      //this.getSizes();
     //  this.dataService.getLikes();
       //this.likes = this.dataService.likes;
     } else if (this.permission == 'service') {
-      this.getCreations();
-
 
       if (this.user.type2 == 'Craftsman') {
         this.options = ['Tailor', 'Shoe Maker'];
@@ -150,21 +181,6 @@ export class UserProfilePage {
     }
   }
 
-  getCreations() {
-    //get my posts from data service
-    this.creations = this.dataService.creations.filter(item => item.account_id == this.user.id);
-    console.log(this.creations);
-
-    if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
-      for (let creation of this.creations) {
-        if (creation.availability){
-          console.log(creation.availability)
-          creation.availability = false;
-          this.dataService.updateAvailability(creation.code, creation.availability);
-        }
-      }
-    }
-  }
 
   getImage(creation) {
     if(creation.creationCode.substr(0,15) !== "inspirationpage") {
@@ -262,8 +278,6 @@ export class UserProfilePage {
     }
 
   openCreation(creation2Open) {
-
-    creation2Open = this.dataService.creations.filter(item => item.code == creation2Open.code)[0];
 
     if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
 
@@ -534,12 +548,15 @@ export class UserProfilePage {
       });
 
     } else if (this.sizesChanged) {
-
+      console.log("this size",this.size);
       this.showLoading('Updating ..');
-      this.dataService.updateSize(this.size);
-      this.sizesChanged = false;
-      this.loading.dismissAll();
-
+      this.dataService.updateSize(this.size).subscribe((res)=> {
+        this.sizesChanged = false;
+        this.loading.dismissAll();
+      },(err)=> {
+        this.sizesChanged = false;
+        this.loading.dismissAll();
+      });
     }
 
 

@@ -20,8 +20,9 @@
     <ion-row>
 
       <ion-col col-2>
-        <ion-avatar (click)="selectProfileImage()">
-          <img *ngIf="user" src="{{user.imageUrl}}"  style="object-fit: cover;">
+        <ion-avatar>
+          <img *ngIf="user && user.imageUrl" src="{{user.imageUrl}}"  style="object-fit: cover;">
+          <img *ngIf="user && !user.imageUrl" src="../../assets/images/default.png"  style="object-fit: cover;">
         </ion-avatar>
       </ion-col>
       <ion-col col-10>
