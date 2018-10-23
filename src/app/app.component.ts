@@ -95,11 +95,11 @@ export class MyApp {
             this.setUser(data);
             //this.dataService.getLikes();
             //fcmprovider.saveToken('TestToken');
-            if (data.result[0].type == "customer") {
-              this.dataService.getSizeFile();
-            } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
-              this.dataService.loadIllustratorPosts();
-            }
+            // if (data.result[0].type == "customer") {
+            //   this.dataService.getSizeFile();
+            // } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
+            //   this.dataService.loadIllustratorPosts();
+            // }
 
             if (platform.is('cordova')) {
               fcm.getToken().then(token=>{

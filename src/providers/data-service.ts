@@ -164,8 +164,8 @@ export class DataService {
     });
   }
 
-  getInspirations() : Observable<any> {
-    let getUrl = 'getInspirations';
+  getInspirations(offset,limit) : Observable<any> {
+    let getUrl = 'getInspirations/'+offset+'/'+limit;
     return this._httpService.getRequest(getUrl)
     .map((res: Response) => res)
     .catch((error: any) => {
@@ -641,29 +641,15 @@ export class DataService {
   saveSize(sizeFile) {
 
     console.log(sizeFile)
-
-    var parameters = JSON.stringify({
+    let getUrl = 'saveSize';
+    let body = {
       sizeFile: sizeFile
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+        return Observable.throw(error);
     });
-
-    let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'saveSize';
-
-
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-
-      if (data.message == "Successful") {
-          //sizeFile.id = data.result.id;
-        console.log('size file saved');
-      } else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[1].title,ErrorHandlerProvider.MESSAGES.error.file[1].msg);
-      }
-
-    });
-
   }
 
   getImageUrl(imageName,object){

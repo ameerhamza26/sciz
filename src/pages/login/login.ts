@@ -83,11 +83,11 @@ export class LoginPage {
             this.storage.set('data', data);
             //this.dataService.getLikes();
             console.log(this.dataService.me);
-            if (data.result[0].type == "customer") {
-              this.dataService.getSizeFile();
-            } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
-              this.dataService.loadIllustratorPosts();
-            }
+            // if (data.result[0].type == "customer") {
+            //   this.dataService.getSizeFile();
+            // } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
+            //   this.dataService.loadIllustratorPosts();
+            // }
             this.navCtrl.setRoot(TabsPage);
           } else {
               console.log("ERR 5");

@@ -84,9 +84,9 @@ export class TagPage {
 
       try{
         if(data.message == "Successful"){
-          this.dataService.getInspirations();
+          //this.dataService.getInspirations(0,5);
 
-        }else{
+        } else{
             this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.tag[0].title,ErrorHandlerProvider.MESSAGES.error.tag[0].msg);
           console.log('error saving tag');
         }

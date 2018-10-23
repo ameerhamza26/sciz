@@ -569,21 +569,25 @@ export class LookbookLeroyPage implements OnInit {
 
     like(like){
         //like post, add to likes
+        let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
+        this.dataService.likes.splice(0,0,likedCreation);
+        this.dataService.saveLike(likedCreation); 
+        like.isLikedByMe = true;
+        like.likes= like.likes + 1;
+        // //like post, add to likes
+        // console.log("Liked code", like.id);
+        // if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
+        //     let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
+        //     reLikedCreation.liked = true;
+        //     //update database
+        // }else{
+        //     let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
+        //     this.dataService.likes.splice(0,0,likedCreation);
+        //     this.dataService.saveLike(likedCreation);
+        //     //save like
+        // }
 
-        //like post, add to likes
-        console.log("Liked code", like.id);
-        if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
-            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
-            reLikedCreation.liked = true;
-            //update database
-        }else{
-            let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
-            this.dataService.likes.splice(0,0,likedCreation);
-            this.dataService.saveLike(likedCreation);
-            //save like
-        }
-
-        this.checkLiked();
+        // this.checkLiked();
 
     }
     facebookShare(creation: Post) {

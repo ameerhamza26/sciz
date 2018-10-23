@@ -10,7 +10,7 @@ import {Size} from '../../models/size-model';
 import {Md5} from 'ts-md5/dist/md5';
 import { FormControl } from '@angular/forms';
 import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
-
+import { Storage } from '@ionic/storage';
 
 /**
  * Generated class for the SignUpPage page.
@@ -55,7 +55,8 @@ question:any;
   confirmPassword:any;
   savedUser:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private errorHandlerProvider: ErrorHandlerProvider,public userService:UserService,public dataService:DataService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+    private storage: Storage, private errorHandlerProvider: ErrorHandlerProvider,public userService:UserService,public dataService:DataService) {
     this.start();
   }
 
@@ -257,20 +258,28 @@ question:any;
   processUser(){
 
     //send user to database and save
-    let newUser = new User('',this.code,this.type,this.serviceType,'','','','','',this.name,this.gender,this.email,this.city,true,'short description','@username','@username','@username','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
+    let newUser = new User('',this.code,this.type,this.serviceType,'','','','','',this.name,this.gender,this.email,this.city,'',true,'','','','','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
     this.userService.saveUser(newUser).subscribe(data =>{
-
+      
         if(data.message == "Successful"){
+          newUser = data.result[0];
           this.errorHandlerProvider.throwSuccess(ErrorHandlerProvider.MESSAGES.success.signup[0].title, ErrorHandlerProvider.MESSAGES.success.signup[0].msg);
+          this.storage.set('data', data);
+          this.storage.set('user', newUser);
           if(this.type == 'customer'){
               let sizeFile = new Size('', this.sizeCode, this.code,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-              this.dataService.saveSize(sizeFile);
+              this.dataService.saveSize(sizeFile).subscribe((res)=> {
+                this.savedUser = newUser;
+                this.question = "Thank You.";
+                this.stage = this.stage + 1 ;
+                this.handleStage();
+              });
+          } else {
+            this.savedUser = newUser;
+            this.question = "Thank You.";
+            this.stage = this.stage + 1 ;
+            this.handleStage();
           }
-          this.savedUser = newUser;
-          this.question = "Thank You.";
-          this.stage = this.stage + 1 ;
-          this.handleStage();
-
         }else{
             this.errorHandlerProvider.throwError(ErrorHandlerProvider.MESSAGES.error.signup[1].title, ErrorHandlerProvider.MESSAGES.error.signup[1].msg);
         }
@@ -312,15 +321,11 @@ question:any;
   done(){
 
     this.savedUser.image = this.dataService.apiUrl + "images/" +  this.savedUser.image;
+    
     this.userService.setUser(this.savedUser);
     this.dataService.permission = this.userService.getPermission(this.savedUser);
     this.dataService.me = this.savedUser;
     //this.dataService.getLikes();
-
-    if(this.savedUser.type == "customer"){
-      this.dataService.getSizeFile();
-    }
-
     this.navCtrl.setRoot(TabsPage);
     console.log('done- segue now');
   }

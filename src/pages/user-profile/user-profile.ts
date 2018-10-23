@@ -6,7 +6,7 @@ import { UserService } from '../../providers/user-service';
 import { CreationPage } from '../../pages/creation/creation';
 import { LoginPage } from '../../pages/login/login';
 import { PaymentHistoryPage } from '../../pages/payment-history/payment-history';
-
+import { User } from "../../models/user-model"
 import { App } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
 import { Storage } from '@ionic/storage';
@@ -45,10 +45,6 @@ export class UserProfilePage {
   likes: any = [];
   isPageOpen:boolean;
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public userService: UserService, private app: App, public actionSheetCtrl: ActionSheetController, private camera: Camera, public platform: Platform, private alertCtrl: AlertController, public loadingCtrl: LoadingController, private emailComposer: EmailComposer, private storage: Storage,private errorHandler: ErrorHandlerProvider) {
-    this.start();
-    //this.likes = this.dataService.likes;
-    console.log("USER PROF CONSTR");
-    console.log(this.likes);
   }
 
 
@@ -62,7 +58,6 @@ export class UserProfilePage {
 
  this.start();
       console.log("Ion will enter profile");
-      //this.dataService.getLikes();
       this.isPageOpen = true;
   }
     
@@ -75,7 +70,7 @@ export class UserProfilePage {
 
     this.segment = 'likes';
     this.user = this.userService.user;
-    this.permission = this.dataService.permission;
+    this.permission = this.user.type;
 
     this.navParamUserCode = this.navParams.get("user");
     if (this.navParamUserCode != undefined) {
@@ -88,8 +83,6 @@ export class UserProfilePage {
 
     this.loading.present().then(()=> {
       if (this.permission == 'service') {
-        this.dataService.getUserByCode(this.user.id).subscribe((res)=> {
-          this.user= res.json().data[0];
           this.dataService.getCreationByUser(this.user.id).subscribe((res)=> {
             this.creations = res.json().result;
             if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
@@ -118,10 +111,7 @@ export class UserProfilePage {
               this.loading.dismissAll();
             }
           })
-        })
       } else {
-        this.dataService.getUserByCode(this.user.id).subscribe((res)=> {
-          this.user= res.json().data[0];
           this.dataService.getLikesByUser(this.user.id).subscribe((res)=> {
             this.likes = res.json().result;
             this.dataService.getSizesByUserCode(this.user.code).subscribe((res)=> {
@@ -129,30 +119,15 @@ export class UserProfilePage {
               this.loading.dismissAll();
             })
           })
-        })
       }
 
     })
 
     this.userCopy = this.user;
-
-    console.log(this.dataService)
-    console.log(this.userService)
     this.sizeCode = this.user.sizeCode;
 
-    if (this.permission == this.user.type) {
-      console.log('matching permissions');
-    } else {
-      console.log('error , no matching permissions');
-    }
-
-    if (this.permission == 'customer') {
-      //this.getSizes();
-    //  this.dataService.getLikes();
-      //this.likes = this.dataService.likes;
-    } else if (this.permission == 'service') {
-
-      if (this.user.type2 == 'Craftsman') {
+    if (this.permission == 'service') {
+      if (this.user.type2 == 'Craftsmen') {
         this.options = ['Tailor', 'Shoe Maker'];
       } else if (this.user.type2 == 'Designer') {
         this.options = ['Local', 'International African Designer'];
@@ -163,7 +138,7 @@ export class UserProfilePage {
       }
 
     }
-
+    console.log("this.options",this.options)
   }
 
   createNewCreation() {
@@ -479,7 +454,7 @@ export class UserProfilePage {
               //this.user.image = imageData;
               console.log("Get image url for user profile, ",this.user.image);
               this.dataService.getImageUrl(this.user.image,this.user);
-
+              this.updateUserInLocal(this.user);
               this.loading.dismissAll();
               this.navCtrl.parent.select(2);
 
@@ -505,6 +480,19 @@ export class UserProfilePage {
 
   }
 
+  updateUserInLocal(user) {
+    this.storage.get('data').then((data) => {
+      if (data) {
+        data.result[0] = user;
+        this.storage.set("data",data);
+        this.storage.set("user",user);
+        this.userService.setUser(user);
+        this.dataService.permission = this.userService.getPermission(user);
+        this.dataService.me = user;
+      }
+    });
+  }
+
   settings() {
 
     if (this.showSettings) {
@@ -517,7 +505,7 @@ export class UserProfilePage {
 
   fieldUpdate() {
     console.log('text changing');
-    this.profileChanged = true;
+    this.profileChanged = true;    
   }
 
   sizeUpdate() {
@@ -531,12 +519,13 @@ export class UserProfilePage {
       this.showLoading('Updating ..');
 
       let cleanUser = this.user;
-      cleanUser.image = "";
-      cleanUser.image = cleanUser.id + '.png';
+      // cleanUser.image = "";
+      // cleanUser.image = cleanUser.id + '.png';
       this.dataService.updateProfile(cleanUser).subscribe(data => {
 
         if (data.message == "Successful") {
           this.profileChanged = false;
+          this.updateUserInLocal(cleanUser);
           this.loading.dismissAll();
           this.user.image = this.dataService.apiUrl + 'images/' + this.user.image;
 

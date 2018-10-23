@@ -25,11 +25,11 @@
       </ion-col>
 
       <ion-col col-10>
-        <h2>{{user.name}}</h2>
-        <p *ngIf="user.type != 'service'">{{user.type}}</p>
-        <p *ngIf="user.type == 'service'">{{user.type2}}</p>
-        <p *ngIf="user.rating == 0 && user.type == 'service'">No rating</p>
-        <p *ngIf="user.rating > 0 && user.type == 'service'"><ion-icon *ngFor="let key of counter(user.rating)" name="star" color="main"></ion-icon> </p>
+        <h2 *ngIf="user">{{user.name}}</h2>
+        <p *ngIf="user && user.type != 'service'">{{user.type}}</p>
+        <p *ngIf="user && user.type == 'service'">{{user.type2}}</p>
+        <p *ngIf="user && user.rating == 0 && user.type == 'service'">No rating</p>
+        <p *ngIf="user && user.rating > 0 && user.type == 'service'"><ion-icon *ngFor="let key of counter(user.rating)" name="star" color="main"></ion-icon> </p>
       </ion-col>
 
     </ion-row>

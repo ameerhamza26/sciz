@@ -139,12 +139,12 @@ export class HorizontalLookbook implements OnInit {
 
     like(like){
         //like post, add to likes
-
+        
         let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
         this.dataService.likes.splice(0,0,likedCreation);
         this.dataService.saveLike(likedCreation); 
         like.isLikedByMe = true;
-
+        like.likes= like.likes + 1;
     }
 
     facebookShare(creation: Post) {

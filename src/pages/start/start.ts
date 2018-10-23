@@ -36,13 +36,15 @@ export class StartPage {
           }
           const Branch = window["Branch"];
           this.branchUniversalObj = null;
+          if (Branch != undefined) {
+            Branch.initSession().then(data => {
+                if (data["+clicked_branch_link"]) {
+                    console.log(data);
+                    this.storage.set("branchItem",data);
+                }
+            });
+          }
 
-          Branch.initSession().then(data => {
-              if (data["+clicked_branch_link"]) {
-                  console.log(data);
-                  this.storage.set("branchItem",data);
-              }
-          });
       };
 
       branchInit(); // Initial branch init required when app is first starting

@@ -366,7 +366,7 @@ export class CreateNewPage {
                             this.dataService.posts.splice(index, 1);
                         }
                     }
-                    this.dataService.getInspirations();
+                    this.dataService.getInspirations(0,5);
                 }
                 else
                 {

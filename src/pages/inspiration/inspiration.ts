@@ -53,13 +53,17 @@ export class InspirationPage implements OnInit {
     this.getInspirations(null);
   }
 
+  offset = 0;
+  limit = 5;
   getInspirations(refresher) {
     this.posts = new Array<Post>();
     this.loading = this.loadingCtrl.create({
       content: "Please wait..."
     });
+    this.offset = 0;
+    this.limit = 4;
     this.loading.present().then(()=> {
-      this.dataService.getInspirations().subscribe((res) => {
+      this.dataService.getInspirations(this.offset,this.limit).subscribe((res) => {
         let data = res.json();
         
         for (let inspiration of data.result) {
@@ -70,7 +74,6 @@ export class InspirationPage implements OnInit {
             let likes = 0;
             if (inspiration.pages) {
               for (let pages of inspiration.pages) {
-                console.log("pages",pages, pages.likes);
                 likes = likes + pages.likes ;
                 pages.imageUrl = this.imageBaseUrl + pages.image;
               }
@@ -260,7 +263,7 @@ export class InspirationPage implements OnInit {
                             this.dataService.posts.splice(index, 1);
                         }
                     }
-                    this.dataService.getInspirations();
+                    this.getInspirations(null);
                 }
                 else
                 {
@@ -284,7 +287,52 @@ export class InspirationPage implements OnInit {
 
 
   doRefresh(refresher) {
+    this.showInfinitScroll = true;
     this.getInspirations(refresher);
+  }
+
+  showInfinitScroll = true;
+  doInfinite(infiniteScroll) {
+    this.offset= this.offset + this.limit ;
+    setTimeout(() => {
+      this.dataService.getInspirations(this.offset,this.limit).subscribe((res) => {
+        let data = res.json();
+        if (data.result.length ==0) {
+          this.showInfinitScroll =false;
+        } else {
+          for (let inspiration of data.result) {
+            let image =  inspiration.image;
+            inspiration.image = image;
+            inspiration.likes = 0; // magazine likes - random for testing
+            inspiration.imageUrl = this.imageBaseUrl + image;
+            let likes = 0;
+            if (inspiration.pages) {
+              for (let pages of inspiration.pages) {
+                likes = likes + pages.likes ;
+                pages.imageUrl = this.imageBaseUrl + pages.image;
+              }
+            }
+           
+            inspiration.totalLikes = likes;
+            /* inspirationPages.forEach((page, index) => {
+                  pageLikes = this.likes.filter(item => item.creationCode == page.code);
+                  console.log("PAGE LIKES");
+                  console.log(pageLikes);
+                  console.log(pageLikes.length);
+                  inspiration.likes = pageLikes.length;
+              }); */
+            this.posts.push(inspiration);
+        }
+
+        this.itemMiddle = Math.floor(this.posts.length / 2); //Live magazines
+        this.postLength = this.posts.length;
+        }
+
+      })
+  
+      console.log('Async operation has ended');
+      infiniteScroll.complete();
+    }, 1000);
   }
 
 
