@@ -190,7 +190,9 @@ export class CreationPage {
               console.log('message');
               console.log('message');
               this.navCtrl.push(ChatPage,{
-                userCode:this.creation.account_id,
+                userCode:this.creation.account_code,
+                provider:this.creation.account_code,
+                providername: this.creation.account_name,
                 view:'service'
               });
 
@@ -224,7 +226,9 @@ export class CreationPage {
             text: 'Message',
             handler: () => {
               this.navCtrl.push(ChatPage,{
-                userCode:this.creation.account_id,
+                userCode:this.creation.account_code,
+                provider:this.creation.account_code,
+                providername: this.creation.account_name,
                 view:'service'
               });
 
