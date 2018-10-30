@@ -10,7 +10,7 @@
 
 
 <!--      <ion-input [(ngModel)]="search" type="text" placeholder="Search" text-center (ionInput)="setFilteredItems()"></ion-input>-->
-    <ion-searchbar [(ngModel)]="searchTerm" [formControl]="searchControl" (ionInput)="onSearchInput()"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchTerm" [formControl]="searchControl" (ionInput)="setFilteredItems()"></ion-searchbar>
 
 <!--     <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="setFilteredItems()"></ion-searchbar>-->
 <!--      <ion-input [(ngModel)]="search" type="text" placeholder="Search" text-center></ion-input> -->
@@ -34,7 +34,7 @@
   <div *ngIf="searching" class="spinner-container">
         <ion-spinner></ion-spinner>
     </div>
-  <ion-list>
+  <ion-list *ngIf="!searching">
     <ion-item *ngFor="let item of filtereditems" (click)="openProfile(item)">
       <ion-avatar item-start>
 

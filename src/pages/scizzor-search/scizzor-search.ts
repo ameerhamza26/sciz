@@ -35,10 +35,11 @@ export class ScizzorSearchPage {
     console.log('ionViewDidLoad ScizzorSearchPage');
     this.setFilteredItems();
 
-    this.searchControl.valueChanges.debounceTime(700).subscribe(search => {
-      this.searching = false;
-      this.setFilteredItems();
-        });
+    // this.searchControl.valueChanges.debounceTime(700).subscribe(search => {
+    //   this.searching = false;
+    //   this.searchTerm = "-1";
+    //   this.setFilteredItems();
+    //     });
   }
 
   onSearchInput(){
@@ -46,9 +47,20 @@ export class ScizzorSearchPage {
     }
 
   setFilteredItems() {
-      this.dataService.getUsers().subscribe((res)=>{
+     console.log("searchTerm", this.searchTerm);
+     this.searching = true;
+     if (this.searchTerm.length> 0) {
+      this.dataService.getUsers(this.searchTerm).subscribe((res)=>{
+        this.searching = false;
         this.filtereditems = res.json().result;
       })
+     } else {
+      this.dataService.getUsers("-1").subscribe((res)=>{
+        this.searching = false;
+        this.filtereditems = res.json().result;
+      })
+     }
+      
     }
 
     openProfile(user){

@@ -113,8 +113,8 @@ export class DataService {
       return this.http.post(url, body, options).map(response => response.json());
   }
 
-  getUsers() {
-    let getUrl = 'getUsers';
+  getUsers(name) {
+    let getUrl = 'getUsers/'+name;
     return this._httpService.getRequest(getUrl)
     .map((res: Response) => res)
     .catch((error: any) => {
