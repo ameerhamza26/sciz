@@ -1,8 +1,8 @@
 <!--
-  Generated template for the CreationPage page.
+Generated template for the CreationPage page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
+See http://ionicframework.com/docs/components/#navigation for more info on
+Ionic pages and navigation.
 -->
 
 
@@ -22,10 +22,10 @@
 
   <div  style="height: 80%;" class="animated fadeIn">
 
-  <img src="{{creation.imageUrl}}" *ngIf="(editing || creating)" (click)="getPicture()" style='height: 100%; width: 100%; object-fit: contain'  >
+    <img src="{{creation.imageUrl}}" *ngIf="(editing || creating)" (click)="getPicture()" style='height: 100%; width: 100%; object-fit: contain'  >
     <img src={{creation.imageUrl}} *ngIf="!(editing || creating)" style='height: 100%; width: 100%; object-fit: contain'  >
 
-    </div>
+  </div>
 
   <div padding>
 
@@ -44,21 +44,21 @@
       <ion-col col-3><p class="animated bounceInRight" (click)="whatsappShare(creation)"><ion-icon name="logo-whatsapp"></ion-icon></p></ion-col>
       <ion-col col-3><p class="animated bounceInRight" (click)="emailShare(creation)"><ion-icon name="mail"></ion-icon></p></ion-col>
     </ion-row>
-  <ion-row>
+    <ion-row>
 
-    <ion-col col-9 *ngIf="!(editing || creating)"><p class="animated bounceInRight"><b>{{creation.price}}</b></p></ion-col>
-    <ion-col col-9 *ngIf="(editing || creating)"><p><b><ion-input type="text" placeholder="price" [(ngModel)]="creation.price" ></ion-input></b></p></ion-col>
-    <ion-col col-3 text-right padding class="animated slideInDown" >
+      <ion-col col-9 *ngIf="!(editing || creating)"><p class="animated bounceInRight"><b>{{creation.price}}</b></p></ion-col>
+      <ion-col col-9 *ngIf="(editing || creating)"><p><b><ion-input type="text" placeholder="price" [(ngModel)]="creation.price" ></ion-input></b></p></ion-col>
+      <ion-col col-3 text-right padding class="animated slideInDown" >
 
-      <img src="./assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
-      <img src="./assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;" >
-    </ion-col>
-  </ion-row>
+        <img src="./assets/images/green.png" *ngIf="creation.availability" style="height:15px;"  >
+        <img src="./assets/images/red.png" *ngIf="!(creation.availability)" style="height:15px;" >
+      </ion-col>
+    </ion-row>
 
     <ion-row>
       <ion-col col-8 *ngIf="!(editing || creating)" > <h2 class="animated bounceInLeft" >{{creation.name}}</h2></ion-col>
       <ion-col col-12 *ngIf="(editing || creating)">
-      <h2><ion-input type="text" placeholder="title" [(ngModel)]="creation.name" ></ion-input></h2>
+        <h2><ion-input type="text" placeholder="title" [(ngModel)]="creation.name" ></ion-input></h2>
       </ion-col>
 
       <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
@@ -69,20 +69,20 @@
     </ion-row>
 
 
-  <ion-row>
-    <ion-col col-12 *ngIf="!(editing || creating)">
-      <p class="animated bounceInRight">{{creation.description}}</p>
-    </ion-col>
+    <ion-row>
+      <ion-col col-12 *ngIf="!(editing || creating)">
+        <p class="animated bounceInRight">{{creation.description}}</p>
+      </ion-col>
 
-    <ion-col col-12 *ngIf="(editing || creating)">
+      <ion-col col-12 *ngIf="(editing || creating)">
 
-      <ion-item no-padding color="black" no-lines >
-        <ion-textarea placeholder="Description" rows="4" placeholder="long description" [(ngModel)]="creation.description" text-left ></ion-textarea>
-      </ion-item>
+        <ion-item no-padding color="black" no-lines >
+          <ion-textarea placeholder="Description" rows="4" placeholder="long description" [(ngModel)]="creation.description" text-left ></ion-textarea>
+        </ion-item>
 
 
-    </ion-col>
-  </ion-row>
-    </div>
+      </ion-col>
+    </ion-row>
+  </div>
 
 </ion-content>

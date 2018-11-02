@@ -1,6 +1,6 @@
 /**
- * Created by mikkytaryan on 3/08/2017.
- */
+* Created by mikkytaryan on 3/08/2017.
+*/
 export class Post {
 
   constructor(
@@ -12,17 +12,18 @@ export class Post {
     public description:string,
     public image:string,
     public taggedUser:number,
-    public type:any) {
+    public type:any)
 
-    this.id = id;
-    this.code = code;
-    this.userCode = userCode;
-    this.title = title;
-    this.subTitle = subTitle;
-    this.description = description;
-    this.image = image;
-    this.taggedUser = taggedUser;
-    this.type = type;
+    {
+      this.id = id;
+      this.code = code;
+      this.userCode = userCode;
+      this.title = title;
+      this.subTitle = subTitle;
+      this.description = description;
+      this.image = image;
+      this.taggedUser = taggedUser;
+      this.type = type;
+    }
+
   }
-
-}

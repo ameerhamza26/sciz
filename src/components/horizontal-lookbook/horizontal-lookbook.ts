@@ -10,17 +10,16 @@ import {SocialShareProvider} from "../../providers/social-share/social-share";
 import { LoadingController } from 'ionic-angular';
 
 /**
- * Generated class for the HorizontalLookbookComponent component.
- *
- * See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
- * for more info on Angular Components.
- */
+* Generated class for the HorizontalLookbookComponent component.
+* See https://angular.io/docs/ts/latest/api/core/index/ComponentMetadata-class.html
+* for more info on Angular Components.
+*/
 @Component({
   selector: 'horizontal-lookbook',
   templateUrl: 'horizontal-lookbook.html'
 })
-export class HorizontalLookbook implements OnInit {
 
+export class HorizontalLookbook implements OnInit {
   tags:any;
   name: any;
 
@@ -28,10 +27,9 @@ export class HorizontalLookbook implements OnInit {
   user: any;
   loading: any;
   pages: Array<any> = new Array<any>();
-
   imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
-  constructor(public dataService:DataService,
-    public loadingCtrl: LoadingController,public navCtrl: NavController,private socialShare: SocialShareProvider, public userService:UserService) {
+
+  constructor(public dataService:DataService, public loadingCtrl: LoadingController,public navCtrl: NavController,private socialShare: SocialShareProvider, public userService:UserService) {
     this.getTags();
   }
 
@@ -58,7 +56,7 @@ export class HorizontalLookbook implements OnInit {
                 pages["isLikedByMe"] = true;
               }
             }
-          } 
+          }
         })
         this.loading.dismiss();
       })
@@ -71,7 +69,7 @@ export class HorizontalLookbook implements OnInit {
 
 
   getTags(){
-    this.tags  = this.dataService.tags.filter(item => item.inspiration_id == this.dataService.lookbook.code);
+    this.tags = this.dataService.tags.filter(item => item.inspiration_id == this.dataService.lookbook.code);
   }
 
   getUser(tag){
@@ -105,10 +103,12 @@ export class HorizontalLookbook implements OnInit {
   }
 
   openUserProfile(code){
+    console.log(code)
     //open profile of service
-    let user = this.dataService.users.filter(item => item.code == code)[0];
+    let user = this.dataService.users.filter(item => item.id == code)[0];
+    console.log(user)
 
-    if (this.userService.user.code == code){
+    if (this.userService.user.id == code){
       this.navCtrl.setRoot(UserProfilePage,{
         view:'service'
       });
@@ -121,47 +121,46 @@ export class HorizontalLookbook implements OnInit {
         view:'service'
       });
     }
-
   }
 
+  checkLiked(){
+    // check if you have liked the selected post previously
+    this.dataService.lookbookPages.forEach((page, index) => {
+      if(this.dataService.likes.filter(item => item.creationCode =='inspirationpage'+page.id).length > 0){
+        let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+page.id)[0];
+        page.liked = reLikedCreation.liked;
+      }else{
+        page.liked = false;
+      }
+    });
+  }
 
-    checkLiked(){
-        // check if you have liked the selected post previously
-        this.dataService.lookbookPages.forEach((page, index) => {
-            if(this.dataService.likes.filter(item => item.creationCode =='inspirationpage'+page.id).length > 0){
-                let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+page.id)[0];
-                page.liked = reLikedCreation.liked;
-            }else{
-                page.liked = false;
-            }
-        });
-    }
+  like(like){
+    //like post, add to likes
+    let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
+    this.dataService.likes.splice(0,0,likedCreation);
+    this.dataService.saveLike(likedCreation);
+    like.isLikedByMe = true;
+    like.likes= like.likes + 1;
+  }
 
-    like(like){
-        //like post, add to likes
-        
-        let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
-        this.dataService.likes.splice(0,0,likedCreation);
-        this.dataService.saveLike(likedCreation); 
-        like.isLikedByMe = true;
-        like.likes= like.likes + 1;
-    }
+  facebookShare(creation: Post) {
+    this.socialShare.shareMagazine(creation,'Facebook');
+  }
 
-    facebookShare(creation: Post) {
-        this.socialShare.shareMagazine(creation,'Facebook');
-    }
-    twitterShare(creation: Post){
-        this.socialShare.shareMagazine(creation,'Twitter');
+  twitterShare(creation: Post){
+    this.socialShare.shareMagazine(creation,'Twitter');
+  }
 
-    }
-    instagramShare(creation: Post){
-        this.socialShare.shareMagazine(creation,'Instagram');
-    }
-    whatsappShare(creation: Post){
-        this.socialShare.shareMagazine(creation,'Whatsapp');
-    }
-    emailShare(creation: Post){
-        this.socialShare.shareMagazine(creation,'Email');
-    }
+  instagramShare(creation: Post){
+    this.socialShare.shareMagazine(creation,'Instagram');
+  }
 
+  whatsappShare(creation: Post){
+    this.socialShare.shareMagazine(creation,'Whatsapp');
+  }
+
+  emailShare(creation: Post){
+    this.socialShare.shareMagazine(creation,'Email');
+  }
 }

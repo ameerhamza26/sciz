@@ -28,9 +28,9 @@
         <img src="{{page.imageUrl}}" class="center">
         <ion-row>
           <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
-              <button ion-button color="light" small outline > {{page.likes}} Likes</button>
+            <button ion-button color="light" small outline > {{page.likes}} Likes</button>
             <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.isLikedByMe)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
-            
+
           </ion-col>
         </ion-row>
       </ion-slide>

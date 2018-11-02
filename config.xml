@@ -4,6 +4,7 @@
         <branch-key value="key_live_okA4SyNGnIqE24LxVPyaFfioxwhLSuVb" />
         <uri-scheme value="branchcordova" />
         <link-domain value="scizzor.app.link" />
+        <ios-team-release value="PW4Q8885U7" />
     </branch-config>
     <name>Scizzor</name>
     <description>Bring your fashion ideas to life</description>
@@ -93,8 +94,8 @@
         <branch-key value="key_live_okA4SyNGnIqE24LxVPyaFfioxwhLSuVb" />
         <uri-scheme value="Scizzor" />
         <link-domain value="cordova.app.link" />
+        <ios-team-release value="PW4Q8885U7" />
     </branch-config>
-    <engine name="ios" spec="~4.5.5" />
     <plugin name="com.telerik.plugins.nativepagetransitions" spec="^0.6.5" />
     <plugin name="cordova-plugin-device" spec="^1.1.7" />
     <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
@@ -113,4 +114,5 @@
     </plugin>
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.4.1" />
     <plugin name="branch-cordova-sdk" spec="^2.6.24" />
+    <engine name="ios" spec="~4.5.5" />
 </widget>

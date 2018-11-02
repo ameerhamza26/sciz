@@ -58,6 +58,8 @@ export class RavePaymentPage {
     this.creation = this.navParams.get('purchaseDetails');
     this.user = this.userService.user;
 
+    console.log(this.creation)
+
     if (this.creation.type == 'service'){
       this.purchaseDetails = this.navParams.get('purchaseDetails');
       console.log(this.purchaseDetails)
@@ -65,6 +67,7 @@ export class RavePaymentPage {
 
     else {
       this.provider =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
+      console.log(this.dataService)
       console.log(this.provider);
 
       this.purchaseDetails = {

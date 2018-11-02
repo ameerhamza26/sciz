@@ -67,7 +67,7 @@ export class LookbookLeroyPage implements OnInit {
         this.loading = this.loadingCtrl.create({
           content: "Please wait..."
         });
-    
+
         this.loading.present().then(()=> {
           this.dataService.getUserByCode(this.post.userCode).subscribe((res)=>{
             if (res.json().data.length>0) {
@@ -86,13 +86,13 @@ export class LookbookLeroyPage implements OnInit {
                     pages["isLikedByMe"] = true;
                   }
                 }
-              } 
+              }
             })
             this.loading.dismiss();
           })
         });
   }
-  
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookLeroyPage');
 
@@ -171,7 +171,7 @@ export class LookbookLeroyPage implements OnInit {
                   that.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
                 });
               }));
-            } 
+            }
 
             Promise.all(promises_array).then((data)=> {
               console.log("dataaa",data);
@@ -188,7 +188,7 @@ export class LookbookLeroyPage implements OnInit {
                     this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                 }
               });
-              
+
             })
           }
           else {
@@ -238,7 +238,7 @@ export class LookbookLeroyPage implements OnInit {
                 that.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
               });
             }));
-          } 
+          }
 
           Promise.all(promises_array).then((data)=> {
             console.log("dataaa",data);
@@ -255,12 +255,12 @@ export class LookbookLeroyPage implements OnInit {
                   this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
               }
             });
-            
+
           })
 
           // for (let page of this.pages) {
 
-            
+
           //   page.inspirationCode = this.post.id;
           //   debugger;
           //   this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
@@ -332,8 +332,8 @@ export class LookbookLeroyPage implements OnInit {
                             that.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
                           });
                         }));
-                      } 
-          
+                      }
+
                       Promise.all(promises_array).then((data)=> {
                         console.log("dataaa",data);
                         this.dataService.saveNewInspiration(this.post, data).subscribe( (data) => {
@@ -349,7 +349,7 @@ export class LookbookLeroyPage implements OnInit {
                               this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                           }
                         });
-                        
+
                       })
 
 
@@ -529,6 +529,7 @@ export class LookbookLeroyPage implements OnInit {
 
   openUserProfile(code){
     console.log(code)
+    console.log(this.dataService)
     console.log(this.userService.user.code)
     let user = this.dataService.users.filter(item => item.code == code)[0];
 
@@ -571,7 +572,7 @@ export class LookbookLeroyPage implements OnInit {
         //like post, add to likes
         let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
         this.dataService.likes.splice(0,0,likedCreation);
-        this.dataService.saveLike(likedCreation); 
+        this.dataService.saveLike(likedCreation);
         like.isLikedByMe = true;
         like.likes= like.likes + 1;
         // //like post, add to likes
