@@ -22,6 +22,7 @@ export class PaymentPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private alertCtrl: AlertController) {
     this.payload = this.navParams.get('payload');
+    console.log(this.payload)
   }
 
   ionViewDidLoad() {

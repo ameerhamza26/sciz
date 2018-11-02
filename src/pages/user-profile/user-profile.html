@@ -5,7 +5,9 @@
   Ionic pages and navigation.
 -->
 <ion-header>
+    <ion-navbar>
 
+      </ion-navbar>
 </ion-header>
 
 
@@ -16,21 +18,23 @@
     <ion-row>
 
       <ion-col col-2>
-        <ion-avatar (click)="selectProfileImage()" [style.background-image]="'url('+user.imageUrl+')'" style="background-position: center;background-size: cover;">
+        <ion-avatar (click)="selectProfileImage()">
+          <img *ngIf="user && user.imageUrl" src="{{user.imageUrl}}"  style="object-fit: cover;">
+          <img *ngIf="user && !user.imageUrl" src="../../assets/images/default.png"  style="object-fit: cover;">
         </ion-avatar>
       </ion-col>
 
       <ion-col col-10>
-        <h2>{{user.name}}</h2>
-        <p *ngIf="user.type != 'service'">{{user.type}}</p>
-        <p *ngIf="user.type == 'service'">{{user.type2}}</p>
-        <p *ngIf="user.rating == 0 && user.type == 'service'">No rating</p>
-        <p *ngIf="user.rating > 0 && user.type == 'service'"><ion-icon *ngFor="let key of counter(user.rating)" name="star" color="main"></ion-icon> </p>
+        <h2 *ngIf="user">{{user.name}}</h2>
+        <p *ngIf="user && user.type != 'service'">{{user.type}}</p>
+        <p *ngIf="user && user.type == 'service'">{{user.type2}}</p>
+        <p *ngIf="user && user.rating == 0 && user.type == 'service'">No rating</p>
+        <p *ngIf="user && user.rating > 0 && user.type == 'service'"><ion-icon *ngFor="let key of counter(user.rating)" name="star" color="main"></ion-icon> </p>
       </ion-col>
 
     </ion-row>
 
-    <ion-row>
+    <ion-row *ngIf="!navParamUserCode">
 
       <ion-col col-4>
         <button ion-button color="light" outline block (click)="openPayments()"><ion-icon name="card"></ion-icon>Payments</button>
@@ -47,7 +51,7 @@
 
     </ion-row>
 
-    <ion-row>
+    <ion-row *ngIf="!navParamUserCode">
 
       <ion-col col-2>
       </ion-col>
@@ -55,6 +59,7 @@
       <ion-col col-12>
         <button ion-button color="main" *ngIf="permission == 'service' && !(showSettings)"  block (click)="createNewCreation()" ><ion-icon name="add"></ion-icon> Add New</button>
         <button ion-button color="main" *ngIf="((this.profileChanged || this.sizesChanged) && showSettings)"  block (click)="updateProfile()" >Save Changes</button>
+        <button ion-button color="main" *ngIf="permission != 'service' && (this.sizesChanged)"  block (click)="updateProfile()" >Save Changes</button>
       </ion-col>
 
     </ion-row>
@@ -167,10 +172,9 @@
       <div *ngIf="isPageOpen">
         <ng-container *ngSwitchCase="'likes'">
           <div class="storeholder">
-            <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of dataService.likes" [style.background-image]="' url('+getImage(creation)+')'">
-              <img src="./assets/images/placeholder2.png">
-              <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of likes"  [style.background-image]="' url('+creation.imageUrl+')'">
-              </div>
+            <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of likes" [style.background-image]="' url('+creation.image+')'">
+              <img src="../../assets/images/placeholder2.png">
+             
             </div>
           </div>
         </ng-container>
@@ -180,7 +184,7 @@
         <ion-grid *ngIf="user.gender == 'male'">
           <ion-row>
 
-          <ion-col col-6 padding>
+          <ion-col col-6 padding *ngIf="!navParamUserCode">
             <button ion-button color="light" outline (click)="sendMail()" > Get Measured! </button>
             <img src="./assets/images/male_front.png"  class="" >
             <img src="./assets/images/male_back.png"  class="" >

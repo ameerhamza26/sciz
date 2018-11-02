@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.scizzorapp.scizzorapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <plugin name="branch-cordova-sdk" spec="^2.6.24" />
     <branch-config>
         <branch-key value="key_live_okA4SyNGnIqE24LxVPyaFfioxwhLSuVb" />
         <uri-scheme value="branchcordova" />
         <link-domain value="scizzor.app.link" />
+        <ios-team-release value="PW4Q8885U7" />
     </branch-config>
     <name>Scizzor</name>
     <description>Bring your fashion ideas to life</description>
@@ -94,26 +94,25 @@
         <branch-key value="key_live_okA4SyNGnIqE24LxVPyaFfioxwhLSuVb" />
         <uri-scheme value="Scizzor" />
         <link-domain value="cordova.app.link" />
+        <ios-team-release value="PW4Q8885U7" />
     </branch-config>
-    <plugin name="com.telerik.plugins.nativepagetransitions" spec="~0.6.5" />
-    <plugin name="cordova-plugin-device" spec="^1.1.4" />
-    <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
-    <plugin name="cordova-plugin-statusbar" spec="^2.2.2" />
-    <plugin name="cordova-plugin-whitelist" spec="^1.3.1" />
+    <plugin name="com.telerik.plugins.nativepagetransitions" spec="^0.6.5" />
+    <plugin name="cordova-plugin-device" spec="^1.1.7" />
+    <plugin name="cordova-plugin-splashscreen" spec="^4.1.0" />
+    <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
-    <plugin name="cordova-plugin-file-transfer" spec="^1.6.3" />
-    <plugin name="cordova-plugin-email-composer" spec="^0.8.11" />
-    <plugin name="cordova-plugin-file" spec="^4.0.0" />
+    <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
+    <plugin name="cordova-plugin-email-composer" spec="^0.8.15" />
+    <plugin name="cordova-plugin-file" spec="^6.0.1" />
     <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
     <plugin name="cordova-plugin-stripe" spec="^1.5.3" />
     <plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="^2.2.4" />
-    <plugin name="cordova-plugin-camera" spec="^4.0.3" />
-    <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
-    <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value=" " />
+    <plugin name="cordova-plugin-camera" spec="^4.0.3">
+        <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
+        <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value=" " />
     </plugin>
-    <engine name="ios" spec="~4.5.5" />
-    
     <plugin name="cordova-plugin-x-socialsharing" spec="^5.4.1" />
-
-
+    <plugin name="branch-cordova-sdk" spec="^2.6.24" />
+    <engine name="ios" spec="~4.5.5" />
 </widget>

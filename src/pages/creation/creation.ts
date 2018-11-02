@@ -23,11 +23,11 @@ import {Tag} from "../../models/tag-model";
 
 
 /**
- * Generated class for the CreationPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+* Generated class for the CreationPage page.
+*
+* See http://ionicframework.com/docs/components/#navigation for more info
+* on Ionic pages and navigation.
+*/
 
 @Component({
   selector: 'page-creation',
@@ -37,7 +37,6 @@ export class CreationPage {
 
   loading:any;
   alert:any;
-
   apiUrl = this.appSettings.getApiURl();
   originalImage:any;
   creation:any;
@@ -67,9 +66,9 @@ export class CreationPage {
     if(navParams.get('creation')){
       // view selected post mode
       this.creation = navParams.get('creation');
-      console.log(this.creation.code);
+      console.log(this.creation);
       this.originalImage = this.creation.image;
-      this.checkLiked();
+      this.checkLiked( this.creation);
     }
 
   }
@@ -78,9 +77,9 @@ export class CreationPage {
     console.log('ionViewDidLoad CreationPage');
   }
 
+  /* CREATE A NEW POST */
   createNew(user){
-
-  //generate post code and create new empty post
+    //generate post code and create new empty post
     var code = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -88,14 +87,14 @@ export class CreationPage {
       code += possible.charAt(Math.floor(Math.random() * possible.length));
     }
 
+    // use the newly created code
     this.creationCode = 'creation' + code;
-
-    this.creation = new Creation('',this.creationCode,user.id,'type',this.defaultImage,'title','long description',true,'price');
+    this.creation = new Creation('',this.creationCode,user.id,'',this.defaultImage,'','',true,'');
   }
 
 
+  /* GIVE THE USER THE OPTION TO TAKE A PICTURE OR SELECT ONE FROM GALLERY */
   getPicture() {
-
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Select Image Source',
       buttons: [
@@ -103,14 +102,12 @@ export class CreationPage {
           text: 'Load from Library',
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.PHOTOLIBRARY);
-
           }
         },
         {
           text: 'Use Camera',
           handler: () => {
             this.takePicture(this.camera.PictureSourceType.CAMERA);
-
           }
         },
         {
@@ -120,14 +117,11 @@ export class CreationPage {
       ]
     });
     actionSheet.present();
-
-
   }
 
+  /* SELECT THE PICTURE OR TAKE A NEW ONE */
   takePicture(sourceType) {
-
     let tempImage:any;
-
     this.imageUpdated = true;
 
     // Get the data of an image
@@ -142,21 +136,19 @@ export class CreationPage {
       this.creation.image = tempImage;
       this.creation.imageUrl = tempImage;
       //newPost.image = 'images/1.jpg';
-
     }, (err) => {
       console.log('Error while selecting image.');
     });
-
-
   }
 
+  /* DETERMINE WHAT OPTIONS TO GIVE THE USER WHEN LOOKING AT A POST */
   viewOptions(){
     console.log(this.userService.user.code);
     console.log(this.creation);
 
     //if (this.userService.user.userCode != this.creation.userCode)
     if (this.userService.user.id == this.creation.account_id){
-    let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
+      let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
@@ -164,11 +156,10 @@ export class CreationPage {
             text: 'View Profile',
             handler: () => {
 
-              this.navCtrl.setRoot(UserProfilePage,{
+              this.navCtrl.push(ProfilePage,{
+                userCode: this.creation.account_id,
                 view:'service'
               });
-
-              this.navCtrl.parent.select(2);
 
             }
           },
@@ -182,8 +173,6 @@ export class CreationPage {
     }
 
     else if (this.creation.availability == 0) {
-      let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
-      console.log(creator)
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
@@ -193,7 +182,9 @@ export class CreationPage {
               console.log('message');
               console.log('message');
               this.navCtrl.push(ChatPage,{
-                userCode:creator.code,
+                userCode:this.creation.account_code,
+                provider:this.creation.account_code,
+                providername: this.creation.account_name,
                 view:'service'
               });
 
@@ -204,7 +195,7 @@ export class CreationPage {
             handler: () => {
 
               this.navCtrl.push(ProfilePage,{
-                userCode:creator.code,
+                userCode: this.creation.account_id,
                 view:'service'
               });
 
@@ -220,17 +211,16 @@ export class CreationPage {
     }
 
     else {
-      let creator =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Options',
         buttons: [
           {
             text: 'Message',
             handler: () => {
-              console.log('message');
-              console.log('message');
               this.navCtrl.push(ChatPage,{
-                userCode:creator.code,
+                userCode:this.creation.account_code,
+                provider:this.creation.account_code,
+                providername: this.creation.account_name,
                 view:'service'
               });
 
@@ -241,7 +231,7 @@ export class CreationPage {
             handler: () => {
 
               this.navCtrl.push(ProfilePage,{
-                userCode:creator.code,
+                userCode: this.creation.account_id,
                 view:'service'
               });
 
@@ -269,25 +259,24 @@ export class CreationPage {
 
   }
 
-
-
-  checkLiked(){
+  /* CHECK LIKED POSTS */
+  checkLiked(creation){
     // check if you have liked the selected post previously
-  console.log( this.creation.code);
-    if(this.dataService.likes.filter(item => item.creationCode == 'creation'+this.creation.id).length > 0){
-      let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'creation'+this.creation.id)[0];
 
-      console.log('liked');
-      this.liked = reLikedCreation.liked;
-    }else{
-      console.log('not liked');
-      this.liked = false;
-    }
+    this.dataService.checkLikedByMeCreation(this.dataService.me.id,creation.id).subscribe((res)=> {
+      var data = res.json().data;
+      if(data.length > 0) {
+        this.liked = true;
+      } else {
+        this.liked = false;
+      }
+    })
   }
 
+  /* LIKE A POST AND ADD IT TO YOUR PROFILE IN THE LIKES SECTION */
   like(){
     //like post, add to likes
-      console.log(this.creation.code);
+    console.log(this.creation.code);
     if(this.dataService.likes.filter(item => item.creationCode == 'creation'+this.creation.id).length > 0){
       let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'creation'+this.creation.id)[0];
       reLikedCreation.liked = true;
@@ -299,13 +288,40 @@ export class CreationPage {
       //save like
     }
 
-    this.checkLiked();
+    this.checkLiked(this.creation);
   }
 
+  /* SAVE A NEWLY CREATED POST */
   save(){
-// save post
+    // save post
+    //
+    /* Validate fields before saving
+    * code, account_id, type, name, description, availability, price
+    * image (not required for validation as default can be used)
+    */
 
-    if ( (this.creation.price.charAt(0) != "N") && (this.creation.price.charAt(0) != "£") && (this.creation.price.charAt(0) != "$") && (this.creation.price.charAt(0) != "€") ){
+    //code, account id and availability validation (not user related so generic error message will suffice)
+    if (this.creation.code.length === 0 || this.creation.account_id.length === 0 || this.creation.availability.length === 0){
+      this.presentAlert('Error','Unable to process your request at this time, please try again later');
+    }
+
+    //type validation
+    else if (this.creation.type.length === 0){
+      this.presentAlert('Error','Please select a post type');
+    }
+
+    //name validation
+    else if (this.creation.name.length === 0){
+      this.presentAlert('Error','A name is required');
+    }
+
+    //description validation
+    else if (this.creation.description.length === 0){
+      this.presentAlert('Error','A description is required');
+    }
+
+    //price validation
+    else if ( (this.creation.price.charAt(0) != "N") && (this.creation.price.charAt(0) != "£") && (this.creation.price.charAt(0) != "$") && (this.creation.price.charAt(0) != "€") ){
       this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
     }
 
@@ -315,7 +331,7 @@ export class CreationPage {
 
     else {
 
-    this.showLoading('Saving ..');
+      this.showLoading('Saving ..');
 
       this.dataService.saveImage(this.creation.image,"item"+this.dataService.me.id + "-" + Date.now()).subscribe(data =>{
 
@@ -334,134 +350,191 @@ export class CreationPage {
                 this.dataService.reloadCreations().subscribe(data =>{
 
                   if(data.status){
-                      for(let creation of data.result) {
+                    for(let creation of data.result) {
 
-                          let image = creation.image;
-                          creation.image = image;
-                          this.dataService.creations.push(creation);
+                      let image = creation.image;
+                      creation.image = image;
+                      this.dataService.creations.push(creation);
 
-                      }
-                      this.loading.dismissAll();
-                      console.log("POP");
-                      this.navCtrl.pop();
+                    }
+                    this.loading.dismissAll();
+                    console.log("POP");
+                    this.navCtrl.pop();
                   }
                   else
                   {
-                      this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[1].title,ErrorHandlerProvider.MESSAGES.error.creation[1].msg);
+                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[1].title,ErrorHandlerProvider.MESSAGES.error.creation[1].msg);
                   }
                 });
 
               }else{
-               // this.loading.dismissAll();
-                  this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[0].title,ErrorHandlerProvider.MESSAGES.error.creation[0].msg);
+                // this.loading.dismissAll();
+                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[0].title,ErrorHandlerProvider.MESSAGES.error.creation[0].msg);
               }
             });
 
           }else{
             //this.loading.dismissAll();
-              this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
+            this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
           }
         } catch(error){
-         // this.loading.dismissAll();
+          // this.loading.dismissAll();
           this.presentAlert('Oops','Please try again');
         }
-       // this.loading.dismissAll();
+        // this.loading.dismissAll();
       });
-
-
-
     }
-
   }
 
+  /* UPDATE AN EXSTING POST AND VALIDATE */
   update(){
-
     //update
     // if image updated update that first then data
     //if only data changed then update
 
-
-    if ( (this.creation.price.charAt(0) != "N") && (this.creation.price.charAt(0) != "£") && (this.creation.price.charAt(0) != "$") && (this.creation.price.charAt(0) != "€") ){
-      this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
-    }
-
-    else if (isNaN(this.creation.price.substring(1,this.creation.price.length))){
-      this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
-    }
-
-    else if(this.imageUpdated){
-
-      this.showLoading('Updating Image..');
-
-      this.dataService.saveImage(this.creation.image,"item"+this.dataService.me.id + "-" + Date.now()).subscribe(data =>{
+    if(this.imageUpdated){
+      /* Validate fields before saving
+      * code, account_id, type, name, description, availability, price
+      * image (not required for validation as default can be used)
+      */
 
 
-        try{
-          if(data.message == "Successful"){
+      //code, account id and availability validation (not user related so generic error message will suffice)
+      if (this.creation.code.length === 0 || this.creation.account_id.length === 0 || this.creation.availability.length === 0){
+        this.presentAlert('Error','Unable to process your request at this time, please try again later');
+      }
 
-            this.loading.dismissAll();
-            this.showLoading('Updating Changes..');
-            this.creation.image = data.imageName;
-            this.dataService.updateCreation(this.creation).subscribe(data =>{
+      //type validation
+      else if (this.creation.type.length === 0){
+        this.presentAlert('Error','Please select a post type');
+      }
+
+      //name validation
+      else if (this.creation.name.length === 0){
+        this.presentAlert('Error','A name is required');
+      }
+
+      //description validation
+      else if (this.creation.description.length === 0){
+        this.presentAlert('Error','A description is required');
+      }
+
+      // price validation
+      else if ( (this.creation.price.charAt(0) != "N") && (this.creation.price.charAt(0) != "£") && (this.creation.price.charAt(0) != "$") && (this.creation.price.charAt(0) != "€") ){
+        this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+      }
+
+      else if (isNaN(this.creation.price.substring(1,this.creation.price.length))){
+        this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+      }
+
+      else {
+        this.showLoading('Updating Image..');
+
+        this.dataService.saveImage(this.creation.image,"item"+this.dataService.me.id + "-" + Date.now()).subscribe(data =>{
 
 
-              if(data.message == "Successful"){
+          try{
+            if(data.message == "Successful"){
 
-                this.dataService.reloadCreations().subscribe(data =>{
+              this.loading.dismissAll();
+              this.showLoading('Updating Changes..');
+              this.creation.image = data.imageName;
+              this.dataService.updateCreation(this.creation).subscribe(data =>{
 
-                  if(data.status){
+
+                if(data.message == "Successful"){
+
+                  this.dataService.reloadCreations().subscribe(data =>{
+
+                    if(data.status){
                       for(let creation of data.result) {
-
-                          let image = this.dataService.getImageUrl(creation.image,creation);
-                          creation.imageUrl = image;
-                          this.dataService.creations.push(creation);
-
+                        let image = this.dataService.getImageUrl(creation.image,creation);
+                        creation.imageUrl = image;
+                        this.dataService.creations.push(creation);
                       }
 
                       this.loading.dismissAll();
                       console.log("POP2");
                       this.navCtrl.pop();
 
-                  }
-                  else {
+                    }
+                    else {
                       this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[1].title,ErrorHandlerProvider.MESSAGES.error.creation[1].msg);
 
-                  }
-                });
+                    }
+                  });
 
-              }else{
-                this.loading.dismissAll();
+                }else{
+                  this.loading.dismissAll();
                   this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[2].title,ErrorHandlerProvider.MESSAGES.error.creation[2].msg);
-              }
-            });
+                }
+              });
 
-          }else{
-            this.loading.dismissAll();
+            }else{
+              this.loading.dismissAll();
               this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[1].title,ErrorHandlerProvider.MESSAGES.error.image[1].msg);
-          }
-        } catch(error){
-          this.loading.dismissAll();
+            }
+          } catch(error){
+            this.loading.dismissAll();
             this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[1].title,ErrorHandlerProvider.MESSAGES.error.image[1].msg);
-        }
-      });
+          }
+        });
+      }
 
     }else{
+      /* Validate fields before saving
+      * code, account_id, type, name, description, availability, price
+      * image (not required for validation as default can be used)
+      */
 
-      this.showLoading('Updating Changes ..');
 
-      this.dataService.updateCreation(this.creation).subscribe(data =>{
+      //code, account id and availability validation (not user related so generic error message will suffice)
+      if (this.creation.code.length === 0 || this.creation.account_id.length === 0 || this.creation.availability.length === 0){
+        this.presentAlert('Error','Unable to process your request at this time, please try again later');
+      }
 
+      //type validation
+      else if (this.creation.type.length === 0){
+        this.presentAlert('Error','Please select a post type');
+      }
 
-        if(data.message == "Successful"){
+      //name validation
+      else if (this.creation.name.length === 0){
+        this.presentAlert('Error','A name is required');
+      }
 
-          this.dataService.reloadCreations().subscribe(data =>{
+      //description validation
+      else if (this.creation.description.length === 0){
+        this.presentAlert('Error','A description is required');
 
-            if(data.status){
+      }
+
+      // price validation
+      else if ( (this.creation.price.charAt(0) != "N") && (this.creation.price.charAt(0) != "£") && (this.creation.price.charAt(0) != "$") && (this.creation.price.charAt(0) != "€") ){
+        this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+      }
+
+      else if (isNaN(this.creation.price.substring(1,this.creation.price.length))){
+        this.presentAlert('Error','Invalid price format. Format should be (£15 | $45 | N5000)');
+      }
+
+      else {
+
+        this.showLoading('Updating Changes ..');
+
+        this.dataService.updateCreation(this.creation).subscribe(data =>{
+
+          if(data.message == "Successful"){
+
+            this.dataService.reloadCreations().subscribe(data =>{
+
+              if(data.status){
                 for(let creation of data.result) {
 
-                    let image = this.dataService.apiUrl + "images/" + creation.image;
-                    creation.image = image;
-                    this.dataService.creations.push(creation);
+                  let image = this.dataService.apiUrl + "images/" + creation.image;
+                  creation.image = image;
+                  this.dataService.creations.push(creation);
 
                 }
 
@@ -469,44 +542,31 @@ export class CreationPage {
                 console.log("POP3");
                 this.navCtrl.pop();
 
-            }
-            else{
+              }
+              else{
                 this.loading.dismissAll();
-
                 this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[1].title,ErrorHandlerProvider.MESSAGES.error.creation[1].msg);
+              }
+            });
 
-            }
-
-
-          });
-
-        }else{
-          this.loading.dismissAll();
+          }else{
+            this.loading.dismissAll();
             this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.creation[2].title,ErrorHandlerProvider.MESSAGES.error.creation[2].msg);
-            }
-      });
-
-
+          }
+        });
+      }
     }
-
-
   }
 
+  /* PRESENT LOADING */
   showLoading(message){
-
     this.loading = this.loadingCtrl.create({
       content: message
     });
     this.loading.present();
-
-    /*setTimeout(() => {
-      this.loading.dismiss();
-    }, 120000);*/
-
-
   }
 
-
+  /* PRESENT ALERT */
   presentAlert(title,message) {
     this.alert = this.alertCtrl.create({
       title: title,
@@ -516,27 +576,30 @@ export class CreationPage {
     this.alert.present();
   }
 
+
   goBack(){
     this.navCtrl.pop();
   }
 
+  /* SOCIAL SHARING */
   facebookShare(creation: Creation) {
     this.socialShare.shareItem(creation,'Facebook');
   }
+
   twitterShare(creation: Creation){
-      this.socialShare.shareItem(creation,'Twitter');
-
+    this.socialShare.shareItem(creation,'Twitter');
   }
+
   instagramShare(creation: Creation){
-      this.socialShare.shareItem(creation,'Instagram');
+    this.socialShare.shareItem(creation,'Instagram');
   }
-    whatsappShare(creation: Creation){
-        this.socialShare.shareItem(creation,'Whatsapp');
-    }
-    emailShare(creation: Creation){
-        this.socialShare.shareItem(creation,'Email');
-    }
 
+  whatsappShare(creation: Creation){
+    this.socialShare.shareItem(creation,'Whatsapp');
+  }
 
+  emailShare(creation: Creation){
+    this.socialShare.shareItem(creation,'Email');
+  }
 
 }

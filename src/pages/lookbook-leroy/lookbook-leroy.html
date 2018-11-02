@@ -4,10 +4,6 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
-
-</ion-header>
-
 
 <ion-content class="leroy">
 
@@ -29,7 +25,7 @@
     <img src={{imageLink}} (click)="closeImage()">
   </div>
 
-  <ion-slides (ionSlideDidChange)="slideChanged()" style="height: 100%">
+  <ion-slides (ionSlideDidChange)="slideChanged()" style="height: 100%" >
     <ion-slide pager (click)="goToSlide(true)" [style.background-image]="' url('+post.imageUrl+')'" style="height: 100%">
       <!--<ion-header  no-border style="background: #eee;opacity: 0.8;">
 
@@ -37,13 +33,13 @@
       <div class="postInfo">
         <h2 padding>{{post.title}}</h2>
         <p padding>{{post.description}}</p>
-        <h1 *ngIf="post.likes > 0" class="post-likes"><span style="padding:16px" ><ion-icon name="heart" item-start color="danger"></ion-icon> {{post.likes}}</span></h1>
+        <h1 *ngIf="post.likes > 0" class="post-likes"><span style="padding:16px" ><ion-icon name="heart" item-start color="danger"></ion-icon> {{post.totalLikes}}</span></h1>
         <ion-row style="text-align: center">
-          <ion-col col-4><p class="animated bounceInRight" (click)="facebookShare(dataService.lookbook)"><ion-icon name="logo-facebook"></ion-icon></p></ion-col>
-          <ion-col col-4><p class="animated bounceInRight" (click)="twitterShare(dataService.lookbook)"><ion-icon name="logo-twitter"></ion-icon></p></ion-col>
-          <ion-col col-4><p class="animated bounceInRight" (click)="instagramShare(dataService.lookbook)"><ion-icon name="logo-instagram"></ion-icon></p></ion-col>
-          <ion-col col-4><p class="animated bounceInRight" (click)="whatsappShare(dataService.lookbook)"><ion-icon name="logo-whatsapp"></ion-icon></p></ion-col>
-          <ion-col col-4><p class="animated bounceInRight" (click)="emailShare(dataService.lookbook)"><ion-icon name="mail"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="facebookShare(post)"><ion-icon name="logo-facebook"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="twitterShare(post)"><ion-icon name="logo-twitter"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="instagramShare(post)"><ion-icon name="logo-instagram"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="whatsappShare(post)"><ion-icon name="logo-whatsapp"></ion-icon></p></ion-col>
+          <ion-col col-4><p class="animated bounceInRight" (click)="emailShare(post)"><ion-icon name="mail"></ion-icon></p></ion-col>
         </ion-row>
       </div>
     <!--  <ion-footer>
@@ -57,13 +53,14 @@
       </ion-footer> -->
     </ion-slide>
 
-    <ion-slide class="slide" *ngFor="let page of pages; let i = index" style="height: 100%">
+    <ion-slide class="slide" *ngFor="let page of post.pages; let i = index" style="height: 100%">
       <ion-grid style="height: 100%">
         <ion-row>
           <ion-col col-1 class="start" (click)="goToSlide(false)" style="background-size: cover;background-position: right; "></ion-col>
           <ion-col col-1></ion-col>
             <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
-              <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
+                <button ion-button color="light" small outline > {{page.likes}} Likes</button>
+              <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.isLikedByMe)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
             </ion-col>
           <ion-col col-8 (click)="viewImage(page.imageUrl)" [style.background-image]="' url('+page.imageUrl+')'" style="background-position:center; background-size: 100%; background-repeat:no-repeat;">
             <img src="./assets/images/placeholder.png">
@@ -80,15 +77,15 @@
         <ion-grid>
           <ion-row>
             <ion-col>
-              <button center ion-button clear (click)="openUserProfile(dataService.lookbook.accountCode)" color="main">
-                <h2  style="text-align:center;" padding>Created By : {{getCreator(dataService.lookbook.accountCode)}}</h2>
+              <button center ion-button clear (click)="openUserProfile(user.code)" color="main">
+                <h2  style="text-align:center;" padding>Created By : <span *ngIf="user">{{user.name}}</span></h2>
               </button>
               <ion-list>
                 <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
                   <ion-avatar item-start>
                     <img src="{{getImage(tag)}}" class="center">
                   </ion-avatar>
-                  <h3>{{getUser(tag)}}</h3>
+                  <h3>{{user.name}}</h3>
                 </ion-item>
               </ion-list>
             </ion-col>

@@ -3,61 +3,61 @@
   <h1 style="color: #fff">Vertical lookbook</h1>
   <ion-slides >
 
-  <ion-slide  [style.background-image]="' url('+dataService.lookbook.imageUrl+')'"  >
-    <div class="postInfo">
-      <h2 padding>{{dataService.lookbook.title}}</h2>
-      <p padding>{{dataService.lookbook.description}}</p>
-      <h1 *ngIf="dataService.lookbook.likes > 0" class="post-likes"><span style="padding:16px" ><ion-icon name="heart" item-start color="danger"></ion-icon> {{dataService.lookbook.likes}}</span></h1>
-    </div>
-  </ion-slide>
+    <ion-slide  [style.background-image]="' url('+dataService.lookbook.imageUrl+')'"  >
+      <div class="postInfo">
+        <h2 padding>{{dataService.lookbook.title}}</h2>
+        <p padding>{{dataService.lookbook.description}}</p>
+        <h1 *ngIf="dataService.lookbook.likes > 0" class="post-likes"><span style="padding:16px" ><ion-icon name="heart" item-start color="danger"></ion-icon> {{dataService.lookbook.likes}}</span></h1>
+      </div>
+    </ion-slide>
+    
+  </ion-slides>
+  <div>
+    <ion-row style="color:white;">
+      <ion-col style="text-align: center;" col-3><ion-icon name="logo-facebook" class="animated bounceInRight"  style="font-size:2.4rem;padding:11px;" (click)="facebookShare(dataService.lookbook)"></ion-icon></ion-col>
+      <ion-col style="text-align: center;" col-3><ion-icon  class="animated bounceInRight" (click)="twitterShare(dataService.lookbook)" style="font-size:2.4rem;padding:11px;"  name="logo-twitter"></ion-icon></ion-col>
+      <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="instagramShare(dataService.lookbook)"  style="font-size:2.4rem;padding:11px;"  name="logo-instagram"></ion-icon></ion-col>
+      <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="whatsappShare(dataService.lookbook)"  style="font-size:2.4rem;padding:11px;"  name="logo-whatsapp"></ion-icon></ion-col>
+      <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="emailShare(dataService.lookbook)"  style="font-size:2.4rem;padding:11px;"  name="mail"></ion-icon></ion-col>
+    </ion-row>
+  </div>
+  <div  *ngFor="let page of dataService.lookbookPages" class="center">
 
-</ion-slides>
-<div>
-  <ion-row style="color:white;">
-    <ion-col style="text-align: center;" col-3><ion-icon name="logo-facebook" class="animated bounceInRight"  style="font-size:2.4rem;padding:11px;" (click)="facebookShare(dataService.lookbook)"></ion-icon></ion-col>
-    <ion-col style="text-align: center;" col-3><ion-icon  class="animated bounceInRight" (click)="twitterShare(dataService.lookbook)" style="font-size:2.4rem;padding:11px;"  name="logo-twitter"></ion-icon></ion-col>
-    <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="instagramShare(dataService.lookbook)"  style="font-size:2.4rem;padding:11px;"  name="logo-instagram"></ion-icon></ion-col>
-    <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="whatsappShare(dataService.lookbook)"  style="font-size:2.4rem;padding:11px;"  name="logo-whatsapp"></ion-icon></ion-col>
-    <ion-col style="text-align: center;" col-3><ion-icon class="animated bounceInRight" (click)="emailShare(dataService.lookbook)"  style="font-size:2.4rem;padding:11px;"  name="mail"></ion-icon></ion-col>
-  </ion-row>
-</div>
-<div  *ngFor="let page of dataService.lookbookPages" class="center">
-
-  <img src={{page.imageUrl}}  >
-  <ion-row>
-    <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
-      <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
-    </ion-col>
-  </ion-row>
-</div>
+    <img src={{page.imageUrl}}  >
+    <ion-row>
+      <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
+        <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
+      </ion-col>
+    </ion-row>
+  </div>
 
   <ion-slides >
 
-  <ion-slide  [style.background-image]="' url('+dataService.coverImage+')'"  >
-    <div class="postInfo">
-      <ion-grid>
-        <ion-row>
-          <ion-col>
+    <ion-slide  [style.background-image]="' url('+dataService.coverImage+')'"  >
+      <div class="postInfo">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
 
-            <button center ion-button clear (click)="openUserProfile(dataService.lookbook.accountCode)" color="main">
-              <h2  style="text-align:center;" padding>Created By : {{getCreator(dataService.lookbook.accountCode)}}</h2>
-            </button>
+              <button center ion-button clear (click)="openUserProfile(dataService.lookbook.accountCode)" color="main">
+                <h2  style="text-align:center;" padding>Created By : {{getCreator(dataService.lookbook.accountCode)}}</h2>
+              </button>
 
-            <ion-list >
-              <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
-                <ion-avatar item-start>
-                  <img src="{{getImage(tag)}}" class="center" >
-                </ion-avatar>
-                <h3>{{getUser(tag)}}</h3>
-              </ion-item>
-            </ion-list>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+              <ion-list >
+                <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
+                  <ion-avatar item-start>
+                    <img src="{{getImage(tag)}}" class="center" >
+                  </ion-avatar>
+                  <h3>{{getUser(tag)}}</h3>
+                </ion-item>
+              </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
 
-    </div>
+      </div>
 
-  </ion-slide>
-    </ion-slides>
+    </ion-slide>
+  </ion-slides>
 
-  </ng-container>
+</ng-container>

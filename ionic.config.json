@@ -1,8 +1,8 @@
 {
   "name": "Scizzor",
-  "app_id": "d5ddbb3e",
-  "type": "ionic-angular",
   "integrations": {
     "cordova": {}
-  }
+  },
+  "type": "ionic-angular",
+  "pro_id": "d5ddbb3e"
 }

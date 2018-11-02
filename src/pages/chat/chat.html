@@ -1,23 +1,18 @@
 <!--
-  Generated template for the ChatPage page.
+Generated template for the ChatPage page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
+See http://ionicframework.com/docs/components/#navigation for more info on
+Ionic pages and navigation.
 -->
 <ion-header class="headersection">
 
   <ion-navbar>
-
     <ion-title>
       <h2><small>{{provider.name}}</small></h2>
     </ion-title>
-
-
   </ion-navbar>
 
-
 </ion-header>
-
 
 <ion-content class="chat" padding>
   <div #scrollMe id="chatMessages">
@@ -31,8 +26,6 @@
           </a>
         </div>
         <div *ngIf="message.image == true" class="timestamp">{{message.timestamp.slice(0,21)}}</div>
-
-
       </div>
     </div>
   </div>
@@ -45,11 +38,8 @@
         <ion-icon style="font-size: 30px;" name="image"></ion-icon>
       </button>
     </ion-buttons>
-
-
     <ion-input left type="text" [(ngModel)]="message" placeholder="Write a message...">
     </ion-input>
-
     <ion-buttons end padding-right>
       <button ion-button icon-right color="main" (click)="sendMessage()" [disabled]="message == ''">
         <ion-icon style="font-size: 30px;" name="send"></ion-icon>

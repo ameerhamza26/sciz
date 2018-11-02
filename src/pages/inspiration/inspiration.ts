@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component , OnInit} from '@angular/core';
 import { NavController, NavParams, ActionSheetController, ModalController, AlertController } from 'ionic-angular';
 import { LoadingController } from 'ionic-angular';
 import { LookbookPage } from '../lookbook/lookbook';
@@ -12,7 +12,7 @@ import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler"
 import {Storage} from "@ionic/storage";
 import {ProfilePage} from "../profile/profile";
 import {ScizzorPage} from "../scizzor/scizzor";
-
+import { Post } from "../../models/post-model";
 
 /**
  * Generated class for the InspirationPage page.
@@ -31,37 +31,91 @@ import {ScizzorPage} from "../scizzor/scizzor";
   selector: 'page-inspiration',
   templateUrl: 'inspiration.html',
 })
-export class InspirationPage {
+export class InspirationPage implements OnInit {
   //images = [1,2,3,4,5];
   itemMiddle;
 
+  posts: Array<Post>;
 
-  //itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
-  //itemMiddle = Math.floor(this.images.length / 2); // Test magazines
-    postLength;
+  postLength;
   timestapm = Date.now();
-  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, public loadingCtrl: LoadingController,private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider) {
+
+  imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
+  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, 
+    public loadingCtrl: LoadingController,private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider) {
 
       console.log("INSPIRATION CONSTR",this.dataService.posts);
     //  this.itemMiddle = Math.floor(this.images.length / 2); //Live magazines
      // this.postLength = this.images.length;
   }
 
+  ngOnInit() {
+    this.getInspirations(null);
+  }
+
+  offset = 0;
+  limit = 5;
+  getInspirations(refresher) {
+    this.posts = new Array<Post>();
+    this.loading = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+    this.offset = 0;
+    this.limit = 4;
+    this.loading.present().then(()=> {
+      this.dataService.getInspirations(this.offset,this.limit).subscribe((res) => {
+        let data = res.json();
+        
+        for (let inspiration of data.result) {
+            let image =  inspiration.image;
+            inspiration.image = image;
+            inspiration.likes = 0; // magazine likes - random for testing
+            inspiration.imageUrl = this.imageBaseUrl + image;
+            let likes = 0;
+            if (inspiration.pages) {
+              for (let pages of inspiration.pages) {
+                likes = likes + pages.likes ;
+                pages.imageUrl = this.imageBaseUrl + pages.image;
+              }
+            }
+           
+            inspiration.totalLikes = likes;
+            /* inspirationPages.forEach((page, index) => {
+                  pageLikes = this.likes.filter(item => item.creationCode == page.code);
+                  console.log("PAGE LIKES");
+                  console.log(pageLikes);
+                  console.log(pageLikes.length);
+                  inspiration.likes = pageLikes.length;
+              }); */
+            this.posts.push(inspiration);
+        }
+
+        this.itemMiddle = Math.floor(this.posts.length / 2); //Live magazines
+        this.postLength = this.posts.length;
+        this.loading.dismiss();
+        if (refresher) {
+          refresher.complete();
+        }
+      })
+    });
+  }
+
     ionViewWillEnter() {
         console.log("ENTER INSPIRATION");
         this.storage.get("branchItem").then(data => {
             if (data) {
+                console.log("branchitem dataaa",data);
                 switch (data.type){
                     case 'Profile':
                         var profile =  this.dataService.users.filter(item => item.id == data.type_id)[0];
                         this.navCtrl.push(ProfilePage,{
-                            userCode:profile.code,
+                            userCode: data.type_id,
                             view:'service'
                         });
                         break;
                     case 'Magazine':
+                        var post =data.custom_object;
                         this.storage.remove("branchItem");
-                        var post = this.dataService.findInspiration("id",data.type_id)[0];
                         this.openLookbook(post);
                         break;
                     case 'Item':
@@ -76,18 +130,6 @@ export class InspirationPage {
     }
   ionViewDidLoad($event) {
     console.log('ionViewDidLoad InspirationPage');
-
-      this.timestapm = Date.now();
-      this.dataService.getAllLikes().then((data) => {
-        this.dataService.getInspirations();
-        setTimeout(()=>{
-           // console.log("LALALALALALA")  LIVE ONLY
-            this.itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
-            this.postLength = this.dataService.posts.length;
-            console.log(this.itemMiddle);
-            console.log(this.postLength);
-        },5000);
-      })
   }
 
   getAnimation(post) {
@@ -101,20 +143,20 @@ export class InspirationPage {
     }
   }
 
+  loading :any;
   presentLoading() {
-    let loader = this.loadingCtrl.create({
+    this.loading = this.loadingCtrl.create({
       content: "Please wait...",
       duration: 1000
     });
-    loader.present();
+    this.loading.present();
   }
 
   selectLookbook(post) {
-
-    console.log(post);
+    console.log("post",post)
+    console.log("this.dataService.me",this.dataService.me)
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
-    console.log(this.dataService.me.code)
-    if (this.dataService.permission == 'admin' || this.dataService.me.type2 == "Illustrator" || post.accountCode == this.dataService.me.id) {
+    if (this.dataService.permission == 'admin' || (this.dataService.me.type2 == "Illustrator" && +post.userCode == this.dataService.me.id)) {
 
       let actionSheet = this.actionSheetCtrl.create({
         title: 'Modify lookbook',
@@ -156,11 +198,12 @@ export class InspirationPage {
   }
 
 
+  shareLookBook(post) {
+    console.log("post",post);
+  }
 
   openLookbook(post) {
     //open lookbook according to style -> segue
-    console.log('Open Lookbook');
-    console.log(post);
     if (post.type == 'vertical' || post.type == 'horizontal') {
       this.navCtrl.push(LookbookPage, {
         post: post,
@@ -181,9 +224,6 @@ export class InspirationPage {
   }
 
   editLookbook(post2Edit) {
-    //admin option,  edit selected  lookbook - > segue
-      console.log("Edit inspiration");
-      console.log(post2Edit);
     this.navCtrl.setRoot(CreateNewPage, {
       mode: 'edit',
       post: post2Edit
@@ -223,7 +263,7 @@ export class InspirationPage {
                             this.dataService.posts.splice(index, 1);
                         }
                     }
-                    this.dataService.getInspirations();
+                    this.getInspirations(null);
                 }
                 else
                 {
@@ -247,40 +287,52 @@ export class InspirationPage {
 
 
   doRefresh(refresher) {
-    this.timestapm = Date.now();
-    console.log('Begin async operation', refresher);
-      this.dataService.getAllLikes().then((data)=>{
-          this.dataService.getLikes();
-          this.dataService.getInspirations();
-          setTimeout(()=>{
-              this.dataService.getInspirationTags();
-              // console.log("LALALALALALA")  LIVE ONLY
-              this.itemMiddle = Math.floor(this.dataService.posts.length / 2); //Live magazines
-              this.postLength = this.dataService.posts.length;
-              console.log(this.itemMiddle);
-              console.log(this.postLength);
-          },5000);
-      }).catch((err)=>{
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.like[1].title,ErrorHandlerProvider.MESSAGES.error.like[1].msg);
-      })
+    this.showInfinitScroll = true;
+    this.getInspirations(refresher);
+  }
 
-    /*var getAllLikes = new Promise(function(resolve,reject){
-        if(this.dataService.getAllLikes() == true) {
-          alert("RESOLVING");
-          resolve(true);
-        }
-    }); */
-
-    /*getAllLikes.then(function(response){
-        alert("PROMISE");
-        console.log("Get all likes response");
-        console.log(response);
-    });*/
-
+  showInfinitScroll = true;
+  doInfinite(infiniteScroll) {
+    this.offset= this.offset + this.limit ;
     setTimeout(() => {
+      this.dataService.getInspirations(this.offset,this.limit).subscribe((res) => {
+        let data = res.json();
+        if (data.result.length ==0) {
+          this.showInfinitScroll =false;
+        } else {
+          for (let inspiration of data.result) {
+            let image =  inspiration.image;
+            inspiration.image = image;
+            inspiration.likes = 0; // magazine likes - random for testing
+            inspiration.imageUrl = this.imageBaseUrl + image;
+            let likes = 0;
+            if (inspiration.pages) {
+              for (let pages of inspiration.pages) {
+                likes = likes + pages.likes ;
+                pages.imageUrl = this.imageBaseUrl + pages.image;
+              }
+            }
+           
+            inspiration.totalLikes = likes;
+            /* inspirationPages.forEach((page, index) => {
+                  pageLikes = this.likes.filter(item => item.creationCode == page.code);
+                  console.log("PAGE LIKES");
+                  console.log(pageLikes);
+                  console.log(pageLikes.length);
+                  inspiration.likes = pageLikes.length;
+              }); */
+            this.posts.push(inspiration);
+        }
+
+        this.itemMiddle = Math.floor(this.posts.length / 2); //Live magazines
+        this.postLength = this.posts.length;
+        }
+
+      })
+  
       console.log('Async operation has ended');
-      refresher.complete();
-    }, 2000);
+      infiniteScroll.complete();
+    }, 1000);
   }
 
 

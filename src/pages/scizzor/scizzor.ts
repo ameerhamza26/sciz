@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, LoadingController } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
 import { CreationPage } from '../creation/creation';
 import { ProfilePage } from '../profile/profile';
@@ -38,7 +38,9 @@ export class ScizzorPage {
   counter = Array;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService,private errorHandler: ErrorHandlerProvider,private storage: Storage) {
+  constructor(public navCtrl: NavController, 
+    private loadingCtrl: LoadingController, 
+    public navParams: NavParams,public dataService:DataService,private errorHandler: ErrorHandlerProvider,private storage: Storage) {
 
     this.start();
   }
@@ -59,7 +61,7 @@ export class ScizzorPage {
                         this.navCtrl.parent.select(0);
                         break;
                     case 'Item':
-                        var item = this.dataService.creations.filter(item => item.id == data.type_id)[0];
+                        var item =data.custom_object;
                         this.storage.remove("branchItem");
                         this.openCreation(item);
                         break;
@@ -111,12 +113,23 @@ let animation:any;
     return animation
   }
 
+  loading: any;
   openStore(store){
 
     //change segment, get posts
     this.segment = 'creations';
     this.location = store;
-    this.creations =  this.dataService.creations.filter(item => item.type == store);
+    this.loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+
+    this.loading.present().then((res)=> {
+      this.dataService.getCreationsByType(store).subscribe((res)=> {
+        this.creations = res.json().result;
+        this.loading.dismissAll();
+      })
+    })
+    
   }
 
   openPeople(service){

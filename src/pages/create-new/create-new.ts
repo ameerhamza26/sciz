@@ -12,22 +12,22 @@ import { TagPage } from '../tag/tag';
 import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 
 /**
- * Generated class for the CreateNewPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- *
- * createNewPost() generate code and start process
- * getPicture(post/page object) from source or camera
- * takePicture(sourceType,post/page object) grab picture and present
- * preview() preview lookbook depending on what lookbook style choosen
- * showPage(page) expand/open/close Page
- * add() add page
- * minus() delete page
- * savePost() set user input to post object before preview
- * presentToast(text) show Toast
- * goBack() go back
- */
+* Generated class for the CreateNewPage page.
+*
+* See http://ionicframework.com/docs/components/#navigation for more info
+* on Ionic pages and navigation.
+*
+* createNewPost() generate code and start process
+* getPicture(post/page object) from source or camera
+* takePicture(sourceType,post/page object) grab picture and present
+* preview() preview lookbook depending on what lookbook style choosen
+* showPage(page) expand/open/close Page
+* add() add page
+* minus() delete page
+* savePost() set user input to post object before preview
+* presentToast(text) show Toast
+* goBack() go back
+*/
 
 @Component({
   selector: 'page-create-new',
@@ -35,12 +35,11 @@ import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler"
 })
 export class CreateNewPage {
 
+  alert:any;
   pictureAdded: boolean = false;
   pageCount = 0;
-
   pages: Array<Page> = new Array<Page>();
   temp: Array<string> = ['images/1.jpg', 'images/2.jpg', 'images/3.jpg', 'images/4.jpg', 'images/5.jpg'];
-
   create: any = false;
   code: any;
   who: any = "";
@@ -50,14 +49,12 @@ export class CreateNewPage {
   lookbook: any = "";
   index: any;
   post: any;
-
   selectedRecord: any;
   mode: any;
 
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public platform: Platform, public actionSheetCtrl: ActionSheetController, public toastCtrl: ToastController, private camera: Camera, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController,private errorHandler: ErrorHandlerProvider) {
-
     if (this.navParams.get('mode') == 'edit') {
       //if edit mode then setup edit, get passed post
       this.post = this.navParams.get('post');
@@ -65,7 +62,6 @@ export class CreateNewPage {
       this.setupEdit();
       console.log(this.pages)
     }
-
   }
 
   ionViewDidLoad() {
@@ -73,7 +69,6 @@ export class CreateNewPage {
   }
 
   start() {
-
     // create new clicked , create new inspiration
     this.create = true;
     this.createNewPost();
@@ -81,7 +76,6 @@ export class CreateNewPage {
   }
 
   setupEdit() {
-
     //setup edit fields, load post
     this.create = true;
     this.mode = 'edit';
@@ -96,7 +90,7 @@ export class CreateNewPage {
 
   getPages() {
     //load pages from data service
-   // this.pages = this.dataService.pages.filter(item => item.inspirationCode == this.post.code);
+    // this.pages = this.dataService.pages.filter(item => item.inspirationCode == this.post.code);
     this.pages = this.dataService.findPage("inspiration_id",this.post.id);
     this.pages["pagesRemoved"] = new Array<Page>();
   }
@@ -120,7 +114,6 @@ export class CreateNewPage {
   }
 
   getPicture(newPost) {
-
     let actionSheet = this.actionSheetCtrl.create({
       title: 'Select Image Source',
       buttons: [
@@ -168,36 +161,62 @@ export class CreateNewPage {
       this.pictureAdded = false;
       this.presentToast('Error while selecting image.');
     });
-
-
   }
 
 
   preview() {
     //preview inspiration, send post to whateva lookbook style is selected
     this.savePost();
-    console.log('preview page');
-    console.log('open ' + this.lookbook);
-    var modesection = this.mode;
-    console.log(this.pages)
-    if (this.lookbook == 'vertical' || this.lookbook == 'horizontal') {
-      this.navCtrl.push(LookbookPage, {
-        mode: (modesection == 'edit') ? 'edit' : 'preview',
-        pages: this.pages,
-        post: this.post
-      });
-    } else if (this.lookbook == 'leroy') {
-      this.navCtrl.push(LookbookLeroyPage, {
-        mode: (modesection == 'edit') ? 'edit' : 'preview',
-        pages: this.pages,
-        post: this.post
-      });
-    } else if (this.lookbook == 'flip') {
-      this.navCtrl.push(LookbookFlipPage, {
-        mode: (modesection == 'edit') ? 'edit' : 'preview',
-        pages: this.pages,
-        post: this.post
-      });
+
+    //code,userCode,title,subTitle,description,image,type
+    if (this.post.code.length === 0 || this.post.userCode.length === 0) {
+      this.presentAlert('Error','Unable to process your request at this time, please try again later');
+    }
+
+    //title
+    else if (this.post.title.length === 0) {
+      this.presentAlert('Error','A title is required');
+    }
+
+    //description
+    else if (this.post.description.length === 0) {
+      this.presentAlert('Error','A description is required');
+    }
+
+    //type
+    else if (this.post.type.length === 0) {
+      this.presentAlert('Error','A lookbook style is required');
+    }
+
+    //length of pages
+    else if (this.post.pages.length === 0) {
+      this.presentAlert('Error','No pages added');
+    }
+
+    else {
+      console.log('preview page', this.post);
+      console.log('open ' + this.lookbook);
+      var modesection = this.mode;
+      console.log(this.pages)
+      if (this.lookbook == 'vertical' || this.lookbook == 'horizontal') {
+        this.navCtrl.push(LookbookPage, {
+          mode: (modesection == 'edit') ? 'edit' : 'preview',
+          pages: this.pages,
+          post: this.post
+        });
+      } else if (this.lookbook == 'leroy') {
+        this.navCtrl.push(LookbookLeroyPage, {
+          mode: (modesection == 'edit') ? 'edit' : 'preview',
+          pages: this.pages,
+          post: this.post
+        });
+      } else if (this.lookbook == 'flip') {
+        this.navCtrl.push(LookbookFlipPage, {
+          mode: (modesection == 'edit') ? 'edit' : 'preview',
+          pages: this.pages,
+          post: this.post
+        });
+      }
     }
   }
 
@@ -213,36 +232,35 @@ export class CreateNewPage {
 
   add() {
     // add page to inspiration
-      var text = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-      for (var i = 0; i < 40; i++) {
-          text += possible.charAt(Math.floor(Math.random() * possible.length));
-      }
+    for (var i = 0; i < 40; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
 
-      let pagecode = 'inspirationpage' + text;
-  //  let tempPage = new Page('', this.code,pagecode, 'images/image.png');
+    let pagecode = 'inspirationpage' + text;
+    //  let tempPage = new Page('', this.code,pagecode, 'images/image.png');
     let tempPage = new Page('', this.post.id, "",'inspirationrotIf0giEtlnOmsdZZBBnUWK8FY7gCzRDJW2Uui71.png'); // debug
-      tempPage.imageUrl = "";
-      this.pages.push(tempPage);
+    tempPage.imageUrl = "";
+    this.pages.push(tempPage);
   }
   minus(index) {
     //delete page from inspiration
-      //this.pages["pagesRemoved"].push(this.pages[index]);
-      //this.pagesRemoved.push(this.pages[index]);
+    //this.pages["pagesRemoved"].push(this.pages[index]);
+    //this.pagesRemoved.push(this.pages[index]);
 
     this.pages.splice(index, 1);
   }
 
   savePost() {
     // save post fields into post object
-   // this.post.image = "inspirationXOaXhtOaEQ0eyzoSnqTFCB8jPtLZ76H1nAvREIsP.png"; // debug
+    // this.post.image = "inspirationXOaXhtOaEQ0eyzoSnqTFCB8jPtLZ76H1nAvREIsP.png"; // debug
     this.post.title = this.title;
     this.post.subTitle = this.subTitle;
     this.post.description = this.description;
-    this.post.who = this.who;
     this.post.type = this.lookbook;
-
+    this.post.pages = this.pages;
     console.log(this.post);
   }
 
@@ -254,7 +272,6 @@ export class CreateNewPage {
     });
     toast.present();
   }
-
 
   selectLookbook(post) {
     //if admin or owner of post (illustrator) show admin options, else open lookbook to view
@@ -333,6 +350,16 @@ export class CreateNewPage {
 
   }
 
+  /* PRESENT ALERT */
+  presentAlert(title,message) {
+    this.alert = this.alertCtrl.create({
+      title: title,
+      subTitle: message,
+      buttons: ['Dismiss']
+    });
+    this.alert.present();
+  }
+
   tagPost(post) {
     // tag post, bring up modal
     let profileModal = this.modalCtrl.create(TagPage, { inspiration: post });
@@ -358,24 +385,24 @@ export class CreateNewPage {
             this.dataService.deleteInspiration(post2Delete).subscribe(data => {
               try {
                 if(data.status) {
-                    console.log('inspiration deleted');
-                    let index = 0;
-                    for (let post of this.dataService.posts) {
-                        if (post2Delete != post) {
-                            index = index + 1;
-                        } else {
-                            this.dataService.posts.splice(index, 1);
-                        }
+                  console.log('inspiration deleted');
+                  let index = 0;
+                  for (let post of this.dataService.posts) {
+                    if (post2Delete != post) {
+                      index = index + 1;
+                    } else {
+                      this.dataService.posts.splice(index, 1);
                     }
-                    this.dataService.getInspirations();
+                  }
+                  this.dataService.getInspirations(0,5);
                 }
                 else
                 {
-                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
+                  this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
                 }
               } catch (error) {
-                  this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
-                  console.log('inspiration delete error');
+                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[0].title,ErrorHandlerProvider.MESSAGES.error.inspiration[0].msg);
+                console.log('inspiration delete error');
               }
             });
           }

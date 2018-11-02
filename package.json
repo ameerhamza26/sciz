@@ -85,14 +85,12 @@
       "cordova-plugin-file-transfer": {},
       "cordova-plugin-email-composer": {},
       "cordova-plugin-file": {},
-
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-stripe": {},
       "cordova-plugin-fcm-with-dependecy-updated": {},
       "cordova-plugin-camera": {},
       "cordova-plugin-x-socialsharing": {},
       "branch-cordova-sdk": {}
-
     },
     "platforms": [
       "ios"

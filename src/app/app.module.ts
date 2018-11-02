@@ -44,20 +44,17 @@ import { FCM } from '@ionic-native/fcm';
 
 import { NativePageTransitions } from '@ionic-native/native-page-transitions';
 
-
-
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { DataService } from '../providers/data-service';
+import { HttpService } from "../providers/http.service";
 import { AppSettings } from '../providers/app-settings'
 import { FcmProvider } from '../providers/fcm/fcm';
 import { HttpModule } from '@angular/http';
 import { AudioService } from '../providers/audio-service';
-
 import { NativeAudio } from '@ionic-native/native-audio';
 import { UserService } from '../providers/user-service';
 import { SocialShareProvider } from '../providers/social-share/social-share';
-
 import { VerticalLookbook } from '../components/vertical-lookbook/vertical-lookbook';
 import { HorizontalLookbook } from '../components/horizontal-lookbook/horizontal-lookbook';
 import { ErrorHandlerProvider } from '../providers/error-handler/error-handler';
@@ -93,25 +90,20 @@ var config = {
     HorizontalLookbook,
     MessengerPage,
     ChatPage,
-    //ScizzorSearchPage,
-    //TagPage,
-    //PaymentPage,
-    //RavePaymentPage,
-    //StripePaymentPage,
     ModalContentPage,
-    //PaymentHistoryPage,
     StripeModalContentPage,
-    RaveModalContentPage,
-    //ServicePaymentPage
+    RaveModalContentPage
   ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
     HttpModule,
     AngularFireModule.initializeApp(config),
-    AngularFireDatabaseModule, // imports firebase/database, only needed for database features
-    AngularFireAuthModule, // imports firebase/auth, only needed for auth features
-    //    IonicImageLoader.forRoot(),
+    // imports firebase/database, only needed for database features
+    AngularFireDatabaseModule,
+    // imports firebase/auth, only needed for auth features
+    AngularFireAuthModule,
+    // IonicImageLoader.forRoot(),
     IonicStorageModule.forRoot(),
     PaymentPageModule,
     ScizzorSearchPageModule,
@@ -140,28 +132,21 @@ var config = {
     ScizzorPage,
     MessengerPage,
     ChatPage,
-    //ScizzorSearchPage,
-    //TagPage,
-    //PaymentPage,
-    //RavePaymentPage,
-    //StripePaymentPage,
     ModalContentPage,
-    //PaymentHistoryPage,
     StripeModalContentPage,
-    RaveModalContentPage,
-    //ServicePaymentPage
+    RaveModalContentPage
   ],
   providers: [
+    HttpService,
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     DataService, AppSettings, NativePageTransitions, Camera,
-
     SocialSharing, AudioService, NativeAudio,
     UserService, EmailComposer,
     SocialShareProvider, ErrorHandlerProvider,
     AuthService, InAppBrowser, Stripe, FCM, FcmProvider
-
   ]
 })
+
 export class AppModule { }

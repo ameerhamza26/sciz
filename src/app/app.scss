@@ -75,9 +75,6 @@
   }
 }
 
-
-
-
 .back-button {
   color: #d3a33c !important;
 }
@@ -93,11 +90,8 @@ h2,button,p{
   text-align: center;
   font-size: 40px;
   width: 100%;
-
   border-color: #000000;
   border: solid;
-
-
 }
 
 .toolbar-title.toolbar-title-md,
@@ -158,64 +152,9 @@ ion-icon {
     mask-image: url(../assets/images/search.png);
   }
 
-/*
-ion-content{
-  background-image: url('../assets/african1.jpg');
-  background-image: url('../assets/bag.png');
-  background-image: url('../assets/body.png');
-  background-image: url('../assets/bulb.png');
-  background-image: url('../assets/business.jpg');
-  background-image: url('../assets/business2.jpg');
-  background-image: url('../assets/business3.jpg');
-  background-image: url('../assets/business4.jpg');
-  background-image: url('../assets/business5.jpg');
-  background-image: url('../assets/chat.png');
-  background-image: url('../assets/corporate.png');
-  background-image: url('../assets/default.png');
-  background-image: url('../assets/des.jpeg');
-  background-image: url('../assets/des1.jpeg');
-  background-image: url('../assets/des2.jpeg');
-  background-image: url('../assets/des3.jpeg');
-  background-image: url('../assets/des4.jpeg');
-  background-image: url('../assets/female_back.png');
-  background-image: url('../assets/female_front.png');
-  background-image: url('../assets/green.png');
-  background-image: url('../assets/image.png');
-  background-image: url('../assets/leather.jpg');
-  background-image: url('../assets/leather.png');
-  background-image: url('../assets/magazine.png');
-  background-image: url('../assets/main.png');
-  background-image: url('../assets/male_back.png');
-  background-image: url('../assets/male_front.png');
-  background-image: url('../assets/manufacture.png');
-  background-image: url('../assets/manufacturing.png');
-  background-image: url('../assets/manufacturing.jpg');
-  background-image: url('../assets/matra.jpeg');
-  background-image: url('../assets/ogo.jpeg');
-  background-image: url('../assets/ogo1.jpeg');
-  background-image: url('../assets/ogo2.jpeg');
-  background-image: url('../assets/placeholder.png');
-  background-image: url('../assets/placeholder2.png');
-  background-image: url('../assets/profile.jpg');
-  background-image: url('../assets/red.png');
-  background-image: url('../assets/search.png');
-  background-image: url('../assets/start.png');
-  background-image: url('../assets/street1.jpg');
-  background-image: url('../assets/street2.jpg');
-  background-image: url('../assets/streetwear.png');
-  background-image: url('../assets/streetwear2.png');
-  background-image: url('../assets/tailor.png');
-  background-image: url('../assets/tailoring1.jpg');
-  background-image: url('../assets/tailoring2.jpg');
-  background-image: url('../assets/traditional.png');
-
-}
-*/
-
   @font-face{
     font-family: Hind;
     src: url('../assets/fonts/5aU69_a8oxmIdGd4BDGwgDJm_A.woff2') format('woff2');
   }
-
 
 }

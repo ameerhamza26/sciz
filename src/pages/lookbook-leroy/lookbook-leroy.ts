@@ -1,4 +1,4 @@
-import { ViewChild } from '@angular/core';
+import { ViewChild, OnInit } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ProfilePage } from '../profile/profile';
@@ -27,7 +27,7 @@ import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler"
   selector: 'page-lookbook-leroy',
   templateUrl: 'lookbook-leroy.html',
 })
-export class LookbookLeroyPage {
+export class LookbookLeroyPage implements OnInit {
 
   @ViewChild(Content) content: Content;
   @ViewChild(Slides) slides: Slides;
@@ -45,13 +45,14 @@ export class LookbookLeroyPage {
   pages: any;
   post: any;
   tags: any;
+  lookbook: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider, private errorHandler: ErrorHandlerProvider, public userService: UserService) {
 
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');
     this.post = navParams.get('post');
-
+    this.lookbook = this.post.type;
 
     this.start(this.mode);
     this.helpToast();
@@ -60,8 +61,41 @@ export class LookbookLeroyPage {
 
   }
 
+  user: any;
+
+  ngOnInit() {
+        this.loading = this.loadingCtrl.create({
+          content: "Please wait..."
+        });
+
+        this.loading.present().then(()=> {
+          this.dataService.getUserByCode(this.post.userCode).subscribe((res)=>{
+            if (res.json().data.length>0) {
+              this.user = res.json().data[0];
+            }
+            var ids = [];
+            for (let pages of this.post.pages) {
+              ids.push('inspirationpage'+pages.id);
+            }
+            this.dataService.checkLikedByMe(this.dataService.me.id,ids).subscribe((res)=> {
+              let data = res.json().data;
+              for (let pages of this.post.pages ) {
+                pages["isLikedByMe"] = false;
+                for (let r of data) {
+                  if (pages.id == r.pageid) {
+                    pages["isLikedByMe"] = true;
+                  }
+                }
+              }
+            })
+            this.loading.dismiss();
+          })
+        });
+  }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookLeroyPage');
+
   }
 
   start(mode) {
@@ -126,32 +160,36 @@ export class LookbookLeroyPage {
         if (data.message == "Successful") {
           this.post.image = data.imageName;
           if (this.pages.length > 0) {
+
+            let promises_array:Array<any> = [];
+            let that = this;
             for (let page of this.pages) {
-              this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
-                if (data.message == "Successful") {
-                  counter = counter + 1;
-                  if (counter == (this.pages.length - 1)) {
-                    console.log('all images saved');
-                    // this.post.image = this.post.code + '.png';
-                    i = 0;
-                    for (let page of this.pages) {
-                      page.image = data.imageName;
-                      i = i + 1;
-                    }
-                    //this.loading.dismissAll();
-                    this.dataService.saveNewInspiration(this.post, this.pages).subscribe(data => {
-                      try {
-                        console.log(data);
-                      } catch (error) {
-                        console.log('inspiration save error');
-                      }
-                    });
-                    this.navCtrl.parent.select(0);
-                  }
+              promises_array.push(new Promise(function(resolve,reject) {
+                that.dataService.savePageImage(page.code, page.image, "magazine_page"+that.dataService.me.id + "-" + Date.now()).subscribe((data) => {
+                  resolve(data);
+                }, (err)=> {
+                  that.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
+                });
+              }));
+            }
+
+            Promise.all(promises_array).then((data)=> {
+              console.log("dataaa",data);
+              this.dataService.saveNewInspiration(this.post, data).subscribe( (data) => {
+                this.navCtrl.parent.select(0);
+                this.loading.dismissAll();
+                if(data.status) {
+                  console.log("SAVED INSPIRATION");
+                  console.log(data);
+                }
+                else
+                {
+                    console.log("ERROR SAVING INSPIRATION");
+                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                 }
               });
-              i = i + 1;
-            }
+
+            })
           }
           else {
             this.dataService.saveNewInspiration(this.post, this.pages).subscribe(data => {
@@ -190,37 +228,69 @@ export class LookbookLeroyPage {
         // if pages found
           this.post.image = data.imageName;
         if (this.pages.length > 0) {
+          let promises_array:Array<any> = [];
+          let that = this;
           for (let page of this.pages) {
-            page.inspirationCode = this.post.id;
-            debugger;
-            this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
-              console.log(data.message)
-              if (data.message == "Successful") {
-                counter = counter + 1;
-                console.log(this.pages.length)
-                console.log(counter)
-                //  Logic Need to check why it's hapning
-                debugger;
-                if (counter == (this.pages.length)) {
-                  console.log('all images saved');
-                  // this.post.image = this.post.code + '.png';
-                  i = 0;
-                  for (let page of this.pages) {
-                    page.inspirationCode = this.post.id;
-                    page.image = data.imageName;
-                    i = i + 1;
-                  }
-                  debugger;
-                  this.dataService.updateInspiration(this.post.id, this.post, this.pages).subscribe(data => {
-                    console.log(data)
-                    this.loading.dismissAll();
-                    this.navCtrl.parent.select(0);
-                  })
-                }
+            promises_array.push(new Promise(function(resolve,reject) {
+              that.dataService.savePageImage(page.code, page.image, "magazine_page"+that.dataService.me.id + "-" + Date.now()).subscribe((data) => {
+                resolve(data);
+              }, (err)=> {
+                that.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
+              });
+            }));
+          }
+
+          Promise.all(promises_array).then((data)=> {
+            console.log("dataaa",data);
+            this.dataService.updateInspiration(this.post.id, this.post, data).subscribe( (data) => {
+              this.navCtrl.parent.select(0);
+              this.loading.dismissAll();
+              if(data.status) {
+                console.log("SAVED INSPIRATION");
+                console.log(data);
+              }
+              else
+              {
+                  console.log("ERROR SAVING INSPIRATION");
+                  this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
               }
             });
-            i = i + 1;
-          }
+
+          })
+
+          // for (let page of this.pages) {
+
+
+          //   page.inspirationCode = this.post.id;
+          //   debugger;
+          //   this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
+          //     console.log(data.message)
+          //     if (data.message == "Successful") {
+          //       counter = counter + 1;
+          //       console.log(this.pages.length)
+          //       console.log(counter)
+          //       //  Logic Need to check why it's hapning
+          //       debugger;
+          //       if (counter == (this.pages.length)) {
+          //         console.log('all images saved');
+          //         // this.post.image = this.post.code + '.png';
+          //         i = 0;
+          //         for (let page of this.pages) {
+          //           page.inspirationCode = this.post.id;
+          //           page.image = data.imageName;
+          //           i = i + 1;
+          //         }
+          //         debugger;
+          //         this.dataService.updateInspiration(this.post.id, this.post, this.pages).subscribe(data => {
+          //           console.log(data)
+          //           this.loading.dismissAll();
+          //           this.navCtrl.parent.select(0);
+          //         })
+          //       }
+          //     }
+          //   });
+          //   i = i + 1;
+          // }
         }
         else {
           this.dataService.updateInspiration(this.post.code, this.post, this.pages).subscribe(data => {
@@ -252,39 +322,35 @@ export class LookbookLeroyPage {
                 if (data.message == "Successful") {
                     this.post.image = data.imageName;
                     if (this.pages.length > 0) {
-                        console.log("HAS PAGES");
-                        console.log(this.pages.length);
-                        for (let page of this.pages) {
-                            this.dataService.saveImage(page.image, "magazine_page"+this.dataService.me.id + "-" + Date.now()).subscribe(data => {
-                                if (data.message == "Successful") {
-                                    counter++;
-                                    if (counter == (this.pages.length)) {
-                                        console.log('all images saved');
-                                        // this.post.image = this.post.code + '.png';
+                      let promises_array:Array<any> = [];
+                      let that = this;
+                      for (let page of this.pages) {
+                        promises_array.push(new Promise(function(resolve,reject) {
+                          that.dataService.savePageImage(page.code, page.image, "magazine_page"+that.dataService.me.id + "-" + Date.now()).subscribe((data) => {
+                            resolve(data);
+                          }, (err)=> {
+                            that.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
+                          });
+                        }));
+                      }
 
-                                        for (let page of this.pages) {
-                                            page.image = data.imageName;
-                                        }
-                                        this.loading.dismissAll();
-                                        this.dataService.saveNewInspiration(this.post, this.pages).subscribe(data => {
-                                            if(data.status) {
-                                                console.log("SAVED INSPIRATION");
-                                                console.log(data);
-                                            }
-                                            else
-                                            {
-                                                console.log("ERROR SAVING INSPIRATION");
-                                                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
-                                            }
-                                        });
-                                        this.navCtrl.parent.select(0);
-                                    }
-                                }
-                                else {
-                                    this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.image[0].title,ErrorHandlerProvider.MESSAGES.error.image[0].msg);
-                                }
-                            });
-                        }
+                      Promise.all(promises_array).then((data)=> {
+                        console.log("dataaa",data);
+                        this.dataService.saveNewInspiration(this.post, data).subscribe( (data) => {
+                          this.navCtrl.parent.select(0);
+                          this.loading.dismissAll();
+                          if(data.status) {
+                            console.log("SAVED INSPIRATION");
+                            console.log(data);
+                          }
+                          else
+                          {
+                              console.log("ERROR SAVING INSPIRATION");
+                              this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
+                          }
+                        });
+
+                      })
 
 
                     }
@@ -463,6 +529,7 @@ export class LookbookLeroyPage {
 
   openUserProfile(code){
     console.log(code)
+    console.log(this.dataService)
     console.log(this.userService.user.code)
     let user = this.dataService.users.filter(item => item.code == code)[0];
 
@@ -475,7 +542,7 @@ export class LookbookLeroyPage {
 
     else {
       this.navCtrl.push(ProfilePage,{
-        userCode:user.code,
+        userCode:this.user.id,
         view:'service'
       });
     }
@@ -503,21 +570,25 @@ export class LookbookLeroyPage {
 
     like(like){
         //like post, add to likes
+        let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
+        this.dataService.likes.splice(0,0,likedCreation);
+        this.dataService.saveLike(likedCreation);
+        like.isLikedByMe = true;
+        like.likes= like.likes + 1;
+        // //like post, add to likes
+        // console.log("Liked code", like.id);
+        // if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
+        //     let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
+        //     reLikedCreation.liked = true;
+        //     //update database
+        // }else{
+        //     let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
+        //     this.dataService.likes.splice(0,0,likedCreation);
+        //     this.dataService.saveLike(likedCreation);
+        //     //save like
+        // }
 
-        //like post, add to likes
-        console.log("Liked code", like.id);
-        if(this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id).length > 0){
-            let reLikedCreation = this.dataService.likes.filter(item => item.creationCode == 'inspirationpage'+like.id)[0];
-            reLikedCreation.liked = true;
-            //update database
-        }else{
-            let likedCreation = new Like ('',this.dataService.me.id, 'inspirationpage'+like.id,true,like.imageUrl);
-            this.dataService.likes.splice(0,0,likedCreation);
-            this.dataService.saveLike(likedCreation);
-            //save like
-        }
-
-        this.checkLiked();
+        // this.checkLiked();
 
     }
     facebookShare(creation: Post) {

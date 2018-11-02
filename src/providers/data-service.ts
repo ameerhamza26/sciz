@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable,OnDestroy } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
-
 import 'rxjs/add/operator/map';
 import { AppSettings } from './app-settings';
 import { UserService } from './user-service';
@@ -14,19 +13,20 @@ import { User } from '../models/user-model';
 import { Like } from '../models/like-model';
 import { Tag } from '../models/tag-model';
 import {ErrorHandlerProvider} from "./error-handler/error-handler";
-import {errorHandler} from "@angular/platform-browser/src/browser";
 
-
+import { HttpService } from "./http.service";
+import { Subject } from "rxjs/Subject";
+import { Observable } from "rxjs/Observable";
+import 'rxjs/add/operator/map';
 
 /*
-  Generated class for the DataServiceProvider provider.
-
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
+Generated class for the DataServiceProvider provider.
+See https://angular.io/docs/ts/latest/guide/dependency-injection.html
+for more info on providers and Angular DI.
 */
+
 @Injectable()
 export class DataService {
-
   apiUrl = this.appSettings.getApiURl();
   raveURL = this.appSettings.getRaveURL();
   stripeURL = this.appSettings.getStripeURL();
@@ -36,7 +36,6 @@ export class DataService {
   permission: any;
   openConversation: any;
   user2Message: any;
-
   posts: Array<Post> = new Array<Post>();
   tags: Array<Tag> = new Array<Tag>();
   illustratorPosts: Array<Post> = new Array<Post>();
@@ -48,88 +47,71 @@ export class DataService {
   likes: Array<Like> = new Array<Like>();
   allLikes: Array<Like> = new Array<Like>();
   userProfileLikes: Array<Like> = new Array<Like>();
-
   lookbook: any;
   coverImage: any;
 
-  constructor(public http: Http, public appSettings: AppSettings, public userService: UserService,private errorHandler: ErrorHandlerProvider) {
-   // console.log('Hello DataServiceProvider Provider');
+  constructor(public http: Http, private _httpService: HttpService,
+    public appSettings: AppSettings, public userService: UserService,
+    private errorHandler: ErrorHandlerProvider
+  ) {
     this.loadData();
   }
 
-
-
   loadData() {
-
- // console.log("LOAD DATA");
     this.coverImage = 'assets/images/placeholder.png';
-
-    this.getUsers();
-    this.getInspirations();
     this.getInspirationTags();
-    this.getCreations();
   }
 
   filterItems(searchTerm) {
-
     return this.users.filter((item) => {
-      return ((item.type3.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
+      return (
+        (item.type3.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
         || (item.type2.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
         || (item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
         || (item.city.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
-      );
+      )
     });
-
   }
 
   filter4Tag(searchTerm) {
-
     return this.users.filter((item) => {
       return item.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1;
     });
-
   }
 
-  createBranchLink(model_type,type_id,type_image,social_type){
-      var model_type = model_type; // magazine,item,profile
-      var type_id = type_id; // magazine,item,profile ID
-      var type_image = type_image;
-      var social_type = social_type;
-      var parameters = JSON.stringify({
-          type: model_type,
-          type_id: type_id,
-          type_image: type_image,
-          social_type: social_type
-      });
-
-      let body: string = parameters,
-          type: string = "application/json",
-          headers: any = new Headers({ 'Content-Type': type }),
-          options: any = new RequestOptions({ headers: headers }),
-          url: any = this.apiUrl + 'branchCreateLink';
-
-      return this.http.post(url, body, options).map(response => response.json());
-  }
-
-  getUsers() {
-    this.users.length = 0;
-    this.http.get(this.apiUrl + 'getUsers').map(res => res.json()).subscribe(data => {
-      if(data.status){
-          console.log("GET USERS,", data.result);
-          for (let user of data.result) {
-
-              let image = user.image;
-              this.getImageUrl(image,user);
-              user.image = image;
-              this.users.push(user);
-          }
-         // console.log(this.users);
-      }
-      else{
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataUser[0].msg);
-      }
+  createBranchLink(model_type,type_id,type_image,social_type, message, model){
+    var model_type = model_type; // magazine,item,profile
+    var type_id = type_id; // magazine,item,profile ID
+    var type_image = type_image;
+    var social_type = social_type;
+    var parameters = JSON.stringify({
+      type: model_type,
+      type_id: type_id,
+      type_image: type_image,
+      social_type: social_type,
+      message: message,
+      custom_obj : model
     });
 
+    let body: string = parameters,
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'branchCreateLink';
+
+    return this.http.post(url, body, options).map(response => response.json());
+  }
+
+  getUsers(name) {
+
+    console.log('getUsers', + name)
+
+    let getUrl = 'getUsers/'+name;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
   }
 
   reloadUsers() {
@@ -137,97 +119,147 @@ export class DataService {
     return this.http.get(this.apiUrl + 'getUsers').map(res => res.json());
   }
 
-  getInspirations() {
-
-    this.posts = [];
-    this.posts.length = 0;
-      let pageLikes;
-      let inspirationPages;
-      this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
-        if(data.status){
-            for (let inspiration of data.result) {
-                let image =  inspiration.image;
-                inspiration.image = image;
-                inspiration.likes = 0; // magazine likes - random for testing
-                this.getImageUrl(inspiration.image,inspiration);
-                /* inspirationPages.forEach((page, index) => {
-                     pageLikes = this.likes.filter(item => item.creationCode == page.code);
-                     console.log("PAGE LIKES");
-                     console.log(pageLikes);
-                     console.log(pageLikes.length);
-                     inspiration.likes = pageLikes.length;
-                 }); */
-                this.posts.push(inspiration);
-            }
-            this.getPages();
-        }
-        else {
-            this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].msg);
-        }
+  getUserByCode(code) {
+    let getUrl = 'get/' + code;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
     });
+  }
+
+  getInspirationsByPageId(pageId) : Observable<any> {
+    let getUrl = 'getInspiration/' + pageId;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
+
+  getCreationById(id) : Observable<any> {
+    let getUrl = 'getCreationsById/'+id;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
+
+  getSizesByUserCode(code) : Observable<any> {
+    let getUrl = 'getSizeByUserCode/'+code;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
+
+  getInspirations(offset,limit) : Observable<any> {
+    let getUrl = 'getInspirations/'+offset+'/'+limit;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+
+    // this.posts = [];
+    // this.posts.length = 0;
+    //   this.http.get(this.apiUrl + 'getInspirations').map(res => res.json()).subscribe(data => {
+    //     if(data.status){
+    //         for (let inspiration of data.result) {
+    //             let image =  inspiration.image;
+    //             inspiration.image = image;
+    //             inspiration.likes = 0; // magazine likes - random for testing
+    //             this.getImageUrl(inspiration.image,inspiration);
+    //             /* inspirationPages.forEach((page, index) => {
+    //                  pageLikes = this.likes.filter(item => item.creationCode == page.code);
+    //                  console.log("PAGE LIKES");
+    //                  console.log(pageLikes);
+    //                  console.log(pageLikes.length);
+    //                  inspiration.likes = pageLikes.length;
+    //              }); */
+    //             this.posts.push(inspiration);
+    //         }
+    //         this.getPages();
+    //     }
+    //     else {
+    //         this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[0].msg);
+    //     }
+    // });
 
   }
 
   getInspirationTags() {
-  //  console.log("INSPIRATION TAGS");
     this.tags.length = 0;
-
     this.http.get(this.apiUrl + 'getInspirationTags').map(res => res.json()).subscribe(data => {
       if(data.status){
-         // console.log(data);
-          for (let tag of data.result) {
+        // console.log(data);
+        for (let tag of data.result) {
 
-              let newTag = new Tag(tag.id, tag.code, tag.taggedUser);
-              this.tags.push(newTag);
-          }
-
-        //  console.log(this.tags);
+          let newTag = new Tag(tag.id, tag.code, tag.taggedUser);
+          this.tags.push(newTag);
+        }
       }
       else
       {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[1].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[1].msg);
+        this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[1].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataInspiration[1].msg);
       }
-
     });
-
   }
 
   getPages() {
-
     let post;
     let pageLikes;
     this.pages.length = 0;
 
     this.http.get(this.apiUrl + 'getPages').map(res => res.json()).subscribe(data => {
       if(data.status){
-          for (let page of data.result) {
-              let image =  page.image;
-              page.image = image;
-              this.getImageUrl(page.image,page);
-              post = this.findInspiration("id",page.inspiration_id);
-              //console.log("METHOD FIND");
-              console.log(post);
-              // get page likes
-              pageLikes = this.allLikes.filter(item => item.creationCode == 'inspirationpage'+page.id);
-              console.log(pageLikes);
+        for (let page of data.result) {
+          let image =  page.image;
+          page.image = image;
+          this.getImageUrl(page.image,page);
+          post = this.findInspiration("id",page.inspiration_id);
+          console.log(post);
+          // get page likes
+          pageLikes = this.allLikes.filter(item => item.creationCode == 'inspirationpage'+page.id);
+          console.log(pageLikes);
 
-              pageLikes.forEach((like) => {
-                if(like.liked == true) {
-                  if (post.length != 0){
-                    post[0].likes++
-                  }
-                }
-              });
-              this.pages.push(page);
-          }
+          pageLikes.forEach((like) => {
+            if(like.liked == true) {
+              if (post.length != 0){
+                post[0].likes++
+              }
+            }
+          });
+          this.pages.push(page);
+        }
       }
       else{
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataPage[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataPage[0].msg);
+        this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataPage[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataPage[0].msg);
       }
 
 
     });
 
+  }
+
+  getCreationByUser(userId) : Observable<any> {
+    let getUrl = 'getCreations/'+userId;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
+
+  getCreationsByType(type) : Observable<any> {
+    let getUrl = 'getCreationsByType/'+type;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
   }
 
   getCreations() {
@@ -236,17 +268,17 @@ export class DataService {
 
     this.http.get(this.apiUrl + 'getCreations').map(res => res.json()).subscribe(data => {
       if(data.status) {
-          for (let creation of data.result) {
+        for (let creation of data.result) {
 
-              let image =  creation.image;
-              creation.image = image;
-              this.getImageUrl(image,creation);
-              this.creations.push(creation);
+          let image =  creation.image;
+          creation.image = image;
+          this.getImageUrl(image,creation);
+          this.creations.push(creation);
 
-          }
+        }
       }
       else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataCreation[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataCreation[0].msg);
+        this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataCreation[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataCreation[0].msg);
       }
 
 
@@ -259,49 +291,56 @@ export class DataService {
     return this.http.get(this.apiUrl + 'getCreations').map(res => res.json());
   }
 
-  getLikes() {
+  getLikesByUser(userId)  : Observable<any> {
+    let getUrl = 'getLikes/'+userId;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
 
-      this.likes = new Array<Like>();
+  getLikes() {
+    this.likes = new Array<Like>();
     this.likes.length = 0;
     this.userProfileLikes.length = 0;
     console.log(this.me)
-   // console.log(this.me.code);
+    // console.log(this.me.code);
     var parameters = JSON.stringify({
       userCode: this.me.id
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'getLikes';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'getLikes';
 
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
       if(data.status) {
-          for (let like of data.result) {
-              if(like.creationCode.substr(0,15) !== "inspirationpage") {
-                  console.log("Get like creation");
-                  let temp = this.creations.filter(item => item.id == like.creationCode.substr(8))[0];
-                  console.log(temp.image);
-                  if(temp.image){
-                      this.getImageUrl(temp.image,like);
-                  }
-              }
-              else {
-                  console.log("Get like page",like.creationCode.substr(15));
-                  let temp = this.findPage("id",like.creationCode.substr(15))[0];
-                  if(temp.image){
-                      this.getImageUrl(temp.image,like);
-                      console.log(temp.image);
-                  }
-              }
-              this.likes.push(like);
+        for (let like of data.result) {
+          if(like.creationCode.substr(0,15) !== "inspirationpage") {
+            console.log("Get like creation", like);
+            let temp = this.creations.filter(item => item.id == like.creationCode.substr(8))[0];
+            if(temp.image){
+              this.getImageUrl(temp.image,like);
+            }
           }
+          else {
+            console.log("Get like page",like.creationCode.substr(15));
+            let temp = this.findPage("id",like.creationCode.substr(15))[0];
+            if(temp!= undefined && temp.image){
+              this.getImageUrl(temp.image,like);
+              console.log(temp.image);
+            }
+          }
+          this.likes.push(like);
+        }
         //  console.log("LIKES");
-          //console.log(this.likes);
+        //console.log(this.likes);
       }
       else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].msg);
+        this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].msg);
       }
 
     });
@@ -309,55 +348,64 @@ export class DataService {
 
   getAllLikes() {
     return new Promise((resolve,reject)=>{
-        this.allLikes.length = 0;
-        var parameters = JSON.stringify({
-            userCode: 0
-        });
-
-        let body: string = parameters,
-            type: string = "application/json",
-            headers: any = new Headers({ 'Content-Type': type }),
-            options: any = new RequestOptions({ headers: headers }),
-            url: any = this.apiUrl + 'getLikes';
-
-        this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-            if(data.status) {
-              //  console.log(data);
-                for (let like of data.result) {
-                    this.allLikes.push(like);
-                }
-                resolve(true);
-            }
-            else {
-                this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].msg);
-               reject();
-            }
-
-        });
+      this.allLikes.length = 0;
+      var parameters = JSON.stringify({
+        userCode: 0
       });
-}
+
+      let body: string = parameters,
+      type: string = "application/json",
+      headers: any = new Headers({ 'Content-Type': type }),
+      options: any = new RequestOptions({ headers: headers }),
+      url: any = this.apiUrl + 'getLikes';
+
+      this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
+        if(data.status) {
+          //  console.log(data);
+          for (let like of data.result) {
+            this.allLikes.push(like);
+          }
+          resolve(true);
+        }
+        else {
+          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].title,ErrorHandlerProvider.MESSAGES.serviceStatus.dataLike[0].msg);
+          reject();
+        }
+
+      });
+    });
+  }
+
+  likeInspirationPage(body): Observable<any>  {
+    let url = 'inspirationpage/like';
+    return this._httpService.postRequest(url,body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
 
   saveLike(likeToUpload) {
 
-   // console.log(likeToUpload);
+    // console.log(likeToUpload);
     var parameters = JSON.stringify({
       newLike: likeToUpload
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'saveLike';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'saveLike';
 
 
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
       if (data.message == "Successful") {
-      //  console.log('like saved');
+        //  console.log('like saved');
       } else {
         //console.log('like not saved');
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.like[0].title,ErrorHandlerProvider.MESSAGES.error.like[0].msg);
+        this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.like[0].title,ErrorHandlerProvider.MESSAGES.error.like[0].msg);
       }
 
 
@@ -370,44 +418,54 @@ export class DataService {
   updateAvailability(creationCode, availability) {
 
 
-    var parameters = JSON.stringify({
+    let getUrl = 'updateAvailability';
+    let body = {
       creationCode: creationCode,
       availability: availability
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
     });
 
-    let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'updateAvailability';
+    // var parameters = JSON.stringify({
+    //   creationCode: creationCode,
+    //   availability: availability
+    // });
+
+    // let body: string = parameters,
+    //   type: string = "application/json",
+    //   headers: any = new Headers({ 'Content-Type': type }),
+    //   options: any = new RequestOptions({ headers: headers }),
+    //   url: any = this.apiUrl + 'updateAvailability';
 
 
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
+    // this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
 
-      if (data.message == "Successful") {
-       // console.log('availability saved');
-      } else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.availability[0].title,ErrorHandlerProvider.MESSAGES.error.availability[0].msg);
-      }
+    //   if (data.message == "Successful") {
+    //    // console.log('availability saved');
+    //   } else {
+    //       this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.availability[0].title,ErrorHandlerProvider.MESSAGES.error.availability[0].msg);
+    //   }
 
-    });
+    // });
 
 
   }
 
   saveCreation(creation) {
-
-   // console.log(creation);
+    console.log(creation);
 
     var parameters = JSON.stringify({
       creation: creation
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'saveCreation';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'saveCreation';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -423,10 +481,10 @@ export class DataService {
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'updateCreation';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'updateCreation';
 
     return this.http.post(url, body, options).map(response => response.json());
 
@@ -440,10 +498,10 @@ export class DataService {
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'login';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'login';
 
     return this.http.post(url, body, options).map(response => response.json());
 
@@ -453,28 +511,28 @@ export class DataService {
   loadIllustratorPosts() {
     for (let inspiration of this.posts) {
 
-      if (inspiration.accountCode == this.me.code) {
+      if (inspiration.userCode == this.me.code) {
 
         this.illustratorPosts.push(inspiration);
       }
     }
 
-  //  console.log('Loaded Illustrator posts');
-   // console.log(this.illustratorPosts);
+    //  console.log('Loaded Illustrator posts');
+    // console.log(this.illustratorPosts);
   }
 
   tagInspiration(tag) {
 
-      console.log("Tag inspiration,", tag);
+    console.log("Tag inspiration,", tag);
     var parameters = JSON.stringify({
       tag: tag
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'tagInspiration';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'tagInspiration';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -490,21 +548,21 @@ export class DataService {
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'getSizeFile';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'getSizeFile';
 
 
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
       if(data.status) {
-          for (let sizeFile of data.result) {
-              this.sizes.push(sizeFile);
-          }
+        for (let sizeFile of data.result) {
+          this.sizes.push(sizeFile);
+        }
       }
       else
       {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[0].title,ErrorHandlerProvider.MESSAGES.error.file[0].msg);
+        this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[0].title,ErrorHandlerProvider.MESSAGES.error.file[0].msg);
       }
 
 
@@ -513,48 +571,48 @@ export class DataService {
   }
 
   updateInspiration(code, inspiration, inspirationPages) {
-      console.log("Update inspiration method");
-      console.log(inspiration);
+    console.log("Update inspiration method");
+    console.log(inspiration);
     var parameters = JSON.stringify({
       code: code,
       inspiration: inspiration,
-     // inspirationPages: inspirationPages
+      // inspirationPages: inspirationPages
     });
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'updateInspiration';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'updateInspiration';
 
     return this.http.post(url, body, options).map(response => response.json());
   }
 
   updateInspirationPages(inspiration_id,inspirationPages){
-      var parameters = JSON.stringify({
-          inspiration_id: inspiration_id,
-          inspirationPages: inspirationPages
-      });
-      let body: string = parameters,
-          type: string = "application/json",
-          headers: any = new Headers({ 'Content-Type': type }),
-          options: any = new RequestOptions({ headers: headers }),
-          url: any = this.apiUrl + 'updatePages';
+    var parameters = JSON.stringify({
+      inspiration_id: inspiration_id,
+      inspirationPages: inspirationPages
+    });
+    let body: string = parameters,
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'updatePages';
 
-      return this.http.post(url, body, options).map(response => response.json());
+    return this.http.post(url, body, options).map(response => response.json());
   }
 
   updateProfile(user) {
-      console.log("Update profile,",user);
+    console.log("Update profile,",user);
 
     var parameters = JSON.stringify({
       user: user
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'updateServiceProfile';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'updateServiceProfile';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -564,89 +622,61 @@ export class DataService {
   saveSize(sizeFile) {
 
     console.log(sizeFile)
-
-    var parameters = JSON.stringify({
+    let getUrl = 'saveSize';
+    let body = {
       sizeFile: sizeFile
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
     });
-
-    let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'saveSize';
-
-
-    this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-
-      if (data.message == "Successful") {
-          //sizeFile.id = data.result.id;
-        console.log('size file saved');
-      } else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[1].title,ErrorHandlerProvider.MESSAGES.error.file[1].msg);
-      }
-
-    });
-
   }
 
   getImageUrl(imageName,object){
-      console.log("GET IMAGE URL");
-      var parameters = JSON.stringify({
-          imageName: imageName
-      });
-
-      let body: string = parameters,
-          type: string = "application/json",
-          headers: any = new Headers({ 'Content-Type': type }),
-          options: any = new RequestOptions({ headers: headers }),
-          url: any = this.apiUrl + 'getImageLink';
-
-      this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-          console.log("image url", data.imageUrl);
-          object.imageUrl = data.imageUrl;
-      });
-  }
-
-  updateSize(sizeFile) {
-
+    console.log("GET IMAGE URL");
     var parameters = JSON.stringify({
-      sizeFile: sizeFile
+      imageName: imageName
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'updateSize';
-
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'getImageLink';
 
     this.http.post(url, body, options).map(response => response.json()).subscribe(data => {
-
-      if (data.message == "Successful") {
-        //console.log('profile saved');
-      } else {
-          this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.file[2].title,ErrorHandlerProvider.MESSAGES.error.file[2].msg);
-      }
-
+      console.log("image url", data.imageUrl);
+      object.imageUrl = data.imageUrl;
     });
+  }
 
-
+  updateSize(sizeFile) {
+    let getUrl = 'updateSize';
+    let body = {
+      sizeFile: sizeFile
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
   }
 
   saveNewInspiration(inspiration, inspirationPages) {
 
-      console.log("SAVE NEW INSPIRATION POST METHOD");
-      console.log(inspiration);
+    console.log("SAVE NEW INSPIRATION POST METHOD");
+    console.log(inspiration);
     var parameters = JSON.stringify({
       inspiration: inspiration,
       inspirationPages: inspirationPages
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'saveNewInspiration';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'saveNewInspiration';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -660,10 +690,10 @@ export class DataService {
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'deleteInspiration';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'deleteInspiration';
 
 
     return this.http.post(url, body, options).map(response => response.json());
@@ -672,82 +702,138 @@ export class DataService {
 
   saveImage(imageData, imageName) {
 
-      console.log("Save image");
-      //console.log(imageData);
-      console.log(imageName);
+    console.log("Save image");
+    //console.log(imageData);
+    console.log(imageName);
     var parameters = JSON.stringify({
       imageData: imageData,
       imageName: imageName
     });
 
     let body: string = parameters,
-      type: string = "application/json",
-      headers: any = new Headers({ 'Content-Type': type }),
-      options: any = new RequestOptions({ headers: headers }),
-      url: any = this.apiUrl + 'uploadImage';
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'uploadImage';
 
 
     return this.http.post(url, body, options).map(response => response.json());
   }
 
- /*
-    Don't need it now
+  savePageImage(imageCode, imageData, imageName) {
+
+    console.log("Save image");
+    //console.log(imageData);
+    console.log(imageName);
+    var parameters = JSON.stringify({
+      imageData: imageData,
+      imageName: imageName,
+      imageCode: imageCode
+    });
+
+    let body: string = parameters,
+    type: string = "application/json",
+    headers: any = new Headers({ 'Content-Type': type }),
+    options: any = new RequestOptions({ headers: headers }),
+    url: any = this.apiUrl + 'uploadImage';
+
+
+    return this.http.post(url, body, options).map(response => response.json());
+  }
+
+  /*
+  Don't need it now
   generateCode(type) {
 
-    //new user code
+  //new user code
 
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    for (var i = 0; i < 80; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
+  for (var i = 0; i < 80; i++) {
+  text += possible.charAt(Math.floor(Math.random() * possible.length));
+}
 
-    text = type + text;
+text = type + text;
 
-    return text;
+return text;
 
 
-  } */
+} */
 
-    /**
-     * **************************
-     * FIND METHODS TO KEEP ALL FILTER STUFF ON ONE PLACE
-     */
+/**
+* **************************
+* FIND METHODS TO KEEP ALL FILTER STUFF ON ONE PLACE
+*/
 
-    /**
-     *  Find inspiration in list by key,value
-     * @param key
-     * @param value
-     * @param is_equal
-     * @returns {Post[]}
-     */
-  findInspiration(key,value,is_equal = true){
-     // console.log("FIND POST");
-      if(is_equal)
-          var postFound = this.posts.filter(item => item[key] == value);
-      else
-          var postFound = this.posts.filter(item => item[key] != value);
-      return postFound;
+/**
+*  Find inspiration in list by key,value
+* @param key
+* @param value
+* @param is_equal
+* @returns {Post[]}
+*/
+findInspiration(key,value,is_equal = true){
+  // console.log("FIND POST");
+  var postFound ;
+  if(is_equal)
+  postFound = this.posts.filter(item => item[key] == value);
+  else
+  postFound = this.posts.filter(item => item[key] != value);
+  return postFound;
+}
+
+/**
+*  Find page in list by key,value
+* @param key
+* @param value
+* @param is_equal
+* @returns {Page[]}
+*/
+findPage(key,value,is_equal = true){
+  //console.log("FIND PAGE");
+  var pageFound ;
+  if(is_equal)
+  pageFound =this.pages.filter(item => item[key] == value);
+  else
+  pageFound =  this.pages.filter(item => item[key] != value);
+  return pageFound;
+
+}
+
+getPagesByInspirationId(id) {
+  let getUrl = 'getPages/'+id;
+  return this._httpService.getRequest(getUrl)
+  .map((res: Response) => res)
+  .catch((error: any) => {
+    return Observable.throw(error);
+  });
+}
+
+checkLikedByMe(userid,pageids) : Observable<any>  {
+  let getUrl = 'checkinspiration/like';
+  let body = {
+    userid: userid,
+    pageids: pageids
   }
+  return this._httpService.postRequest(getUrl, body)
+  .map((res: Response) => res)
+  .catch((error: any) => {
+    return Observable.throw(error);
+  });
+}
 
-    /**
-     *  Find page in list by key,value
-     * @param key
-     * @param value
-     * @param is_equal
-     * @returns {Page[]}
-     */
-  findPage(key,value,is_equal = true){
-    //console.log("FIND PAGE");
-    if(is_equal)
-        var pageFound =  this.pages.filter(item => item[key] == value);
-    else
-        var pageFound =  this.pages.filter(item => item[key] != value);
-    return pageFound;
-
+checkLikedByMeCreation(userid,creationid) : Observable<any>  {
+  let getUrl = 'checkcreation/like';
+  let body = {
+    userid: userid,
+    creationid: creationid
   }
-
-
+  return this._httpService.postRequest(getUrl, body)
+  .map((res: Response) => res)
+  .catch((error: any) => {
+    return Observable.throw(error);
+  });
+}
 
 }

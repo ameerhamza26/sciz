@@ -35,10 +35,11 @@ export class ScizzorSearchPage {
     console.log('ionViewDidLoad ScizzorSearchPage');
     this.setFilteredItems();
 
-    this.searchControl.valueChanges.debounceTime(700).subscribe(search => {
-      this.searching = false;
-      this.setFilteredItems();
-        });
+    // this.searchControl.valueChanges.debounceTime(700).subscribe(search => {
+    //   this.searching = false;
+    //   this.searchTerm = "-1";
+    //   this.setFilteredItems();
+    //     });
   }
 
   onSearchInput(){
@@ -46,32 +47,44 @@ export class ScizzorSearchPage {
     }
 
   setFilteredItems() {
-
-        this.filtereditems = this.dataService.filterItems(this.searchTerm);
+     console.log("searchTerm", this.searchTerm);
+     this.searching = true;
+     if (this.searchTerm.length> 0) {
+      this.dataService.getUsers(this.searchTerm).subscribe((res)=>{
+        this.searching = false;
+        this.filtereditems = res.json().result;
+      })
+     } else {
+      this.dataService.getUsers("-1").subscribe((res)=>{
+        this.searching = false;
+        this.filtereditems = res.json().result;
+      })
+     }
+      
     }
 
     openProfile(user){
-      if (this.user.code == user.code) {
 
-        this.navCtrl.setRoot(UserProfilePage,{
-          view:'service'
-        });
-
-        this.navCtrl.parent.select(2);
-      }
-
-      else {
-        this.navCtrl.push(ProfilePage,{
-          userCode:user.code,
-          view:'service'
-        });
+      console.log("user",user, this.dataService.me); 
+      if (this.dataService.me.id == user.id) {
+        this.navCtrl.parent.select(2); 
+      } else {
+        if (user.type == 'customer') {
+          this.navCtrl.push(UserProfilePage,{
+            user:user,
+            view:'customer'
+          });
+        }
+        else {
+          this.navCtrl.push(ProfilePage,{
+            userCode:user.id,
+            view:'service'
+          });
+        }
       }
     }
 
     makeArray(number){
       return new Array(number)
     }
-
-
-
 }

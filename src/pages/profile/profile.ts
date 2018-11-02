@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams  } from 'ionic-angular';
+import { NavController, NavParams , LoadingController } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
 import { CreationPage } from '../creation/creation';
 import { ChatPage } from '../chat/chat';
@@ -30,16 +30,18 @@ export class ProfilePage {
   counter = Array;
   segment:any;
   view:any;
+  userId: any;
+  imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public dataService:DataService,private socialShare:SocialShareProvider, private storage: Storage) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, 
+    private loadingCtrl: LoadingController,
+    public dataService:DataService,private socialShare:SocialShareProvider, private storage: Storage) {
 
     //get usercode to load
 
     //view = service or user
-
-    this.userCode = this.navParams.get('userCode');
     this.view = this.navParams.get('view');
-
+    this.userCode = this.navParams.get('userCode');
     this.start();
   }
     ionViewWillEnter() {
@@ -71,15 +73,30 @@ export class ProfilePage {
     console.log('ionViewDidLoad ProfilePage');
   }
 
+  loading: any;
   start(){
 
     //load user and their posts from data service
 
     this.segment = 'work';
-    this.user =  this.dataService.users.filter(item => item.code == this.userCode)[0];
-    console.log(this.user)
-    this.creations =  this.dataService.creations.filter(item => item.account_id == this.userCode);
+    console.log("in start",this.userCode)
+    this.loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+  
+    this.loading.present().then(()=> {
+      this.dataService.getUserByCode(this.userCode).subscribe((res)=> {
+        this.user= res.json().data[0];
+        this.dataService.getCreationByUser(this.user.id).subscribe((res)=> {
+          this.creations = res.json().result;
+          this.loading.dismissAll();
+        })
+      })
+    });
 
+    
+    
+    
 
   }
 

@@ -64,10 +64,6 @@ export class LoginPage {
 
   ionViewDidLoad() {
     console.log('user stor',this.storage.get('user'));
-    if(this.dataService.users.length == 0) {
-      this.dataService.getUsers();
-    }
-    console.log('ionViewDidLoad LoginPage');
   }
 
   signInAnonymously() {
@@ -85,13 +81,13 @@ export class LoginPage {
             this.setUser(data.result[0]);
             this.signInAnonymously();
             this.storage.set('data', data);
-            this.dataService.getLikes();
+            //this.dataService.getLikes();
             console.log(this.dataService.me);
-            if (data.result[0].type == "customer") {
-              this.dataService.getSizeFile();
-            } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
-              this.dataService.loadIllustratorPosts();
-            }
+            // if (data.result[0].type == "customer") {
+            //   this.dataService.getSizeFile();
+            // } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
+            //   this.dataService.loadIllustratorPosts();
+            // }
             this.navCtrl.setRoot(TabsPage);
           } else {
               console.log("ERR 5");

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "965202261185",
+    "firebase_url": "https://scizzor-14968.firebaseio.com",
+    "project_id": "scizzor-14968",
+    "storage_bucket": "scizzor-14968.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:965202261185:android:c9116987d6e16661",
+        "android_client_info": {
+          "package_name": "com.scizzorapp.scizzorapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "965202261185-bssob44omj6q7leveaf1n5uitf7m4muk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtsWJgZVbHmjUbU_vDZJ0Ku60FJMgQpB8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

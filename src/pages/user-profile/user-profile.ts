@@ -6,7 +6,7 @@ import { UserService } from '../../providers/user-service';
 import { CreationPage } from '../../pages/creation/creation';
 import { LoginPage } from '../../pages/login/login';
 import { PaymentHistoryPage } from '../../pages/payment-history/payment-history';
-
+import { User } from "../../models/user-model"
 import { App } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
 import { Storage } from '@ionic/storage';
@@ -45,76 +45,89 @@ export class UserProfilePage {
   likes: any = [];
   isPageOpen:boolean;
   constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public userService: UserService, private app: App, public actionSheetCtrl: ActionSheetController, private camera: Camera, public platform: Platform, private alertCtrl: AlertController, public loadingCtrl: LoadingController, private emailComposer: EmailComposer, private storage: Storage,private errorHandler: ErrorHandlerProvider) {
-    this.start();
-    //this.likes = this.dataService.likes;
-    console.log("USER PROF CONSTR");
-    console.log(this.likes);
   }
 
 
   ionViewDidLoad() {
     this.isPageOpen = true;
     console.log('ionViewDidLoad UserProfilePage');
-    this.start();
+   
   }
 
   ionViewWillEnter() {
 
-
-
+ this.start();
       console.log("Ion will enter profile");
-      this.dataService.getLikes();
       this.isPageOpen = true;
-      //reload own posts on entry
-      this.likes = [];
-      this.likes = this.dataService.likes;
-
-
-      console.log('re-entry');
-   // this.likes = [];
-    if (this.permission == 'customer') {
-      this.getSizes();
-
-      //console.log(this.likes);
-
-
-    } else if (this.permission == 'service') {
-      this.getCreations();
-    }
   }
-    ionViewWillLeave() {
+    
+  ionViewWillLeave() {
       this.likes = [];
       this.isPageOpen = false;
   }
-
+  navParamUserCode: any;
   start() {
 
     this.segment = 'likes';
     this.user = this.userService.user;
-    console.log(this.user)
-    this.dataService.getImageUrl(this.user.image,this.user);
-      console.log("USER PROFILE USER--",this.user)
+    this.permission = this.user.type;
+
+    this.navParamUserCode = this.navParams.get("user");
+    if (this.navParamUserCode != undefined) {
+      this.user  = this.navParamUserCode;
+      this.permission = this.navParams.get("view");
+    }
+    this.loading = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+
+    this.loading.present().then(()=> {
+      if (this.permission == 'service') {
+          this.dataService.getCreationByUser(this.user.id).subscribe((res)=> {
+            this.creations = res.json().result;
+            if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
+              let promises_array:Array<any> = [];
+              let that = this;
+              for (let creation of this.creations) {
+                if (creation.availability){
+                  creation.availability = false;
+                  promises_array.push(new Promise(function(resolve,reject) {
+                    that.dataService.updateAvailability(creation.code, creation.availability).subscribe((data) => {
+                      resolve(data);
+                    }, (err)=> {
+                      reject(err);
+                    });
+                  }));
+                }
+              }
+              if (promises_array.length > 0)  {
+                Promise.all(promises_array).then((data)=> {
+                  this.loading.dismissAll();
+                });
+              } else {
+                this.loading.dismissAll();
+              }
+            } else {
+              this.loading.dismissAll();
+            }
+          })
+      } else {
+          this.dataService.getLikesByUser(this.user.id).subscribe((res)=> {
+            this.likes = res.json().result;
+            this.dataService.getSizesByUserCode(this.user.code).subscribe((res)=> {
+              this.size = res.json().result[0];
+              this.loading.dismissAll();
+            })
+          })
+      }
+
+    })
+
     this.userCopy = this.user;
-    this.permission = this.dataService.permission;
-    console.log(this.dataService)
-    console.log(this.userService)
     this.sizeCode = this.user.sizeCode;
 
-    if (this.permission == this.user.type) {
-      console.log('matching permissions');
-    } else {
-      console.log('error , no matching permissions');
-    }
-
-    if (this.permission == 'customer') {
-      this.getSizes();
-    //  this.dataService.getLikes();
-      //this.likes = this.dataService.likes;
-    } else if (this.permission == 'service') {
-      this.getCreations();
-
-
-      if (this.user.type2 == 'Craftsman') {
+    if (this.permission == 'service') {
+      if (this.user.type2 == 'Craftsmen') {
         this.options = ['Tailor', 'Shoe Maker'];
       } else if (this.user.type2 == 'Designer') {
         this.options = ['Local', 'International African Designer'];
@@ -125,7 +138,7 @@ export class UserProfilePage {
       }
 
     }
-
+    console.log("this.options",this.options)
   }
 
   createNewCreation() {
@@ -143,21 +156,6 @@ export class UserProfilePage {
     }
   }
 
-  getCreations() {
-    //get my posts from data service
-    this.creations = this.dataService.creations.filter(item => item.account_id == this.user.id);
-    console.log(this.creations);
-
-    if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
-      for (let creation of this.creations) {
-        if (creation.availability){
-          console.log(creation.availability)
-          creation.availability = false;
-          this.dataService.updateAvailability(creation.code, creation.availability);
-        }
-      }
-    }
-  }
 
   getImage(creation) {
     if(creation.creationCode.substr(0,15) !== "inspirationpage") {
@@ -176,7 +174,7 @@ export class UserProfilePage {
         //console.log(this.dataService.pages);
         //let temp = this.dataService.pages.filter(item => item.code == creation.creationCode)[0];
         let temp = this.dataService.findPage("id",creation.creationCode.substr(15))[0];
-        if(temp.image){
+        if(temp != undefined && temp.image){
             this.dataService.getImageUrl(temp.image,creation);
             console.log(temp.image);
             return temp.image;
@@ -184,33 +182,57 @@ export class UserProfilePage {
     }
   }
 
+  imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
   openLike(creation2Open) {
     console.log(creation2Open);
       if(creation2Open.creationCode.substr(0,15) !== "inspirationpage"){
         console.log(this.dataService.creations);
-        creation2Open = this.dataService.creations.filter(item => item.id == creation2Open.creationCode.substr(8))[0];
-
+        //creation2Open = this.dataService.creations.filter(item => item.id == creation2Open.creationCode.substr(8))[0];
+        this.dataService.getCreationById(creation2Open.code).subscribe((res)=> {
+          var data =res.json().result[0]
+          data.imageUrl = this.imageBaseUrl + data.image;
+          this.navCtrl.push(CreationPage, {
+            creation:data
+          });
+        }) 
         console.log('open creation: ' + creation2Open);
-        this.navCtrl.push(CreationPage, {
-            creation: creation2Open
-    });
+        
     } else {
-         // var page = this.dataService.pages.filter(item => item.code == creation2Open.creationCode);
-          var page = this.dataService.findPage("id",creation2Open.creationCode.substr(15));
-         // var post = this.dataService.posts.filter(item=>item.code == page[0].inspirationCode);
-          console.log("FIND POST OPEN LIKE")
-          var post = this.dataService.findInspiration("id",page[0].inspiration_id);
-          console.log(creation2Open);
-          this.openLookbook(post[0]);
-          console.log(page);
-          console.log(post);
+          this.dataService.getInspirationsByPageId(creation2Open.code).subscribe((res)=> {
+            var result = res.json().result;
+            if (result.length >0) {
+              for (let inspiration of result) {
+                let image =  inspiration.image;
+                inspiration.image = image;
+                inspiration.likes = 0; // magazine likes - random for testing
+                inspiration.imageUrl = this.imageBaseUrl + image;
+                let likes = 0;
+                for (let pages of inspiration.pages) {
+                  console.log("pages",pages, pages.likes);
+                  likes = likes + pages.likes ;
+                  pages.imageUrl = this.imageBaseUrl + pages.image;
+                }
+                inspiration.totalLikes = likes;
+                /* inspirationPages.forEach((page, index) => {
+                      pageLikes = this.likes.filter(item => item.creationCode == page.code);
+                      console.log("PAGE LIKES");
+                      console.log(pageLikes);
+                      console.log(pageLikes.length);
+                      inspiration.likes = pageLikes.length;
+                  }); */
+                
+            }
+            this.openLookbook(result[0]);
+              
+            }
+          })
       }
 
   }
 
     openLookbook(post) {
         //open lookbook according to style -> segue
-        console.log('Open Lookbook');
+        console.log('Open Lookbook',post);
         if (post.type == 'vertical' || post.type == 'horizontal') {
             this.navCtrl.push(LookbookPage, {
                 post: post,
@@ -231,8 +253,6 @@ export class UserProfilePage {
     }
 
   openCreation(creation2Open) {
-
-    creation2Open = this.dataService.creations.filter(item => item.code == creation2Open.code)[0];
 
     if (this.user.bankAccountHolder.length == 0 || this.user.bankAccountNumber.length == 0 || this.user.bankAccountSortCode.length == 0){
 
@@ -434,7 +454,7 @@ export class UserProfilePage {
               //this.user.image = imageData;
               console.log("Get image url for user profile, ",this.user.image);
               this.dataService.getImageUrl(this.user.image,this.user);
-
+              this.updateUserInLocal(this.user);
               this.loading.dismissAll();
               this.navCtrl.parent.select(2);
 
@@ -460,6 +480,19 @@ export class UserProfilePage {
 
   }
 
+  updateUserInLocal(user) {
+    this.storage.get('data').then((data) => {
+      if (data) {
+        data.result[0] = user;
+        this.storage.set("data",data);
+        this.storage.set("user",user);
+        this.userService.setUser(user);
+        this.dataService.permission = this.userService.getPermission(user);
+        this.dataService.me = user;
+      }
+    });
+  }
+
   settings() {
 
     if (this.showSettings) {
@@ -472,7 +505,7 @@ export class UserProfilePage {
 
   fieldUpdate() {
     console.log('text changing');
-    this.profileChanged = true;
+    this.profileChanged = true;    
   }
 
   sizeUpdate() {
@@ -486,12 +519,13 @@ export class UserProfilePage {
       this.showLoading('Updating ..');
 
       let cleanUser = this.user;
-      cleanUser.image = "";
-      cleanUser.image = cleanUser.id + '.png';
+      // cleanUser.image = "";
+      // cleanUser.image = cleanUser.id + '.png';
       this.dataService.updateProfile(cleanUser).subscribe(data => {
 
         if (data.message == "Successful") {
           this.profileChanged = false;
+          this.updateUserInLocal(cleanUser);
           this.loading.dismissAll();
           this.user.image = this.dataService.apiUrl + 'images/' + this.user.image;
 
@@ -503,12 +537,15 @@ export class UserProfilePage {
       });
 
     } else if (this.sizesChanged) {
-
+      console.log("this size",this.size);
       this.showLoading('Updating ..');
-      this.dataService.updateSize(this.size);
-      this.sizesChanged = false;
-      this.loading.dismissAll();
-
+      this.dataService.updateSize(this.size).subscribe((res)=> {
+        this.sizesChanged = false;
+        this.loading.dismissAll();
+      },(err)=> {
+        this.sizesChanged = false;
+        this.loading.dismissAll();
+      });
     }
 
 

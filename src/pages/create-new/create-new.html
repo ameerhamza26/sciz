@@ -1,12 +1,10 @@
 <!--
-  Generated template for the CreateNewPage page.
+Generated template for the CreateNewPage page.
 
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
+See http://ionicframework.com/docs/components/#navigation for more info on
+Ionic pages and navigation.
 -->
-<ion-header>
 
-</ion-header>
 
 
 <ion-content class="createNew">
@@ -42,10 +40,10 @@
 
   <div *ngIf="create" style=" padding-top: 5%;">
 
-  <ion-card color="black" >
-    <ion-card-header >
-      <h2>New Post</h2>
-    </ion-card-header>
+    <ion-card color="black" >
+      <ion-card-header >
+        <h2>New Post</h2>
+      </ion-card-header>
 
       <img *ngIf="post.imageUrl != ''" src="{{post.imageUrl}}"  (click)="getPicture(post)" >
 
@@ -59,10 +57,10 @@
         <ion-input type="text" placeholder="Leroy Nguyen" [(ngModel)]="title" text-right></ion-input>
       </ion-item>
 
-    <ion-item>
-      <ion-label floating>Sub Title</ion-label>
-      <ion-input type="text"  placeholder="A W 14" [(ngModel)]="subTitle" text-right></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label floating>Sub Title</ion-label>
+        <ion-input type="text"  placeholder="A W 14" [(ngModel)]="subTitle" text-right></ion-input>
+      </ion-item>
 
       <ion-item>
         <ion-label floating>Description</ion-label>
@@ -72,46 +70,46 @@
       <ion-item no-lines>
         <ion-label floating>Lookbook</ion-label>
         <ion-select [(ngModel)]="lookbook" placeholder="Lookbook Style" text-right >
-         <!-- <ion-option value="vertical">Vertical</ion-option> -->
+          <!-- <ion-option value="vertical">Vertical</ion-option> -->
           <ion-option value="horizontal">Horizontal</ion-option>
           <ion-option value="leroy">Leroy</ion-option>
         </ion-select>
       </ion-item>
 
 
-  </ion-card>
+    </ion-card>
 
 
     <ion-card color="black" *ngFor="let page of pages; let i = index"  >
 
       <div (click)="showPage(page)">
-      <ion-card-header  >
-        <ion-row  >
-          <ion-col><h2><b>Page {{i +1}}</b></h2></ion-col>
-          <ion-col text-right><ion-icon style="font-size: 30px;" name="close" color="main" (click)="minus(i)"></ion-icon></ion-col>
+        <ion-card-header  >
+          <ion-row  >
+            <ion-col><h2><b>Page {{i +1}}</b></h2></ion-col>
+            <ion-col text-right><ion-icon style="font-size: 30px;" name="close" color="main" (click)="minus(i)"></ion-icon></ion-col>
           </ion-row>
-      </ion-card-header>
+        </ion-card-header>
       </div>
 
 
 
-        <img *ngIf="page.imageUrl != ''  && (page == selectedRecord)" src="{{page.imageUrl}}"  (click)="getPicture(page)" >
+      <img *ngIf="page.imageUrl != ''  && (page == selectedRecord)" src="{{page.imageUrl}}"  (click)="getPicture(page)" >
 
-        <ion-item  *ngIf="page.imageUrl == '' && (page == selectedRecord)" >
-          <button ion-button block (click)="getPicture(page)" large color="light"><ion-icon style="font-size: 30px;" name="camera" color="main"></ion-icon></button>
-        </ion-item>
+      <ion-item  *ngIf="page.imageUrl == '' && (page == selectedRecord)" >
+        <button ion-button block (click)="getPicture(page)" large color="light"><ion-icon style="font-size: 30px;" name="camera" color="main"></ion-icon></button>
+      </ion-item>
 
     </ion-card>
 
 
 
-  <ion-row>
-    <ion-col><button ion-button color="main" block  (click)="add()" large >Add Picture/Page </button></ion-col>
-   </ion-row>
+    <ion-row>
+      <ion-col><button ion-button color="main" block  (click)="add()" large >Add Picture/Page </button></ion-col>
+    </ion-row>
 
-  <ion-row>
-    <ion-col><button ion-button color="black"  block  (click)="goBack()" large >Cancel </button></ion-col>
-    <ion-col><button ion-button color="black" block  (click)="preview()" large >Preview </button></ion-col>
+    <ion-row>
+      <ion-col><button ion-button color="black"  block  (click)="goBack()" large >Cancel </button></ion-col>
+      <ion-col><button ion-button color="black" block  (click)="preview()" large >Preview </button></ion-col>
     </ion-row>
 
   </div>

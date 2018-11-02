@@ -66,14 +66,14 @@ export class PaymentHistoryPage {
       data.forEach( data => {
 
         var formatted_data = Object.keys(data.val()).map(e => data.val()[e])
-
+        var date;
         if (formatted_data[0].externalPayment == 'false'){
-          var date = new Date(formatted_data[0].data.tx.createdAt);
+          date = new Date(formatted_data[0].data.tx.createdAt);
           formatted_data[0].data.tx.createdAt = date.toUTCString()
         }
 
         else {
-          var date = new Date(formatted_data[0].data.transactions[0].date_created);
+          date = new Date(formatted_data[0].data.transactions[0].date_created);
           formatted_data[0].data.transactions[0].date_created = date.toUTCString()
         }
 
@@ -357,9 +357,12 @@ export class RaveModalContentPage {
   }
 
   sendFinalConfirmationEmail(details) {
-
+    var body;
+    var paymentId;
+    var paymentKey;
+    var userCode;
     if (details.externalPayment == 'true'){
-      var body = {
+      body = {
         sender : this.user.name + ' ' + this.user.email,
         provider : details.metadata.name + ' ' + details.metadata.email,
         amount : details.data.transactions[0].amount,
@@ -370,14 +373,14 @@ export class RaveModalContentPage {
         bankAccountSortCode : details.metadata.bankAccountSortCode
       }
 
-      var paymentId = '' + details.id;
-      var paymentKey = '' + details.key;
-      var userCode = '' + this.user.code;
+      paymentId = '' + details.id;
+      paymentKey = '' + details.key;
+      userCode = '' + this.user.code;
 
     }
 
     else {
-      var body = {
+      body = {
         sender : this.user.name + ' ' + this.user.email,
         provider : details.metadata.name + ' ' + details.metadata.email,
         amount : details.data.tx.amount,
@@ -388,9 +391,9 @@ export class RaveModalContentPage {
         bankAccountSortCode : details.metadata.bankAccountSortCode
       }
 
-      var paymentId = '' + details.id;
-      var paymentKey = '' + details.key;
-      var userCode = '' + this.user.code;
+      paymentId = '' + details.id;
+      paymentKey = '' + details.key;
+      userCode = '' + this.user.code;
 
     }
 
