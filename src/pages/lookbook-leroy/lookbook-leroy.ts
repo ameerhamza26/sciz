@@ -2,7 +2,7 @@ import { ViewChild, OnInit } from '@angular/core';
 import { Content } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { ProfilePage } from '../profile/profile';
-import { NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, AlertController, Events } from 'ionic-angular';
 import { Slides } from 'ionic-angular';
 import { UserProfilePage } from '../../pages/user-profile/user-profile';
 
@@ -47,7 +47,8 @@ export class LookbookLeroyPage implements OnInit {
   tags: any;
   lookbook: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider, private errorHandler: ErrorHandlerProvider, public userService: UserService) {
+  constructor(public navCtrl: NavController, 
+    public events: Events, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private alertCtrl: AlertController,private socialShare: SocialShareProvider, private errorHandler: ErrorHandlerProvider, public userService: UserService) {
 
     this.pages = navParams.get('pages');
     this.mode = navParams.get('mode');
@@ -69,7 +70,7 @@ export class LookbookLeroyPage implements OnInit {
         });
 
         this.loading.present().then(()=> {
-          this.dataService.getUserByCode(this.post.userCode).subscribe((res)=>{
+          this.dataService.getUserById(this.post.userCode).subscribe((res)=>{
             if (res.json().data.length>0) {
               this.user = res.json().data[0];
             }
@@ -337,9 +338,11 @@ export class LookbookLeroyPage implements OnInit {
                       Promise.all(promises_array).then((data)=> {
                         console.log("dataaa",data);
                         this.dataService.saveNewInspiration(this.post, data).subscribe( (data) => {
-                          this.navCtrl.parent.select(0);
-                          this.loading.dismissAll();
+                          
                           if(data.status) {
+                            this.navCtrl.parent.select(0);
+                            this.loading.dismissAll();
+                            this.events.publish('inpiration:created', this.post, Date.now());
                             console.log("SAVED INSPIRATION");
                             console.log(data);
                           }
@@ -360,21 +363,23 @@ export class LookbookLeroyPage implements OnInit {
                             try {
                                 if(data.status) {
                                     console.log(data);
-                                    //  this.loading.dismissAll();
+                                      this.loading.dismissAll();
                                     this.navCtrl.parent.select(0);
+                                    this.events.publish('inpiration:created', this.post, Date.now());
                                 }
                                 else{
+                                  this.loading.dismissAll();
                                     this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                                 }
 
                             } catch (error) {
-                                //   this.loading.dismissAll();
+                                this.loading.dismissAll();
                                 this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                                 console.log('inspiration save error');
                             }
                         });
                         //  this.loading.dismissAll();
-                        this.navCtrl.parent.select(0);
+                        //this.navCtrl.parent.select(0);
                     }
                 }
                 else {
@@ -386,7 +391,7 @@ export class LookbookLeroyPage implements OnInit {
                   this.loading.dismissAll();
                   this.presentAlert('Oops', 'Please try again');
                 } */
-                this.navCtrl.parent.select(0);
+                //this.navCtrl.parent.select(0);
             });
         }
         else if (this.mode == 'edit') {
@@ -488,9 +493,9 @@ export class LookbookLeroyPage implements OnInit {
       content: message
     });
     this.loading.present();
-    setTimeout(() => {
-      this.loading.dismiss();
-    }, 5000);
+    // setTimeout(() => {
+    //   this.loading.dismiss();
+    // }, 5000);
   }
 
   presentAlert(title, message) {
@@ -533,19 +538,22 @@ export class LookbookLeroyPage implements OnInit {
     console.log(this.userService.user.code)
     let user = this.dataService.users.filter(item => item.code == code)[0];
 
-    if (this.userService.user.code == code){
-      this.navCtrl.setRoot(UserProfilePage,{
-        view:'service'
-      });
-      this.navCtrl.parent.select(2);
+    if (this.mode != "preview") {
+      if (this.userService.user.code == code){
+        this.navCtrl.setRoot(UserProfilePage,{
+          view:'service'
+        });
+        this.navCtrl.parent.select(2);
+      }
+  
+      else {
+        this.navCtrl.push(ProfilePage,{
+          userCode:this.user.id,
+          view:'service'
+        });
+      }
     }
 
-    else {
-      this.navCtrl.push(ProfilePage,{
-        userCode:this.user.id,
-        view:'service'
-      });
-    }
   }
 
 

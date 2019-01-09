@@ -85,7 +85,7 @@ export class ProfilePage {
     });
   
     this.loading.present().then(()=> {
-      this.dataService.getUserByCode(this.userCode).subscribe((res)=> {
+      this.dataService.getUserById(this.userCode).subscribe((res)=> {
         this.user= res.json().data[0];
         this.dataService.getCreationByUser(this.user.id).subscribe((res)=> {
           this.creations = res.json().result;

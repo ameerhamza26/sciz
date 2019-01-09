@@ -312,12 +312,12 @@ export class CreationPage {
 
     //name validation
     else if (this.creation.name.length === 0){
-      this.presentAlert('Error','A name is required');
+      this.presentAlert('Error', "You can't post without naming your item");
     }
 
     //description validation
     else if (this.creation.description.length === 0){
-      this.presentAlert('Error','A description is required');
+      this.presentAlert('Error',"You can't post without adding a description");
     }
 
     //price validation
@@ -411,12 +411,12 @@ export class CreationPage {
 
       //name validation
       else if (this.creation.name.length === 0){
-        this.presentAlert('Error','A name is required');
+        this.presentAlert('Error', "You can't post without naming your item");
       }
 
       //description validation
       else if (this.creation.description.length === 0){
-        this.presentAlert('Error','A description is required');
+        this.presentAlert('Error',"You can't post without adding a description");
       }
 
       // price validation
@@ -501,12 +501,12 @@ export class CreationPage {
 
       //name validation
       else if (this.creation.name.length === 0){
-        this.presentAlert('Error','A name is required');
+        this.presentAlert('Error', "You can't post without naming your item");
       }
 
       //description validation
       else if (this.creation.description.length === 0){
-        this.presentAlert('Error','A description is required');
+        this.presentAlert('Error',"You can't post without adding a description");
 
       }
 

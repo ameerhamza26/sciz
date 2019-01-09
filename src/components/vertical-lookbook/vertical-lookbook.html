@@ -10,7 +10,7 @@
         <h1 *ngIf="dataService.lookbook.likes > 0" class="post-likes"><span style="padding:16px" ><ion-icon name="heart" item-start color="danger"></ion-icon> {{dataService.lookbook.likes}}</span></h1>
       </div>
     </ion-slide>
-    
+
   </ion-slides>
   <div>
     <ion-row style="color:white;">
@@ -23,7 +23,7 @@
   </div>
   <div  *ngFor="let page of dataService.lookbookPages" class="center">
 
-    <img src={{page.imageUrl}}  >
+    <img src={{page.imageUrl}} onError="this.src='./assets/images/image.png';">
     <ion-row>
       <ion-col col-4 text-right *ngIf="!(editing || creating)" class="animated flipInX">
         <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.liked)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
@@ -46,7 +46,7 @@
               <ion-list >
                 <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
                   <ion-avatar item-start>
-                    <img src="{{getImage(tag)}}" class="center" >
+                    <img src="{{getImage(tag)}}" onError="this.src='./assets/images/image.png';" class="center" >
                   </ion-avatar>
                   <h3>{{getUser(tag)}}</h3>
                 </ion-item>

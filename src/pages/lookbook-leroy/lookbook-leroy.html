@@ -22,7 +22,7 @@
   </ion-fab>
   <h1 style="color:#fff">Lookbook Leeroy</h1>
   <div *ngIf="showImage">
-    <img src={{imageLink}} (click)="closeImage()">
+    <img src={{imageLink}} onError="this.src='./assets/images/image.png';" (click)="closeImage()">
   </div>
 
   <ion-slides (ionSlideDidChange)="slideChanged()" style="height: 100%" >
@@ -63,7 +63,7 @@
               <button ion-button color="light" small outline *ngIf="dataService.permission == 'customer' && !(page.isLikedByMe)" (click)="like(page)" >   <ion-icon name="heart" item-start color="danger"></ion-icon> &nbsp; Like</button>
             </ion-col>
           <ion-col col-8 (click)="viewImage(page.imageUrl)" [style.background-image]="' url('+page.imageUrl+')'" style="background-position:center; background-size: 100%; background-repeat:no-repeat;">
-            <img src="./assets/images/placeholder.png">
+            <img src="./assets/images/image.png" onError="this.src='./assets/images/image.png';">
           </ion-col>
 
           <ion-col col-1></ion-col>
@@ -83,7 +83,7 @@
               <ion-list>
                 <ion-item *ngFor="let tag of tags" color="clear" (click)="openProfile(tag)" no-lines>
                   <ion-avatar item-start>
-                    <img src="{{getImage(tag)}}" class="center">
+                    <img src="{{getImage(tag)}}" onError="this.src='./assets/images/image.png';" class="center">
                   </ion-avatar>
                   <h3>{{user.name}}</h3>
                 </ion-item>

@@ -46,7 +46,7 @@ export class CreateNewPage {
   title: any = "";
   subTitle: any = "";
   description: any = "";
-  lookbook: any = "";
+  lookbook: any = "horizontal";
   index: any;
   post: any;
   selectedRecord: any;
@@ -109,7 +109,7 @@ export class CreateNewPage {
 
     this.code = 'inspiration' + text;
 
-    this.post = new Post(0, this.code, this.dataService.me.id, '', '', '', '', 0, '');
+    this.post = new Post(0, this.code, this.dataService.me.id, '', '', '', '', 0, 'horizontal');
     this.post.imageUrl = "";
   }
 
@@ -175,29 +175,32 @@ export class CreateNewPage {
 
     //title
     else if (this.post.title.length === 0) {
-      this.presentAlert('Error','A title is required');
+      this.presentAlert('Error',"You can't post without adding a title");
     }
 
     //description
     else if (this.post.description.length === 0) {
-      this.presentAlert('Error','A description is required');
+      this.presentAlert('Error',"You can't post without adding a description");
     }
 
     //type
     else if (this.post.type.length === 0) {
-      this.presentAlert('Error','A lookbook style is required');
+      this.presentAlert('Error','A lookbook style must be selected');
     }
 
     //length of pages
     else if (this.post.pages.length === 0) {
-      this.presentAlert('Error','No pages added');
+      this.presentAlert('Error','No pages have been added');
     }
 
     else {
       console.log('preview page', this.post);
       console.log('open ' + this.lookbook);
       var modesection = this.mode;
-      console.log(this.pages)
+      console.log(this.mode)
+      console.log(this.pages);
+      this.create = false;
+
       if (this.lookbook == 'vertical' || this.lookbook == 'horizontal') {
         this.navCtrl.push(LookbookPage, {
           mode: (modesection == 'edit') ? 'edit' : 'preview',
@@ -413,8 +416,25 @@ export class CreateNewPage {
   }
 
   goBack() {
-    this.create = false;
-  }
+
+    console.log(this.navCtrl.canGoBack())
+
+
+      this.create = false;
+      this.title = "";
+      this.subTitle = "";
+      this.description = "";
+      this.pageCount = 0;
+      this.pages = [];
+
+      if (this.navCtrl.canGoBack()){
+        this.navCtrl.pop();
+      }
+      else {
+        this.navCtrl.parent.select(4);
+      }
+
+    }
 
 
 

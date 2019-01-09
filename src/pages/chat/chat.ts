@@ -88,11 +88,11 @@ export class ChatPage {
 */
 
   /* SEND PUSH NOTIFICATIONS TO THE USERS PHONE WHEN A MESSAGE IS SENT */
-  sendNotification(name, receiver) {
+  sendNotification(name, message, receiver) {
     let body = {
       "notification":{
-        "title":"New Notification",
-        "body":"New message from " + name,
+        "title": name,
+        "body": message,
         "sound":"default",
         "click_action":"FCM_PLUGIN_ACTIVITY",
         "icon":"fcm_push_icon"
@@ -230,10 +230,12 @@ export class ChatPage {
             messagecode: this.messageCode,
             user: this.user.code,
             participant: this.provider.code,
+            participantavatar: '',
             displayname: this.provider.name,
             sender: true,
+            senderavatar: '',
             image: true,
-            message: this.apiImageURL + 'images/' + this.messageCode + '.png',
+            message: this.apiImageURL + data.imageName,
             timestamp: this.dateTime.toString()
 
           }).then( () => {
@@ -248,10 +250,12 @@ export class ChatPage {
             messagecode: this.messageCode,
             user: this.user.code,
             participant: this.provider.code,
+            participantavatar: '',
             displayname: this.provider.name,
             sender: false,
+            senderavatar: '',
             image: true,
-            message: this.apiImageURL + 'images/' + this.messageCode + '.png',
+            message: this.apiImageURL + data.imageName,
             timestamp: this.dateTime.toString()
           }).then( () => {
             //message successfully sent
@@ -260,8 +264,9 @@ export class ChatPage {
             this.subscription = this.db.list('/' + 'devices' + '/' + this.provider.code);
             this.subscription.subscribe(snapshots => {
               if (snapshots.length > 0){
-                this.sendNotification(this.provider.name, snapshots[0].$value)
+                this.sendNotification(this.user.name, "Image", snapshots[0].$value)
               }
+              this.message = '';
             })
 
           }).catch( () => {
@@ -278,7 +283,6 @@ export class ChatPage {
         this.presentAlert('Oops','Please try again');
       }
     });
-    this.message = '';
   }
 
   /*
@@ -299,8 +303,10 @@ export class ChatPage {
       messagecode: this.generateCode(),
       user: this.user.code,
       participant: this.provider.code,
+      participantavatar: '',
       displayname: this.provider.name,
       sender:true,
+      senderavatar: '',
       image: false,
       message: this.message,
       timestamp: this.dateTime.toString()
@@ -315,8 +321,10 @@ export class ChatPage {
       messagecode: this.generateCode(),
       user: this.user.code,
       participant: this.provider.code,
+      participantavatar: '',
       displayname: this.user.name,
       sender:false,
+      senderavatar: '',
       image: false,
       message: this.message,
       timestamp: this.dateTime.toString()
@@ -326,8 +334,10 @@ export class ChatPage {
       this.subscription = this.db.list('/' + 'devices' + '/' + this.provider.code);
       this.subscription.subscribe(snapshots => {
         if (snapshots.length > 0){
-          this.sendNotification(this.provider.name, snapshots[0].$value)
+          console.log(this.message)
+          this.sendNotification(this.user.name, this.message, snapshots[0].$value)
         }
+        this.message = '';
       })
 
     }).catch( (err) => {
@@ -335,8 +345,6 @@ export class ChatPage {
       console.log(err)
       this.presentAlert('Error','Unable to send message at this time, please try again later')
     });
-
-    this.message = '';
   }
 
 

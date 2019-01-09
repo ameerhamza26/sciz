@@ -6,14 +6,14 @@
 -->
 <ion-header>
   <ion-navbar>
-    <ion-title>{{lookbook == 'horizontal' ? 'Horizontal' : 'Leroy'}} Lookbook</ion-title>
+    <ion-title>Lookbook</ion-title>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content class="lookbook">
 
-<!-- 
+<!--
   <ion-fab padding top left>
     <button ion-fab mini color="main"  (click)="goBack()"><ion-icon name="close"></ion-icon></button>
   </ion-fab> -->
@@ -26,7 +26,7 @@
 
 
   <vertical-lookbook  class="vertical" *ngIf="lookbook == 'vertical'"></vertical-lookbook >
-  <horizontal-lookbook  class="horizontal" *ngIf="lookbook == 'horizontal'" user="user"></horizontal-lookbook >
+  <horizontal-lookbook  class="horizontal" [mode]="mode" *ngIf="lookbook == 'horizontal'" user="user"></horizontal-lookbook >
 
 
 

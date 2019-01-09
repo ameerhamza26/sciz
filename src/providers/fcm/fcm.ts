@@ -3,6 +3,7 @@ import { Platform } from 'ionic-angular';
 import { UserService } from '../user-service';
 import {DataService} from '../data-service';
 import { AngularFireDatabase } from 'angularfire2/database';
+import { AuthService } from '../../app/auth.service'
 
 @Injectable()
 export class FcmProvider {
@@ -10,7 +11,7 @@ export class FcmProvider {
   user:any;
   subscription;
 
-  constructor(public db: AngularFireDatabase, private platform: Platform, public userService:UserService, public dataService: DataService) {
+  constructor(public db: AngularFireDatabase, private platform: Platform, public userService:UserService, public dataService: DataService, public auth: AuthService) {
   }
 
   //Get token from db
@@ -32,6 +33,4 @@ export class FcmProvider {
     //some error and the message wasn't sent
     });
   }
-
-
 }

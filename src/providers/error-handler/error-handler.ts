@@ -37,7 +37,7 @@ export class ErrorHandlerProvider {
         {
             signup:
             [
-                {title:"Sign up",msg:"Successful. Welcome to the Scizzor"},
+                {title:"Sign up",msg:"Successful. Welcome to Scizzor"},
             ]
         },
         error:

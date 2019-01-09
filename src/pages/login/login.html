@@ -7,7 +7,7 @@
 <ion-header>
 </ion-header>
 <ion-content class="login">
-  <img src="./assets/images/ogo.jpeg" class="mid_img">
+  <img [hidden]="hideLogo" src="./assets/images/ogo.jpeg" onError="this.src='./assets/images/des1.jpeg';" class="mid_img">
   <ion-grid>
     <ion-row>
       <ion-col>
@@ -24,9 +24,14 @@
             </ion-label>
             <ion-input [(ngModel)]="password" type="password" placeholder="Password" text-left></ion-input>
           </ion-item>
+
         </ion-list>
         <button color="main" ion-button block (click)="login()" large>Login</button>
         <button color="black" ion-button block (click)="signUp()" large>Sign Up</button>
+        <div></div>
+        <div class="forgot-password-text"  (click)="forgotPassword()">
+          FORGOT PASSWORD?
+        </div>
       </ion-col>
     </ion-row>
   </ion-grid>

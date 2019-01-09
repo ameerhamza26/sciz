@@ -1,6 +1,6 @@
 import { Component , OnInit} from '@angular/core';
 import { NavController, NavParams, ActionSheetController, ModalController, AlertController } from 'ionic-angular';
-import { LoadingController } from 'ionic-angular';
+import { LoadingController, Events } from 'ionic-angular';
 import { LookbookPage } from '../lookbook/lookbook';
 import { LookbookLeroyPage } from '../lookbook-leroy/lookbook-leroy';
 import { LookbookFlipPage } from '../lookbook-flip/lookbook-flip';
@@ -12,8 +12,12 @@ import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler"
 import {Storage} from "@ionic/storage";
 import {ProfilePage} from "../profile/profile";
 import {ScizzorPage} from "../scizzor/scizzor";
+import { LoginPage } from '../login/login'
 import { Post } from "../../models/post-model";
-
+import { AuthService } from '../../app/auth.service'
+import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
+import { App } from 'ionic-angular';
+import { InspirationModalPage } from "../inspiration-modal/inspiration-modal"
 /**
  * Generated class for the InspirationPage page.
  *
@@ -41,12 +45,31 @@ export class InspirationPage implements OnInit {
   timestapm = Date.now();
 
   imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
-  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController, 
-    public loadingCtrl: LoadingController,private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public actionSheetCtrl: ActionSheetController, public dataService: DataService, public modalCtrl: ModalController, private alertCtrl: AlertController,
+    public loadingCtrl: LoadingController, public events: Events,
+    private erroHandler: ErrorHandlerProvider,private storage: Storage,private errorHandler:ErrorHandlerProvider, afAuth: AngularFireAuth, private app: App, public auth: AuthService) {
+
+      // Authenticate in firebase for chat functionality
+      /*
+        afAuth.authState.subscribe(auth => {
+          if(auth) {
+            console.log('logged in firebase');
+          } else {
+            console.log('not logged in firebase');
+            this.storage.clear()
+            this.app.getRootNav().push(LoginPage);
+          }
+        });
+        */
 
       console.log("INSPIRATION CONSTR",this.dataService.posts);
     //  this.itemMiddle = Math.floor(this.images.length / 2); //Live magazines
      // this.postLength = this.images.length;
+     events.subscribe('inpiration:created', (inspiration, time) => {
+      // user and time are the same arguments passed in `events.publish(user, time)`
+      console.log(inspiration, 'at', time);
+      this.ngOnInit();
+    });
   }
 
   ngOnInit() {
@@ -61,11 +84,11 @@ export class InspirationPage implements OnInit {
       content: "Please wait..."
     });
     this.offset = 0;
-    this.limit = 4;
+    this.limit = 8;
     this.loading.present().then(()=> {
       this.dataService.getInspirations(this.offset,this.limit).subscribe((res) => {
         let data = res.json();
-        
+
         for (let inspiration of data.result) {
             let image =  inspiration.image;
             inspiration.image = image;
@@ -78,7 +101,6 @@ export class InspirationPage implements OnInit {
                 pages.imageUrl = this.imageBaseUrl + pages.image;
               }
             }
-           
             inspiration.totalLikes = likes;
             /* inspirationPages.forEach((page, index) => {
                   pageLikes = this.likes.filter(item => item.creationCode == page.code);
@@ -99,6 +121,16 @@ export class InspirationPage implements OnInit {
       })
     });
   }
+
+  ionViewDidEnter(){
+    this.storage.get('show_instructions').then((showInstructions)=> {
+      if (showInstructions == null || showInstructions == false) {
+        const home = this.modalCtrl.create(InspirationModalPage);
+        home.present();
+      }
+    });
+  }
+
 
     ionViewWillEnter() {
         console.log("ENTER INSPIRATION");
@@ -224,7 +256,7 @@ export class InspirationPage implements OnInit {
   }
 
   editLookbook(post2Edit) {
-    this.navCtrl.setRoot(CreateNewPage, {
+    this.navCtrl.push(CreateNewPage, {
       mode: 'edit',
       post: post2Edit
     });
@@ -312,7 +344,7 @@ export class InspirationPage implements OnInit {
                 pages.imageUrl = this.imageBaseUrl + pages.image;
               }
             }
-           
+
             inspiration.totalLikes = likes;
             /* inspirationPages.forEach((page, index) => {
                   pageLikes = this.likes.filter(item => item.creationCode == page.code);
@@ -329,7 +361,7 @@ export class InspirationPage implements OnInit {
         }
 
       })
-  
+
       console.log('Async operation has ended');
       infiniteScroll.complete();
     }, 1000);

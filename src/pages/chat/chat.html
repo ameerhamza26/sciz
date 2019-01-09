@@ -22,7 +22,7 @@ Ionic pages and navigation.
         <div *ngIf="message.image == false" class="timestamp">{{message.timestamp.slice(0,21)}}</div>
         <div *ngIf="message.image == true">
           <a class="imgzoom" (click)="openModal({imageurl : message.message})">
-            <img class="imagemessage" src="{{message.message}}"  style="object-fit: cover;">
+            <img class="imagemessage" src="{{message.message}}" onError="this.src='./assets/images/image.png';" style="object-fit: cover;">
           </a>
         </div>
         <div *ngIf="message.image == true" class="timestamp">{{message.timestamp.slice(0,21)}}</div>

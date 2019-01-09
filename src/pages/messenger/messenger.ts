@@ -65,9 +65,11 @@ export class MessengerPage {
   }
 
   deleteMessage(user,participant) {
-    const items = this.db.list('/' + this.user.id);
+    console.log(user)
+    console.log(participant)
+    const items = this.db.list('/' + 'chats' + '/' + this.user.code);
     this.listofchatsdb.forEach(function(value, key) {
-      if ((value as any).participant == participant){
+      if (((value as any).participant == participant) || (value as any).user == participant){
       console.log(key)
       console.log(value)
         items.remove(key)
@@ -75,7 +77,7 @@ export class MessengerPage {
       });
 
     for (var i = 0; i < this.chatlist.length; i++) {
-      if ((this.chatlist[i] as any).participant === participant) {
+      if (((this.chatlist[i] as any).participant === participant) || ((this.chatlist[i] as any).user === participant)) {
         this.chatlist.splice(i,1);
         }
       }
@@ -157,6 +159,8 @@ export class MessengerPage {
 
       this.listofchats.forEach((value: object [], key: string) => {
         console.log(key, value);
+        this.setParticipantAvatar(value)
+        this.setSenderAvatar(value)
         this.chatlist.push(value)
       });
       //this.chatlist.reverse();
@@ -174,14 +178,23 @@ export class MessengerPage {
 
   }
 
-  getAvatar(chat){
-    console.log(chat);
-  let tempUser = this.dataService.users.filter(item => item.code == chat)[0];
-  if(tempUser != undefined)
-    return tempUser.image;
-  else
-    return "";
+  setParticipantAvatar(chat){
+    this.dataService.getUserByCode(chat.participant).subscribe((res)=>{
+      console.log(res.json())
+      if (res.json().message == "Successful" && res.json().data.length > 0){
+        chat.participantavatar = res.json().data[0].imageUrl
+      }
+    })
+  }
 
+  setSenderAvatar(chat){
+    this.dataService.getUserByCode(chat.user).subscribe((res)=>{
+      console.log(res.json())
+      if (res.json().message == "Successful" && res.json().data.length > 0){
+        chat.senderavatar = res.json().data[0].imageUrl
+      }
+    })
+  }
 
 
 /*
@@ -212,10 +225,6 @@ export class MessengerPage {
       return this.dataService.apiUrl + 'images/' + 'astimlee.png';
     }
 */
-
-  }
-
-
 
 
 }

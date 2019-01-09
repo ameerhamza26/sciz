@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import {DataService} from '../../providers/data-service';
 import {UserService} from '../../providers/user-service';
 import { PaymentPage } from '../payment/payment';
@@ -31,8 +31,9 @@ export class ServicePaymentPage {
   serviceDetails:any;
   alert: any;
   minDate: any;
+  loading: any;
 
-  constructor(private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, public userService:UserService, public dataService:DataService) {
+  constructor(private alertCtrl: AlertController, public navCtrl: NavController, public navParams: NavParams, public userService:UserService, public dataService:DataService, public loadingCtrl: LoadingController) {
     this.user = this.userService.user;
     this.sizeCode = this.user.sizeCode;
     this.provider = this.navParams.get('provider');
@@ -44,25 +45,35 @@ export class ServicePaymentPage {
     this.getSizes();
   }
 
-  getSizes() {
-    console.log('getting sizes');
-    this.size = this.dataService.sizes.filter(item => item.sizeCode == this.sizeCode)[0];
-    this.measurement = 'arm length: ' + this.size.arm_length +
-                  ' bust: ' + this.size.bust +
-                  ' chest: ' + this.size.chest +
-                  ' height: ' + this.size.height +
-                  ' high bust: ' + this.size.high_bust +
-                  ' hip: ' + this.size.hip +
-                  ' inside leg: ' + this.size.inside_leg +
-                  ' lower leg: ' + this.size.lower_leg +
-                  ' neck: ' + this.size.neck +
-                  ' neck to waist: ' + this.size.neck_to_waist +
-                  ' shoulder: ' + this.size.shoulder +
-                  ' waist: ' + this.size.waist +
-                  ' waist to floor: ' + this.size.waist_to_floor +
-                  ' weight ' + this.size.weight
 
-    console.log(this.size);
+  getSizes() {
+    console.log(this.user)
+    console.log('getting sizes');
+    this.loading = this.loadingCtrl.create({
+      content: "Please wait..."
+    });
+
+    this.loading.present().then(()=> {
+      this.dataService.getSizesByUserCode(this.user.code).subscribe((res)=> {
+        console.log(res.json());
+        this.size = res.json().result[0];
+        this.loading.dismissAll();
+        this.measurement = 'arm length: ' + this.size.arm_length +
+                      ' bust: ' + this.size.bust +
+                      ' chest: ' + this.size.chest +
+                      ' height: ' + this.size.height +
+                      ' high bust: ' + this.size.high_bust +
+                      ' hip: ' + this.size.hip +
+                      ' inside leg: ' + this.size.inside_leg +
+                      ' lower leg: ' + this.size.lower_leg +
+                      ' neck: ' + this.size.neck +
+                      ' neck to waist: ' + this.size.neck_to_waist +
+                      ' shoulder: ' + this.size.shoulder +
+                      ' waist: ' + this.size.waist +
+                      ' waist to floor: ' + this.size.waist_to_floor +
+                      ' weight ' + this.size.weight
+      })
+    })
   }
 
   presentAlert(title,message) {

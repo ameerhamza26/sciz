@@ -119,8 +119,18 @@ export class DataService {
     return this.http.get(this.apiUrl + 'getUsers').map(res => res.json());
   }
 
+  getUserById(userid) {
+    let getUrl = 'get/' + userid;
+    return this._httpService.getRequest(getUrl)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
+
   getUserByCode(code) {
-    let getUrl = 'get/' + code;
+    console.log(code)
+    let getUrl = 'getUserByCode/' + code;
     return this._httpService.getRequest(getUrl)
     .map((res: Response) => res)
     .catch((error: any) => {
@@ -617,6 +627,43 @@ export class DataService {
 
     return this.http.post(url, body, options).map(response => response.json());
 
+  }
+
+  forgotPassword(email) {
+    let getUrl = 'forgotpassword';
+    let body = {
+      email: email
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
+
+  verifyToken(token) {
+    let getUrl = 'verifytoken';
+    let body = {
+      token: token
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
+  }
+
+  resetPassword(token, password) {
+    let getUrl = 'resetpassword';
+    let body = {
+      token: token,
+      password: password
+    }
+    return this._httpService.postRequest(getUrl, body)
+    .map((res: Response) => res)
+    .catch((error: any) => {
+      return Observable.throw(error);
+    });
   }
 
   saveSize(sizeFile) {

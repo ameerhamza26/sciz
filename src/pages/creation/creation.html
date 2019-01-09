@@ -22,8 +22,8 @@ Ionic pages and navigation.
 
   <div  style="height: 80%;" class="animated fadeIn">
 
-    <img src="{{creation.imageUrl}}" *ngIf="(editing || creating)" (click)="getPicture()" style='height: 100%; width: 100%; object-fit: contain'  >
-    <img src={{creation.imageUrl}} *ngIf="!(editing || creating)" style='height: 100%; width: 100%; object-fit: contain'  >
+    <img src="{{creation.imageUrl}}" onError="this.src='./assets/images/image.png';" *ngIf="(editing || creating)" (click)="getPicture()" style='height: 100%; width: 100%; object-fit: contain'  >
+    <img src={{creation.imageUrl}} onError="this.src='./assets/images/image.png';" *ngIf="!(editing || creating)" style='height: 100%; width: 100%; object-fit: contain'  >
 
   </div>
 

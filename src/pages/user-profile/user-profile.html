@@ -19,8 +19,8 @@
 
       <ion-col col-2>
         <ion-avatar (click)="selectProfileImage()">
-          <img *ngIf="user && user.imageUrl" src="{{user.imageUrl}}"  style="object-fit: cover;">
-          <img *ngIf="user && !user.imageUrl" src="../../assets/images/default.png"  style="object-fit: cover;">
+          <img *ngIf="user && user.imageUrl" src="{{user.imageUrl}}" onError="this.src='./assets/images/default.png';"  style="object-fit: cover;">
+          <img *ngIf="user && !user.imageUrl" src="./assets/images/default.png" onError="this.src='./assets/images/default.png';" style="object-fit: cover;">
         </ion-avatar>
       </ion-col>
 
@@ -114,7 +114,7 @@
 
         <ion-item>
           <ion-icon name="card" item-start color="mail"></ion-icon>
-          <ion-input type="text"  placeholder="Account Holder" [(ngModel)]="user.bankAccountHolder" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
+          <ion-input type="text"  placeholder="Account Name" [(ngModel)]="user.bankAccountHolder" text-right (ngModelChange)="fieldUpdate()" ></ion-input>
         </ion-item>
 
         <ion-item>
@@ -173,8 +173,8 @@
         <ng-container *ngSwitchCase="'likes'">
           <div class="storeholder">
             <div class="post animated fadeIn "  (click)="openLike(creation)"  *ngFor="let creation of likes" [style.background-image]="' url('+creation.image+')'">
-              <img src="../../assets/images/placeholder2.png">
-             
+              <img src="./assets/images/placeholder2.png" onError="this.src='./assets/images/default.png';">
+
             </div>
           </div>
         </ng-container>

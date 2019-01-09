@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, AlertController , Events} from 'ionic-angular';
 import { DataService } from '../../providers/data-service';
 import { ToastController } from 'ionic-angular';
 import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
@@ -26,7 +26,8 @@ export class LookbookPage {
   alert: any;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private errorHandler: ErrorHandlerProvider,private alertCtrl:AlertController) {
+  constructor(public navCtrl: NavController, public events: Events,
+     public navParams: NavParams, public dataService: DataService, private toastCtrl: ToastController, public loadingCtrl: LoadingController, private errorHandler: ErrorHandlerProvider,private alertCtrl:AlertController) {
 
     //get pages, post and mode to operate in
     console.log("LOOKBOOK");
@@ -47,7 +48,7 @@ export class LookbookPage {
   user :any;
   ionViewDidLoad() {
     console.log('ionViewDidLoad LookbookPage');
- 
+
   }
 
 
@@ -133,11 +134,13 @@ export class LookbookPage {
             Promise.all(promises_array).then((data)=> {
 
               this.dataService.saveNewInspiration(this.post, data).subscribe( (data) => {
-                this.navCtrl.parent.select(0);
+                this.navCtrl.parent.select(4)
                 this.loading.dismissAll();
                 if(data.status) {
                   console.log("SAVED INSPIRATION");
                   console.log(data);
+                  this.navCtrl.parent.select(0);
+                  this.events.publish('inpiration:created', this.post, Date.now());
                 }
                 else
                 {
@@ -145,20 +148,23 @@ export class LookbookPage {
                     this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                 }
               });
-              
+
             })
           }
           else {
               console.log("NO PAGES");
             this.dataService.saveNewInspiration(this.post, this.pages).subscribe(data => {
+
               try {
+                this.navCtrl.parent.select(4)
+                this.loading.dismissAll();
                 if(data.status) {
                     console.log(data);
-                    this.loading.dismissAll();
+
                     this.navCtrl.parent.select(0);
+                    this.events.publish('inpiration:created', this.post, Date.now());
                 }
                 else{
-                  this.loading.dismissAll();
                     this.errorHandler.throwError(ErrorHandlerProvider.MESSAGES.error.inspiration[1].title,ErrorHandlerProvider.MESSAGES.error.inspiration[1].msg);
                 }
 
@@ -181,7 +187,7 @@ export class LookbookPage {
           this.loading.dismissAll();
           this.presentAlert('Oops', 'Please try again');
         } */
-        this.navCtrl.parent.select(0);
+        //this.navCtrl.parent.select(0);
       });
     }
     else if (this.mode == 'edit') {

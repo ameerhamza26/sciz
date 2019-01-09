@@ -25,6 +25,9 @@ export class HorizontalLookbook implements OnInit {
 
   @Input()
   user: any;
+
+  @Input()
+  mode;
   loading: any;
   pages: Array<any> = new Array<any>();
   imageBaseUrl = "https://storingimagesandvideos.s3.us-east-2.amazonaws.com/";
@@ -37,9 +40,11 @@ export class HorizontalLookbook implements OnInit {
     this.loading = this.loadingCtrl.create({
       content: "Please wait..."
     });
+    
+    
 
     this.loading.present().then(()=> {
-      this.dataService.getUserByCode(this.dataService.lookbook.userCode).subscribe((res)=>{
+      this.dataService.getUserById(this.dataService.lookbook.userCode).subscribe((res)=>{
         if (res.json().data.length>0) {
           this.user = res.json().data[0];
         }
@@ -108,19 +113,22 @@ export class HorizontalLookbook implements OnInit {
     let user = this.dataService.users.filter(item => item.id == code)[0];
     console.log(user)
 
-    if (this.userService.user.id == code){
-      this.navCtrl.setRoot(UserProfilePage,{
-        view:'service'
-      });
-      this.navCtrl.parent.select(2);
+    if (this.mode != "preview") {
+      if (this.userService.user.id == code){
+        this.navCtrl.setRoot(UserProfilePage,{
+          view:'service'
+        });
+        this.navCtrl.parent.select(2);
+      }
+  
+      else {
+        this.navCtrl.push(ProfilePage,{
+          userCode: this.user.id,
+          view:'service'
+        });
+      }
     }
-
-    else {
-      this.navCtrl.push(ProfilePage,{
-        userCode: this.user.id,
-        view:'service'
-      });
-    }
+    
   }
 
   checkLiked(){

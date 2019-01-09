@@ -131,13 +131,14 @@ page-inspiration {
 
 
   .pin{
-    display:inline-block;
     margin-bottom:7px;
     margin-top:7px;
     height:180px;
-    box-shadow: 0px 2px 8px 3px #000000;
+    //box-shadow: 0px 2px 8px 3px #000000;
     background-size: cover!important;
     background-repeat: no-repeat!important;/*background-position: center center;*/
+    background-position: 50% 50%;
+    border-radius: 5px;
    // border-radius: 7px;
    // background:#414a4c!important;
   }
@@ -274,5 +275,11 @@ page-inspiration {
     font-size: 18px;
     right: 10px;
   }
+
+  .pins {
+        column-count: 2;
+        padding: 5px;
+  }
+
 
 }

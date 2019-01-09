@@ -26,7 +26,7 @@
 
       <ion-slide class="slide"  *ngFor="let page of pages; let i = index" (click)="goToSlide(page)"  [ngClass]="{'animated flipOutY' : !(page.show)}" [ngClass]="{'animated rotateOutUpRight !important' : (page.show)}"  >
 
-        <img src="{{page.image}}" class="center"   >
+        <img src="{{page.image}}" onError="this.src='./assets/images/image.png';" class="center"   >
 
       </ion-slide>
 

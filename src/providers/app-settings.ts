@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 const CONFIG = {
   apiURL: 'http://ec2-18-223-124-121.us-east-2.compute.amazonaws.com/',
   //apiURL: 'http://192.168.0.2:9000/',
-  apiImageURL: 'http://ec2-18-223-124-121.us-east-2.compute.amazonaws.com/',
+  apiImageURL: 'https://storingimagesandvideos.s3.us-east-2.amazonaws.com/',
   //apiImageURL: 'http://192.168.0.2:9000/',
   raveURL: 'http://ec2-18-223-124-121.us-east-2.compute.amazonaws.com/',
   //raveURL: 'http://192.168.0.2:9000/',

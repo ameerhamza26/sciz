@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {NavController, NavParams, LoadingController, Platform} from 'ionic-angular';
+import {NavController, NavParams, LoadingController, Platform } from 'ionic-angular';
 import { SignUpPage } from '../sign-up/sign-up';
 import { TabsPage } from '../tabs/tabs';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -12,7 +12,10 @@ import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler"
 import {InspirationPage} from "../inspiration/inspiration";
 import {ProfilePage} from "../profile/profile";
 import {ScizzorPage} from "../scizzor/scizzor";
-
+import { Keyboard } from '@ionic-native/keyboard';
+import { ForgotPassword } from "../forgot-password/forgot-password"
+import { FCM } from '@ionic-native/fcm';
+import { FcmProvider } from '../../providers/fcm/fcm';
 /**
  * Generated class for the LoginPage page.
  *
@@ -36,7 +39,8 @@ export class LoginPage {
   permission: any;
     Branch;
     branchUniversalObj;
-  constructor(public navCtrl: NavController, public navParams: NavParams, public loadingCtrl: LoadingController, private errorHandlerProvider: ErrorHandlerProvider, public dataService: DataService, public userService: UserService, private storage: Storage,platform: Platform, public auth: AuthService) {
+  constructor(public navCtrl: NavController, private keyboard: Keyboard,
+    public navParams: NavParams, public loadingCtrl: LoadingController, private errorHandlerProvider: ErrorHandlerProvider, public dataService: DataService, public userService: UserService, private storage: Storage, public platform: Platform, public auth: AuthService, public fcmprovider: FcmProvider, private fcm: FCM) {
       const branchInit = () => {
           console.log("Branch init");
           // only on devices
@@ -70,6 +74,11 @@ export class LoginPage {
     this.auth.anonymousLogin();
   }
 
+
+  forgotPassword() {
+    this.navCtrl.push(ForgotPassword);
+  }
+
   login() {
     if ((this.password.length > 6 && this.username.length > 3) || this.username == 'admin') {
       this.showLoading('Logging In...');
@@ -78,8 +87,8 @@ export class LoginPage {
         try {
           this.loading.dismissAll();
           if (data.message == "Successful" && (data.result[0].type == "customer" || data.result[0].type == "service" || data.result[0].type == "admin")) {
+
             this.setUser(data.result[0]);
-            this.signInAnonymously();
             this.storage.set('data', data);
             //this.dataService.getLikes();
             console.log(this.dataService.me);
@@ -88,7 +97,15 @@ export class LoginPage {
             // } else if (data.result[0].type == "admin" || this.dataService.me.type2 == 'Illustrator') {
             //   this.dataService.loadIllustratorPosts();
             // }
-            this.navCtrl.setRoot(TabsPage);
+            this.auth.anonymousLogin().then(() => {
+              if (this.platform.is('ios') || this.platform.is('android')) {
+                this.fcm.getToken().then(token=>{
+                  this.fcmprovider.saveToken(this.dataService.me.code, token);
+                })
+              }
+              this.navCtrl.setRoot(TabsPage)
+            });
+
           } else {
               console.log("ERR 5");
 

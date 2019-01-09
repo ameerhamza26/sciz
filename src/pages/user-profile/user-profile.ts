@@ -15,6 +15,8 @@ import {LookbookLeroyPage} from "../lookbook-leroy/lookbook-leroy";
 import {LookbookPage} from "../lookbook/lookbook";
 import {LookbookFlipPage} from "../lookbook-flip/lookbook-flip";
 import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
+import { FcmProvider } from '../../providers/fcm/fcm';
+import { AuthService } from '../../app/auth.service'
 
 /**
  * Generated class for the UserProfilePage page.
@@ -44,14 +46,14 @@ export class UserProfilePage {
   options: any;
   likes: any = [];
   isPageOpen:boolean;
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public userService: UserService, private app: App, public actionSheetCtrl: ActionSheetController, private camera: Camera, public platform: Platform, private alertCtrl: AlertController, public loadingCtrl: LoadingController, private emailComposer: EmailComposer, private storage: Storage,private errorHandler: ErrorHandlerProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dataService: DataService, public userService: UserService, private app: App, public actionSheetCtrl: ActionSheetController, private camera: Camera, public platform: Platform, private alertCtrl: AlertController, public loadingCtrl: LoadingController, private emailComposer: EmailComposer, private storage: Storage,private errorHandler: ErrorHandlerProvider, public fcmprovider: FcmProvider, public auth: AuthService) {
   }
 
 
   ionViewDidLoad() {
     this.isPageOpen = true;
     console.log('ionViewDidLoad UserProfilePage');
-   
+
   }
 
   ionViewWillEnter() {
@@ -60,7 +62,7 @@ export class UserProfilePage {
       console.log("Ion will enter profile");
       this.isPageOpen = true;
   }
-    
+
   ionViewWillLeave() {
       this.likes = [];
       this.isPageOpen = false;
@@ -130,7 +132,7 @@ export class UserProfilePage {
       if (this.user.type2 == 'Craftsmen') {
         this.options = ['Tailor', 'Shoe Maker'];
       } else if (this.user.type2 == 'Designer') {
-        this.options = ['Local', 'International African Designer'];
+        this.options = ['Local', 'International Designer'];
       } else if (this.user.type2 == 'Fabric Retailer') {
         this.options = ['Local', 'International Fabric Retailer'];
       } else if (this.user.type2 == 'Manufacturer') {
@@ -194,9 +196,9 @@ export class UserProfilePage {
           this.navCtrl.push(CreationPage, {
             creation:data
           });
-        }) 
+        })
         console.log('open creation: ' + creation2Open);
-        
+
     } else {
           this.dataService.getInspirationsByPageId(creation2Open.code).subscribe((res)=> {
             var result = res.json().result;
@@ -220,10 +222,10 @@ export class UserProfilePage {
                       console.log(pageLikes.length);
                       inspiration.likes = pageLikes.length;
                   }); */
-                
+
             }
             this.openLookbook(result[0]);
-              
+
             }
           })
       }
@@ -505,7 +507,7 @@ export class UserProfilePage {
 
   fieldUpdate() {
     console.log('text changing');
-    this.profileChanged = true;    
+    this.profileChanged = true;
   }
 
   sizeUpdate() {
@@ -590,8 +592,11 @@ export class UserProfilePage {
   }
 
   logout() {
+    this.fcmprovider.saveToken(this.dataService.me.code,"")
     this.storage.clear()
-    this.app.getRootNav().push(LoginPage);
+    //empty the token so logged out users don't get notifications
+    //remove logged out users from firebase instance
+    this.app.getRootNav().push(LoginPage)
   }
 
   openPayments() {

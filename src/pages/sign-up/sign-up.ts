@@ -11,6 +11,7 @@ import {Md5} from 'ts-md5/dist/md5';
 import { FormControl } from '@angular/forms';
 import {ErrorHandlerProvider} from "../../providers/error-handler/error-handler";
 import { Storage } from '@ionic/storage';
+import { AuthService } from '../../app/auth.service';
 
 /**
  * Generated class for the SignUpPage page.
@@ -56,7 +57,7 @@ question:any;
   savedUser:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    private storage: Storage, private errorHandlerProvider: ErrorHandlerProvider,public userService:UserService,public dataService:DataService) {
+    private storage: Storage, private errorHandlerProvider: ErrorHandlerProvider,public userService:UserService,public dataService:DataService, public auth: AuthService) {
     this.start();
   }
 
@@ -260,7 +261,7 @@ question:any;
     //send user to database and save
     let newUser = new User('',this.code,this.type,this.serviceType,'','','','','',this.name,this.gender,this.email,this.city,'',true,'','','','','http://www.sczr.co.uk',this.sizeCode,0,Md5.hashStr(this.password));
     this.userService.saveUser(newUser).subscribe(data =>{
-      
+
         if(data.message == "Successful"){
           newUser = data.result[0];
           this.errorHandlerProvider.throwSuccess(ErrorHandlerProvider.MESSAGES.success.signup[0].title, ErrorHandlerProvider.MESSAGES.success.signup[0].msg);
@@ -321,12 +322,12 @@ question:any;
   done(){
 
     this.savedUser.image = this.dataService.apiUrl + "images/" +  this.savedUser.image;
-    
+
     this.userService.setUser(this.savedUser);
     this.dataService.permission = this.userService.getPermission(this.savedUser);
     this.dataService.me = this.savedUser;
     //this.dataService.getLikes();
-    this.navCtrl.setRoot(TabsPage);
+    this.auth.anonymousLogin().then(() => this.navCtrl.setRoot(TabsPage));
     console.log('done- segue now');
   }
 

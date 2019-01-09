@@ -38,7 +38,7 @@ import { PaymentHistoryPageModule } from '../pages/payment-history/payment-histo
 import { StripeModalContentPage } from '../pages/payment-history/payment-history';
 import { RaveModalContentPage } from '../pages/payment-history/payment-history';
 import { ServicePaymentPageModule } from '../pages/service-payment/service-payment.module';
-
+import { ForgotPassword } from "../pages/forgot-password/forgot-password"
 //import { IonicImageLoader } from 'ionic-image-loader';
 import { FCM } from '@ionic-native/fcm';
 
@@ -58,8 +58,9 @@ import { SocialShareProvider } from '../providers/social-share/social-share';
 import { VerticalLookbook } from '../components/vertical-lookbook/vertical-lookbook';
 import { HorizontalLookbook } from '../components/horizontal-lookbook/horizontal-lookbook';
 import { ErrorHandlerProvider } from '../providers/error-handler/error-handler';
+import { Keyboard } from '@ionic-native/keyboard';
 
-
+import { InspirationModalPageModule } from "../pages/inspiration-modal/inspiration-modal.module"
 var config = {
   apiKey: "AIzaSyBx7oLWNN8sP9NgcRyfppT0VyPnTxLg0nk",
   authDomain: "scizzor-14968.firebaseapp.com",
@@ -92,7 +93,8 @@ var config = {
     ChatPage,
     ModalContentPage,
     StripeModalContentPage,
-    RaveModalContentPage
+    RaveModalContentPage,
+    ForgotPassword
   ],
   imports: [
     BrowserModule,
@@ -112,7 +114,8 @@ var config = {
     RavePaymentPageModule,
     StripePaymentPageModule,
     PaymentHistoryPageModule,
-    ServicePaymentPageModule
+    ServicePaymentPageModule,
+    InspirationModalPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -134,7 +137,8 @@ var config = {
     ChatPage,
     ModalContentPage,
     StripeModalContentPage,
-    RaveModalContentPage
+    RaveModalContentPage,
+    ForgotPassword
   ],
   providers: [
     HttpService,
@@ -145,7 +149,8 @@ var config = {
     SocialSharing, AudioService, NativeAudio,
     UserService, EmailComposer,
     SocialShareProvider, ErrorHandlerProvider,
-    AuthService, InAppBrowser, Stripe, FCM, FcmProvider
+    AuthService, InAppBrowser, Stripe, FCM, FcmProvider,
+    Keyboard
   ]
 })
 

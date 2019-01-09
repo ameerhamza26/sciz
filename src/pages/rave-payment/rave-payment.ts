@@ -66,80 +66,91 @@ export class RavePaymentPage {
     }
 
     else {
-      this.provider =  this.dataService.users.filter(item => item.id == this.creation.account_id)[0];
-      console.log(this.dataService)
-      console.log(this.provider);
+      this.loading = this.loadingCtrl.create({
+        content: 'Please wait...'
+      });
+    
+      this.loading.present().then(()=> {
+        this.dataService.getUserById( this.creation.account_id).subscribe((res)=> {
+          this.provider =  res.json().data[0];
+          console.log(this.provider);
 
-      this.purchaseDetails = {
-        type : 'store',
-        name : this.provider.name,
-        email : this.provider.email,
-        mobile : this.provider.phone,
-        item : this.creation.name,
-        itemImage : this.creation.image,
-        bankAccountHolder : this.provider.bankAccountHolder,
-        bankAccountNumber : this.provider.bankAccountNumber,
-        bankAccountSortCode : this.provider.bankAccountSortCode,
-        status : 'false'
-      }
-      console.log(this.purchaseDetails)
-    }
-
-    this.email = this.user.email
+          this.purchaseDetails = {
+            type : 'store',
+            name : this.provider.name,
+            email : this.provider.email,
+            mobile : this.provider.phone,
+            item : this.creation.name,
+            itemImage : this.creation.image,
+            bankAccountHolder : this.provider.bankAccountHolder,
+            bankAccountNumber : this.provider.bankAccountNumber,
+            bankAccountSortCode : this.provider.bankAccountSortCode,
+            status : 'false'
+          }
+          console.log(this.purchaseDetails)
+          this.email = this.user.email
 
 
-    if (this.creation.price.charAt(0) == '£'){
-      this.currency = "GBP"
-      this.amount = this.creation.price.substring(1)
-    }
+          if (this.creation.price.charAt(0) == '£'){
+            this.currency = "GBP"
+            this.amount = this.creation.price.substring(1)
+          }
+      
+          else if (this.creation.price.charAt(0) == '$'){
+            this.currency = "USD"
+            this.amount = this.creation.price.substring(1)
+          }
+      
+          else if (this.creation.price.charAt(0) == '€'){
+            this.currency = "EUR"
+            this.amount = this.creation.price.substring(1)
+          }
+      
+          else if (this.creation.price.charAt(0) == 'N'){
+            this.currency = "NGN"
+            this.amount = this.creation.price.substring(1)
+          }
+      
+          else {
+            this.amount = this.creation.price
+          }
+      
+          this.paymentEmail = {
+            sender : this.user.name + ' ' + this.user.email,
+            provider : this.purchaseDetails.name + ' ' + this.purchaseDetails.email,
+            item : this.purchaseDetails.item,
+            amount : this.amount,
+            currency : this.currency,
+            bankAccountHolder : this.purchaseDetails.bankAccountHolder,
+            bankAccountNumber : this.purchaseDetails.bankAccountNumber,
+            bankAccountSortCode : this.purchaseDetails.bankAccountSortCode
+          }
+      
+          this.serviceProviderEmailService = {
+            provider : this.purchaseDetails.email,
+            sender : this.user.name + ' ' + this.user.email,
+            item : this.purchaseDetails.item,
+            currency : this.currency,
+            amount : this.amount,
+            dueDate : this.purchaseDetails.completionDate,
+            address :this.purchaseDetails.address,
+            measurements : this.purchaseDetails.measurement,
+          }
+      
+          this.serviceProviderEmailStore = {
+            provider : this.purchaseDetails.email,
+            sender : this.user.name + ' ' + this.user.email,
+            item : this.purchaseDetails.item,
+            currency : this.currency,
+            amount : this.amount,
+          }
+      
+      
+          this.loading.dismissAll();
+        })
+      });
 
-    else if (this.creation.price.charAt(0) == '$'){
-      this.currency = "USD"
-      this.amount = this.creation.price.substring(1)
-    }
 
-    else if (this.creation.price.charAt(0) == '€'){
-      this.currency = "EUR"
-      this.amount = this.creation.price.substring(1)
-    }
-
-    else if (this.creation.price.charAt(0) == 'N'){
-      this.currency = "NGN"
-      this.amount = this.creation.price.substring(1)
-    }
-
-    else {
-      this.amount = this.creation.price
-    }
-
-    this.paymentEmail = {
-      sender : this.user.name + ' ' + this.user.email,
-      provider : this.purchaseDetails.name + ' ' + this.purchaseDetails.email,
-      item : this.purchaseDetails.item,
-      amount : this.amount,
-      currency : this.currency,
-      bankAccountHolder : this.purchaseDetails.bankAccountHolder,
-      bankAccountNumber : this.purchaseDetails.bankAccountNumber,
-      bankAccountSortCode : this.purchaseDetails.bankAccountSortCode
-    }
-
-    this.serviceProviderEmailService = {
-      provider : this.purchaseDetails.email,
-      sender : this.user.name + ' ' + this.user.email,
-      item : this.purchaseDetails.item,
-      currency : this.currency,
-      amount : this.amount,
-      dueDate : this.purchaseDetails.completionDate,
-      address :this.purchaseDetails.address,
-      measurements : this.purchaseDetails.measurement,
-    }
-
-    this.serviceProviderEmailStore = {
-      provider : this.purchaseDetails.email,
-      sender : this.user.name + ' ' + this.user.email,
-      item : this.purchaseDetails.item,
-      currency : this.currency,
-      amount : this.amount,
     }
 
 

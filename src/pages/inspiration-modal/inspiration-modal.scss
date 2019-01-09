@@ -1,0 +1,47 @@
+page-home-modal {
+
+    @import url('https://fonts.googleapis.com/css?family=Baloo');
+
+    .opacity{
+        background-color: rgba(229,229,229, 0.85);
+        position:relative;
+        z-index:-1;
+    }
+       
+    .bring_to_front{
+        position:absolute;
+        z-index:1000;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+       
+    }
+
+    .txt{
+        font-family: 'Baloo', cursive;
+        text-align: center;
+        font-size: 25px;
+    }
+    .btn{
+
+        display: flex;
+        align-items: center;
+        position: absolute;
+        bottom: 0;
+        margin-bottom: 40px;
+        margin-left: 100px;
+
+    }
+
+    .scroll-content {
+     overflow-x: unset;
+     overflow-y: unset;
+      
+    }
+
+    .text {
+        text-align: center;
+        padding: 10px;
+        font-weight: bold;
+    }
+}
