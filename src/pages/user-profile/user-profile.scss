@@ -1,10 +1,10 @@
 page-user-profile {
     .userProfile {
         height: 100%;
-        background-color: #000;
+        background-color: #f7f7f7;
         color: #fff;
         h2 {
-            color: #d3a33c;
+            color: #DB5C00;
         }
         .storeholder {
             height: 100vh;
@@ -22,7 +22,7 @@ page-user-profile {
         }
         ion-list {
             .item {
-                background-color: #000000;
+                background-color: #f7f7f7;
                 color: #ffffff;
                 .label {
                     font-family: gilroy;
@@ -32,7 +32,7 @@ page-user-profile {
         .select {
             background-color: #ffffff;
             min-width: 100% !important;
-            color: #d3a33c;
+            color: #DB5C00;
             font-family: gilroy;
         }
     }

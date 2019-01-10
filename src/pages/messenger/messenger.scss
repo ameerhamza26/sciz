@@ -6,7 +6,7 @@ page-messenger {
   }
 
   .toolbar-background {
-    background-color: #000;
+    background-color: #f7f7f7;
   }
 
   .toolbar-title {
@@ -15,7 +15,7 @@ page-messenger {
 
 
   .messenger {
-    background-color: black;
+    background-color: #f7f7f7;
     background-size: cover;
     background-position: center;
   }
@@ -30,23 +30,23 @@ page-messenger {
   }
 
   .list{
-    border-color: #d3a33c;
+    border-color: #DB5C00;
   }
 
   .item{
     background: transparent;
-    border-color: #d3a33c;
+    border-color: #DB5C00;
 
   }
 
   .allchats ion-item-sliding{
     background-color: black;
-    border-color: #d3a33c;
+    border-color: #DB5C00;
 
   }
 
   .item h2 {
-    color:#d3a33c;
+    color:#DB5C00;
   }
   .item p {
     color:white;
